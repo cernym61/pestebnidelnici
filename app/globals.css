@@ -88,3 +88,7 @@
   .pdfPreviewHead{padding:10px}
   .pdfDownloadBtn{font-size:12px;padding:8px}
 }
+
+/* v2.8.4 password recovery */
+.authIntro{margin:-4px 0 14px;line-height:1.45}
+.secondaryTextBtn{opacity:.75;font-size:12px}

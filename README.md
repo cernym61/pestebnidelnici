@@ -1,12 +1,13 @@
-# Kabina Hanspaulka v2.8.3
+# Kabina Hanspaulka v2.8.4
 
-Novinka:
-- tlačítko **Náhled PDF** už neotevírá tisk,
-- PDF se skutečně vygeneruje přímo v prohlížeči,
-- otevře se velký náhled PDF přímo na webu,
-- z náhledu lze PDF jedním kliknutím stáhnout,
-- funguje na PC i telefonu,
-- zachovává ID hráčů, čísla dresů a zelené zvýraznění účasti.
+Novinky:
+- **Zapomenuté heslo?** na přihlašovací obrazovce,
+- resetovací e-mail přes Supabase Auth,
+- po kliknutí na odkaz se otevře formulář pro nové heslo přímo v Kabině,
+- česká i anglická verze,
+- uživatelsky srozumitelná hláška pro `email rate limit exceeded`.
+
+DŮLEŽITÉ:
+Supabase vestavěné auth e-maily mají přísný rate limit. Pro ostrý provoz doporučujeme nastavit Supabase Auth SMTP přes už ověřený Resend účet/doménu `pestebnidelnici.cz`.
 
 Není potřeba žádný SQL update.
-Nahraj pouze celý obsah projektu na GitHub a počkej na Vercel Ready.

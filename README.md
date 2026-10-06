@@ -42,3 +42,10 @@ Sezona označená jako „podzim 2020“ byla kvůli tehdejšímu přerušení d
 
 ## v2.5.1 – správa týmu
 Po spuštění `supabase/update-v2.5.sql` se první již propojený účet automaticky stane prvním adminem, pokud zatím žádný admin neexistuje. Admin poté ve webu u svého profilu uvidí **Správa týmu** a může měnit role Hráč/Kapitán/Admin, aktivovat/deaktivovat hráče a odpojovat účty. Databáze brání tomu, aby poslední aktivní admin sám sobě odebral admin práva, deaktivoval se nebo odpojil svůj účet.
+
+
+## v2.5.2
+- oprava psaní komentářů (textarea už neztrácí focus po každém znaku),
+- soupeři ve Vzájemných zápasech zahrnují i aktuální rozpis; Princ Praha FC se zobrazí i před prvním vzájemným utkáním,
+- samostatná záložka Správa pro admina,
+- update-v2.5.2.sql nastaví Černého Martina jako admina.

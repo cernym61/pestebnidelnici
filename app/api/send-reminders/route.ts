@@ -127,7 +127,7 @@ function recentHtml(ctx:MailContext, lang:'cz'|'en'){
 }
 
 function venueHtml(ctx:MailContext, lang:'cz'|'en'){
-  const where=[ctx.venueCode,ctx.venueName,ctx.venueAddress].filter(Boolean).map(esc).join(' · ');
+  const where=[ctx.venueCode,ctx.venueName,ctx.venueAddress].flatMap((value) => value ? [esc(value)] : []).join(' · ');
   if(!where) return '';
   const nav=[];
   if(ctx.mapsUrl) nav.push(`<a href="${ctx.mapsUrl}" style="color:#1f5a39;font-weight:700;text-decoration:none">Google Maps</a>`);

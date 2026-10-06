@@ -107,3 +107,15 @@
 /* v3.0 real AI source badge */
 .aiAnswer{white-space:pre-line}
 .aiFreeBadge{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:999px;background:#eaf3e7;width:max-content;max-width:100%}
+
+/* v3.2 richer visible statistics and history events */
+.richStats th,.richStats td{text-align:center;white-space:nowrap}.richStats th:first-child,.richStats td:first-child{text-align:left}
+.statPlayer{display:flex;align-items:center;gap:9px;min-width:170px}
+.historyRich{align-items:flex-start}.historyRich .matchTeams{flex:1}
+.matchEventSummary{display:flex;flex-direction:column;gap:6px;margin-top:10px;padding-top:9px;border-top:1px dashed #d7dfd2}
+.matchEventSummary>div{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.eventLabel{font-size:11px;font-weight:900;color:#607365;text-transform:uppercase;letter-spacing:.03em}
+.eventChip{display:inline-flex;align-items:center;border:1px solid #d6dfd2;background:#fff;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:750;color:#254331}
+.goalChip{border-color:#bfd5b9;background:#f5fbf2}.starChip{border-color:#e3d6a4;background:#fffbea}
+.eventNone{font-size:11px;color:#8a978d;font-style:italic}
+@media(max-width:700px){.richStats{overflow-x:auto}.historyRich{grid-template-columns:68px 1fr}.historyRich .venueBtn{grid-column:2}.matchEventSummary{margin-top:8px}}

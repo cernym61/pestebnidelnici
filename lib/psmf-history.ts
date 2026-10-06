@@ -38,7 +38,11 @@ function readableHtml(fragment:string){
     const normalized=bits.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
     const isVs=/\bvs\b/.test(normalized);
     const isStar=!isVs && /(star|hvezd|hvěz|best.?player|player.?of.?match|man.?of.?match|motm)/i.test(normalized);
+    const isYellow=/(yellow|zluta|žluta|zluty|žluty|yellow.?card)/i.test(normalized);
+    const isRed=/(red|cervena|červena|cerveny|červeny|red.?card)/i.test(normalized);
     if(isStar)return ' [★ HRÁČ ZÁPASU] ';
+    if(isYellow)return ' [ŽK] ';
+    if(isRed)return ' [ČK] ';
     return bits?` [OBRÁZEK ${bits}] `:' ';
   });
   const formatted=withImages

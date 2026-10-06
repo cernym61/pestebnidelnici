@@ -1,31 +1,34 @@
-# Kabina Hanspaulka v3.1.1
+# Kabina Hanspaulka v3.2.0
 
-Upřesnění statistik podle pravidel týmu.
+## Statistiky
+V záložce Statistiky jsou nově vidět přímo na webu:
+- zápasy
+- minuty (1 start = 60 min)
+- góly
+- žluté karty
+- červené karty
+- ★ hráč zápasu
 
-## Minuty
-Správce určil jednoduché pravidlo:
-- každý evidovaný start = 60 minut,
-- 1 zápas = 60 min,
-- 5 zápasů = 300 min,
-- 10 zápasů = 600 min.
+A to pro aktuální sezonu i kariéru od roku 2020.
 
-AI dostává `assumed_minutes = games × 60` přímo v datovém kontextu a má toto pravidlo používat i pro historii od roku 2020.
+## Historie
+Každý odehraný zápas v Historii nově obsahuje dostupné události Pěstebních dělníků:
+- ⚽ střelec + minuta gólu
+- 🟨 žlutá karta (+ minuta, pokud je dostupná)
+- 🟥 červená karta (+ minuta, pokud je dostupná)
+- ★ hráč zápasu
 
-## Hráč zápasu
-Na PSMF je hráč zápasu označen hvězdičkou u jména.
-Synchronizace se nyní pokouší převést hvězdičkové obrázky/markery na:
-`[★ HRÁČ ZÁPASU]`
+Např.:
+`⚽ 9' Landfeld Jan · 30' Jelenčiak Jakub`
 
-AI má hvězdičku u jména chápat jako oficiální označení hráče zápasu a nesmí si hráče zápasu vybírat sama.
-
-## Karty
-AI hledá žluté a červené karty v oficiálních detailech PSMF od roku 2020.
-Pokud karta v datech uvedena není, nesmí ji domýšlet.
-
-## Jazyk
-Český kanál → pouze česky.
-Anglický kanál → pouze anglicky.
+Události jsou parsované z oficiálních detailů utkání PSMF od roku 2020.
 
 ## Nasazení
-Není potřeba nový SQL.
-Nahraj v3.1.1 na GitHub, počkej na Vercel Ready a potom ve Správě klikni na **Obnovit PSMF**, aby se znovu zpracovaly detailní stránky a hvězdičky.
+Pokud už byl spuštěn `supabase/update-v3.1.sql`, nový SQL není potřeba.
+
+Po nasazení v3.2.0:
+1. počkej na Vercel Ready,
+2. otevři Správa,
+3. klikni **Obnovit PSMF**.
+
+Tím se detailní historie znovu načte a přepočítají se góly, karty a hvězdičky.

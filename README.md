@@ -23,3 +23,9 @@ Pěstební dělníci A – týmová webová aplikace.
 
 ## Nasazení
 Pro v2.7 není potřeba nový SQL update. Nahraj celý obsah projektu na GitHub a Vercel vytvoří nový deployment.
+
+
+## v2.7.1
+- trims accidental quotes/whitespace and Key/Bearer prefixes from OneSignal API key
+- validates new OneSignal App API key prefix `os_v2_app_`
+- safer diagnostics without exposing the full secret

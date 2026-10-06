@@ -1,12 +1,15 @@
-# Kabina Hanspaulka v2.8.0
+# Kabina Hanspaulka v2.8.1
 
-Novinky:
-- záložka **ID hráčů** pro přihlášené členy týmu,
-- zobrazuje jen hráče s odpovědí **Přijdu** na nejbližší zápas,
-- ID hráče a číslo dresu jsou uloženy v profilu hráče,
-- admin je může kdykoli měnit ve Správě,
-- předvyplněno 13 hráčů podle dodaného seznamu,
-- hráči mimo seznam zůstávají prázdní,
-- oprava profilových fotek: cache-busting, Storage read policy a serverový avatar proxy.
+Změna záložky **ID hráčů**:
+- je dostupná úplně všem, i bez přihlášení,
+- zobrazuje všechny aktivní hráče,
+- u každého ukazuje ID hráče a číslo dresu,
+- hráči, kteří u nejbližšího zápasu potvrdili **Přijdu**, jsou zvýrazněni zeleně,
+- zelené zvýraznění se aktualizuje podle týmové docházky.
 
-Nejdřív spusť `supabase/update-v2.8.sql`, potom nasaď kód na GitHub/Vercel.
+Součástí `supabase/update-v2.8.1.sql` jsou i všechny změny z v2.8.0, takže pokud v2.8.0 ještě nebyla spuštěna, stačí spustit pouze v2.8.1.
+
+Postup:
+1. Supabase → SQL Editor → spusť `supabase/update-v2.8.1.sql`.
+2. Nahraj celý obsah projektu na GitHub.
+3. Počkej na Vercel Ready.

@@ -21,3 +21,11 @@
 /* v2.8 player IDs */
 .playerIdName{display:inline-flex;align-items:center;gap:8px}.jerseyBadge{display:inline-grid;place-items:center;min-width:34px;height:34px;border-radius:9px;background:#203f30;color:#fff;font-weight:900}.playerIdsTable td{vertical-align:middle}.adminRowExtended{grid-template-columns:minmax(190px,1.6fr) minmax(110px,.7fr) minmax(90px,.6fr) 90px auto auto auto}.playerDataField{display:grid;gap:4px}.playerDataField span{font-size:11px;color:var(--muted);font-weight:800}.playerDataField input{width:100%;border:1px solid var(--line);border-radius:9px;background:#fff;padding:8px;font-weight:750;color:var(--ink)}.jerseyField input{max-width:70px}.savePlayerDataBtn{border:1px solid #b9c8b4;background:#eef5e9;color:#28523a;border-radius:9px;padding:8px 10px;font-weight:800;cursor:pointer}.savePlayerDataBtn:disabled{opacity:.5;cursor:wait}
 @media(max-width:1050px){.adminRowExtended{grid-template-columns:1fr 1fr}.adminPerson{grid-column:1/-1}.savePlayerDataBtn,.unlinkBtn{width:100%}}
+
+/* v2.8.1 public player IDs */
+.idsLegend{display:flex;align-items:center;gap:8px;margin:6px 0 18px;color:var(--muted);font-size:13px;font-weight:750}
+.idsLegendDot{width:12px;height:12px;border-radius:999px;background:#dff3df;border:1px solid #8ac58d}
+.playerIdsTable tbody tr.attendingRow td{background:#e8f6e8}
+.playerIdsTable tbody tr.attendingRow td:first-child{box-shadow:inset 4px 0 0 #3a9148}
+.attendingPill{display:inline-flex;align-items:center;margin-left:8px;padding:3px 8px;border-radius:999px;background:#2f7d3d;color:#fff;font-size:11px;font-weight:900;white-space:nowrap}
+@media(max-width:640px){.attendingPill{margin-left:4px}.playerIdName{gap:5px}}

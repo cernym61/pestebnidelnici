@@ -44,11 +44,3 @@ export const fallbackPlayers: PlayerStat[] = [
   ['Jelenčiak Jakub',2,2],['Kolář Adam',3,0],['Kozák Tomáš',0,0],['Kubala Martin',3,0],['Landfeld Jan',2,1],
   ['Landfeld Vít',3,0],['Sigmund Radek',3,0],['Varner Howard',3,0],['Veselý Mikuláš',3,0]
 ];
-
-export const venueLinks: Record<string,string> = {
-  BECH: 'https://www.google.com/maps/search/?api=1&query=BECH+PSMF+Praha', HOSTI: 'https://www.google.com/maps/search/?api=1&query=HOSTI+PSMF+Praha',
-  PODV2: 'https://www.google.com/maps/search/?api=1&query=PODV2+PSMF+Praha', P3: 'https://www.google.com/maps/search/?api=1&query=P3+PSMF+Praha',
-  STER1: 'https://www.google.com/maps/search/?api=1&query=STER1+PSMF+Praha', HRAB2: 'https://www.google.com/maps/search/?api=1&query=HRAB2+PSMF+Praha',
-  P1: 'https://www.google.com/maps/search/?api=1&query=P1+PSMF+Praha', ZABEH: 'https://www.google.com/maps/search/?api=1&query=ZABEH+PSMF+Praha',
-  DEKAN: 'https://www.google.com/maps/search/?api=1&query=DEKAN+PSMF+Praha', PODV1: 'https://www.google.com/maps/search/?api=1&query=PODV1+PSMF+Praha'
-};

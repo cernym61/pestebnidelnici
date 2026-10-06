@@ -6,6 +6,7 @@ import { SEASON, SOURCE_URL, TEAM } from '@/lib/data';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 30;
 
+const VENUES_URL = 'https://www.psmf.cz/hriste/';
 function clean(s:string){ return s.replace(/\u00a0/g,' ').replace(/\s+/g,' ').trim(); }
 function int(s:string){ const n = Number(clean(s).replace(/[^0-9-]/g,'')); return Number.isFinite(n) ? n : 0; }
 function dateIso(s:string){
@@ -13,16 +14,12 @@ function dateIso(s:string){
   if(!m) throw new Error(`Unknown PSMF date: ${s}`);
   return `20${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
 }
-function lastSundayOfOctober(year:number){
-  const d = new Date(Date.UTC(year,9,31));
-  return 31 - d.getUTCDay();
-}
+function lastSundayOfOctober(year:number){ const d = new Date(Date.UTC(year,9,31)); return 31 - d.getUTCDay(); }
 function pragueOffset(isoDate:string){
   const [y,m,d] = isoDate.split('-').map(Number);
   if(m < 3 || m > 10) return '+01:00';
   if(m > 3 && m < 10) return '+02:00';
   if(m === 10) return d <= lastSundayOfOctober(y) ? '+02:00' : '+01:00';
-  // All Hanspaulka spring dates are after the DST switch in late March.
   return '+02:00';
 }
 function kickoff(date:string,time:string){ return `${date}T${time}:00${pragueOffset(date)}`; }
@@ -39,14 +36,16 @@ function teamsFromCell(cell:any){
   const names = links.map((a:any)=>clean(a.text)).filter(Boolean);
   return names.length >= 2 ? names.slice(0,2) : [];
 }
+function multilineText(node:any){
+  const html = String(node?.innerHTML ?? '').replace(/<br\s*\/?>/gi,'\n').replace(/<\/p>/gi,'\n').replace(/<\/div>/gi,'\n');
+  const text = parse(`<div>${html}</div>`).text;
+  return text.split(/\n+/).map(clean).filter(Boolean);
+}
 
-async function sync(){
+async function syncTeam(admin:any, now:string){
   const response = await fetch(SOURCE_URL,{ cache:'no-store', headers:{'user-agent':'PestebniDelniciKabina/1.0'} });
-  if(!response.ok) throw new Error(`PSMF returned ${response.status}`);
-  const html = await response.text();
-  const root = parse(html);
-  const admin = getSupabaseAdmin();
-  const now = new Date().toISOString();
+  if(!response.ok) throw new Error(`PSMF team page returned ${response.status}`);
+  const root = parse(await response.text());
 
   const statsTable = findTable(root,['Hráč','Zápasů','Gólů']);
   const playerRows = rows(statsTable).map((tr:any)=>{
@@ -55,20 +54,14 @@ async function sync(){
     const name = clean(c[0].text); if(!name) return null;
     return { display_name:name, psmf_name:name, psmf_games:int(c[1].text), psmf_goals:int(c[2].text), active:true, last_seen_at:now };
   }).filter(Boolean);
-  if(playerRows.length){
-    const { error } = await admin.from('players').upsert(playerRows,{onConflict:'display_name'});
-    if(error) throw error;
-  }
+  if(playerRows.length){ const { error } = await admin.from('players').upsert(playerRows,{onConflict:'display_name'}); if(error) throw error; }
 
   const standingsTable = findTable(root,['Pořadí','Tým','Odehrané zápasy','Počet bodů']);
   const standingRows = rows(standingsTable).map((tr:any)=>{
     const c = tr.querySelectorAll('td'); if(c.length < 8) return null;
     return { season:SEASON, rank:int(c[0].text), team:clean(c[1].text), played:int(c[2].text), wins:int(c[3].text), draws:int(c[4].text), losses:int(c[5].text), score:clean(c[6].text), points:int(c[7].text), synced_at:now };
   }).filter(Boolean);
-  if(standingRows.length){
-    const { error } = await admin.from('standings').upsert(standingRows,{onConflict:'season,team'});
-    if(error) throw error;
-  }
+  if(standingRows.length){ const { error } = await admin.from('standings').upsert(standingRows,{onConflict:'season,team'}); if(error) throw error; }
 
   const parseMatchTable = (table:any, hasResult:boolean) => rows(table).map((tr:any)=>{
     const c = tr.querySelectorAll('td'); if(c.length < (hasResult?6:5)) return null;
@@ -78,17 +71,43 @@ async function sync(){
     if(hasResult){ const sm=clean(c[5].text).match(/(\d+)\s*:\s*(\d+)/); if(sm){home_score=Number(sm[1]);away_score=Number(sm[2]);} }
     return { psmf_key:`${SEASON}-r${round}`, kickoff:kickoff(date,time), venue_code:venue, home_team:names[0], away_team:names[1], home_score, away_score, season:SEASON };
   }).filter(Boolean);
-
   const resultsTable = findTable(root,['Datum','Čas','Hřiště','Domácí - Hosté','Kolo','Výsledek'],6);
   const upcomingTable = findTable(root,['Datum','Čas','Hřiště','Domácí - Hosté','Kolo'],5);
   const matchRows = [...parseMatchTable(resultsTable,true), ...parseMatchTable(upcomingTable,false)];
-  if(matchRows.length){
-    const { error } = await admin.from('matches').upsert(matchRows,{onConflict:'psmf_key'});
-    if(error) throw error;
-  }
+  if(matchRows.length){ const { error } = await admin.from('matches').upsert(matchRows,{onConflict:'psmf_key'}); if(error) throw error; }
+  return {players:playerRows.length, standings:standingRows.length, matches:matchRows.length};
+}
 
+async function syncVenues(admin:any, now:string){
+  const response = await fetch(VENUES_URL,{ cache:'no-store', headers:{'user-agent':'PestebniDelniciKabina/1.0'} });
+  if(!response.ok) throw new Error(`PSMF venues page returned ${response.status}`);
+  const root = parse(await response.text());
+  const table = findTable(root,['Název hřiště','Zkratka hřiště','Adresa']);
+  const venueRows:any[] = [];
+  for(const tr of rows(table)){
+    const c = tr.querySelectorAll('td'); if(c.length < 3) continue;
+    const name = clean(c[0].text); if(!name) continue;
+    const codes = c[1].querySelectorAll('a').map((a:any)=>clean(a.text)).filter(Boolean);
+    if(!codes.length) continue;
+    const parts = multilineText(c[2]);
+    const address = parts[0] || clean(c[2].text);
+    const notes = parts.slice(1).join(' ') || null;
+    for(const code of codes){
+      venueRows.push({ code, name, address, notes, source_url:VENUES_URL, synced_at:now });
+    }
+  }
+  if(venueRows.length){ const { error } = await admin.from('venues').upsert(venueRows,{onConflict:'code'}); if(error) throw error; }
+  return venueRows.length;
+}
+
+async function sync(){
+  const admin = getSupabaseAdmin();
+  const now = new Date().toISOString();
+  const team = await syncTeam(admin,now);
+  const venues = await syncVenues(admin,now);
   await admin.from('sync_meta').upsert({ key:'psmf-current-team', last_synced_at:now, source_url:SOURCE_URL },{onConflict:'key'});
-  return { players:playerRows.length, standings:standingRows.length, matches:matchRows.length, syncedAt:now };
+  await admin.from('sync_meta').upsert({ key:'psmf-venues', last_synced_at:now, source_url:VENUES_URL },{onConflict:'key'});
+  return {...team, venues, syncedAt:now};
 }
 
 export async function GET(){

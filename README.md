@@ -1,16 +1,27 @@
-# Kabina Hanspaulka v2.2
+# Kabina · Hanspaulka v2.3
 
-Novinky:
-- plný širší kádr 14 hráčů z jara + podzimu 2026,
-- automatický import nových hráčů z aktuální stránky PSMF,
-- automatický import zápasů, výsledků, tabulky a hráčských statistik,
-- ruční tlačítko „Obnovit PSMF“,
-- Vercel Cron jednou denně.
+Next.js týmová aplikace Pěstebních dělníků A.
 
-## Po nahrání na GitHub
-1. Supabase SQL Editor -> Database: spusť `supabase/update-v2.2.sql`.
-2. Ve Vercelu přidej tajnou proměnnou `SUPABASE_SERVICE_ROLE_KEY` (Production).
-3. Redeploy.
-4. Otevři `/api/sync-psmf` nebo klikni na webu „Obnovit PSMF“.
+## Co je ve v2.3
+- automatická synchronizace zápasů, výsledků, tabulky a hráčů z PSMF
+- automatická synchronizace **všech hřišť** z https://www.psmf.cz/hriste/
+- kliknutí na kód hřiště otevře detail s názvem, adresou, poznámkou a tlačítky Google Maps / Waze
+- přihlášení a docházka přes Supabase
+- bezplatné e-mailové připomínky přes Resend: cron běží každý den odpoledne a e-mail odešle jen hráčům, kteří ještě neodpověděli a zápas je přesně za 2 dny
+- ochrana proti duplicitnímu reminderu přes `reminder_log`
+- tlačítko pro znovuodeslání potvrzovacího e-mailu
 
-Nikdy nedávej `SUPABASE_SERVICE_ROLE_KEY` do proměnné začínající `NEXT_PUBLIC_` a neposílej ji veřejně.
+## Nasazení v2.3
+1. V Supabase SQL Editoru spusť `supabase/update-v2.3.sql`.
+2. Nahraj celý obsah projektu na GitHub (přepiš stávající soubory).
+3. Ve Vercelu zkontroluj stávající proměnné Supabase.
+4. Pro reminder vytvoř zdarma účet na Resend, ověř doménu `pestebnidelnici.cz` a do Vercelu přidej:
+   - `RESEND_API_KEY` (Secret)
+   - `REMINDER_FROM_EMAIL` (Config) = `Kabina Pěstební dělníci <kabina@pestebnidelnici.cz>`
+5. Redeploy.
+6. Na webu klikni `Obnovit PSMF`, aby se okamžitě načetl kompletní seznam hřišť.
+
+## Reminder logika
+Vercel Cron volá `/api/send-reminders` jednou denně odpoledne. Endpoint nic neodešle, pokud není zápas přesně za dva kalendářní dny. Pokud zápas je, e-mail dostanou jen registrovaní hráči, kteří k danému zápasu ještě nemají odpověď v `attendance`.
+
+Základní provoz lze držet na free tarifech Vercel + Supabase + Resend (v rámci jejich aktuálních limitů).

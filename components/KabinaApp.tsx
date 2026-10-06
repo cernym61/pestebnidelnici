@@ -32,7 +32,7 @@ export default function KabinaApp(){
   const [authMode,setAuthMode] = useState<'login'|'signup'>('login');
   const [email,setEmail] = useState('');
   const [password,setPassword] = useState('');
-  const [selectedPlayer,setSelectedPlayer] = useState(players[0][0]);
+  const [selectedPlayer,setSelectedPlayer] = useState<string>(players[0][0]);
   const [authMessage,setAuthMessage] = useState('');
   const [authBusy,setAuthBusy] = useState(false);
   const [saving,setSaving] = useState(false);

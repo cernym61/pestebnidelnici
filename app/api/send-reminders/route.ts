@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabase-admin';
+import { sendPush } from '@/lib/onesignal';
 import { TEAM } from '@/lib/data';
 
 export const dynamic = 'force-dynamic';
@@ -208,6 +209,16 @@ export async function GET(){
         if(uErr || !userResult.user?.email){ skipped++; continue; }
         const subject=`⚽ Pěstební dělníci A · Potvrď účast proti ${ctx.opponent}`;
         await sendEmail(userResult.user.email,subject,buildEmailHtml(player.display_name,ctx,false));
+        try{
+          await sendPush({
+            externalIds:[player.id],
+            titleCs:'⚽ Pěstební dělníci A',
+            bodyCs:`Za dva dny hrajeme proti ${ctx.opponent}. Ještě jsi nepotvrdil účast.`,
+            titleEn:'⚽ Pěstební dělníci A',
+            bodyEn:`We play ${ctx.opponent} in two days. You have not confirmed availability yet.`,
+            url:'https://www.pestebnidelnici.cz'
+          });
+        }catch(pushError){ console.error('OneSignal push reminder failed',pushError); }
         await admin.from('reminder_log').insert({match_id:match.id,player_id:player.id,kind:'attendance-2d',sent_to:userResult.user.email});
         sent++;
       }

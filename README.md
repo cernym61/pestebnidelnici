@@ -21,3 +21,7 @@ Produkční verze reminderů.
 
 ## Automatika
 V `vercel.json` zůstává denní kontrola reminderů. Endpoint odešle zprávu pouze tehdy, když je zápas přesně dva pražské kalendářní dny daleko, a pouze hráčům bez odpovědi. Záznam `reminder_log` chrání proti opakovanému odeslání stejné připomínky.
+
+
+## v2.6.3
+Fix TypeScript typing in reminder venue navigation links.

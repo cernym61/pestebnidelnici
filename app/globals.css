@@ -69,3 +69,22 @@
   #player-ids-export .attendingPill{background:#2f7d3d!important;color:#fff!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;font-size:9px!important;padding:2px 5px!important}
   #player-ids-export .jerseyBadge{background:transparent!important;color:#111!important;min-width:auto!important;height:auto!important;border-radius:0!important}
 }
+
+/* v2.8.3 PDF preview */
+.exportPdfBtn:disabled{opacity:.65;cursor:wait}
+.pdfBackdrop{padding:18px}
+.pdfPreviewModal{width:min(1100px,96vw);height:min(92vh,900px);background:#fff;border-radius:18px;box-shadow:0 24px 80px rgba(0,0,0,.28);display:flex;flex-direction:column;overflow:hidden}
+.pdfPreviewHead{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 16px;border-bottom:1px solid var(--line);background:#fff}
+.pdfPreviewHead>div:first-child{display:grid;gap:2px}
+.pdfPreviewHead strong{font-size:17px}
+.pdfPreviewHead span{font-size:12px;color:var(--muted)}
+.pdfPreviewHead>div:last-child{display:flex;align-items:center;gap:8px}
+.pdfDownloadBtn{display:inline-flex;align-items:center;gap:6px;text-decoration:none}
+.pdfCloseBtn{position:static!important}
+.pdfPreviewFrame{width:100%;height:100%;border:0;background:#e9ecef}
+@media(max-width:640px){
+  .pdfBackdrop{padding:0}
+  .pdfPreviewModal{width:100vw;height:100vh;border-radius:0}
+  .pdfPreviewHead{padding:10px}
+  .pdfDownloadBtn{font-size:12px;padding:8px}
+}

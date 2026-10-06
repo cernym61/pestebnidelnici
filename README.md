@@ -1,11 +1,12 @@
-# Kabina Hanspaulka v2.8.2
+# Kabina Hanspaulka v2.8.3
 
 Novinka:
-- v záložce **ID hráčů** je tlačítko **Export PDF**,
-- otevře systémový tiskový dialog s čistou A4 sestavou,
-- lze zvolit **Uložit jako PDF** / Save as PDF,
-- sestava obsahuje hráče, ID, číslo dresu a účast,
-- hráči s potvrzeným **Přijdu** jsou v exportu zeleně,
-- export je připravený i pro tisk přímo u zápasu.
+- tlačítko **Náhled PDF** už neotevírá tisk,
+- PDF se skutečně vygeneruje přímo v prohlížeči,
+- otevře se velký náhled PDF přímo na webu,
+- z náhledu lze PDF jedním kliknutím stáhnout,
+- funguje na PC i telefonu,
+- zachovává ID hráčů, čísla dresů a zelené zvýraznění účasti.
 
-Není potřeba žádný nový SQL update. Nahraj pouze kód na GitHub a počkej na Vercel Ready.
+Není potřeba žádný SQL update.
+Nahraj pouze celý obsah projektu na GitHub a počkej na Vercel Ready.

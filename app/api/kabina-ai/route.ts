@@ -102,7 +102,7 @@ export async function POST(req:NextRequest){
         'Content-Type':'application/json',
         'Authorization':`Bearer ${apiKey}`,
         'HTTP-Referer':'https://www.pestebnidelnici.cz',
-        'X-Title':'Pěstební dělníci A · Kabina AI'
+        'X-Title':'Pestebni delnici A - Kabina AI'
       },
       body:JSON.stringify({
         model:'openrouter/free',

@@ -1,14 +1,16 @@
-# Kabina Hanspaulka v3.0.1
+# Kabina Hanspaulka v3.0.2
 
-Diagnostická oprava Kabina AI.
+Oprava Kabina AI.
 
-- Správce nyní uvidí skutečný důvod, proč OpenRouter požadavek selhal.
-- Rozliší se například:
-  - chybějící `OPENROUTER_API_KEY`,
-  - OpenRouter 401 / 402 / 429 / jiná chyba,
-  - chybějící tabulka `ai_requests`,
-  - chyba některé sportovní tabulky nebo sloupce v Supabase.
-- Běžní hráči stále dostanou jen bezpečný fallback bez technických detailů.
-- AI zůstává na `openrouter/free`.
+## Co bylo špatně
+OpenRouter požadavek padal ještě před odesláním kvůli HTTP hlavičce `X-Title`, která obsahovala české znaky (`Pěstební dělníci`). Runtime ji převáděl na ByteString a vyhodil chybu:
+`Cannot convert argument to a ByteString ... character ... greater than 255`.
 
-Po nasazení polož jako admin jeden dotaz a pošli přesný řádek `Technická diagnostika: ...`.
+## Oprava
+- `X-Title` je nyní čisté ASCII: `Pestebni delnici A - Kabina AI`.
+- OpenRouter request se tak může skutečně odeslat.
+- Opraven i lokální fallback pro hráče: dotaz na „Martin Černý“ už nesmí omylem vybrat „Martin Kubala“ jen kvůli společnému křestnímu jménu.
+
+## Nasazení
+Není potřeba nový SQL ani nová environment proměnná.
+Nahraj celý projekt na GitHub a počkej na Vercel Ready.

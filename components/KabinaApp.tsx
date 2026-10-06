@@ -316,7 +316,15 @@ export default function KabinaApp(){
      return lang==='cs'?`Za posledních ${list.length} zápasů máme bilanci ${w}–${d}–${l} a skóre ${gf}:${ga}.`:`Over the last ${list.length} matches our record is ${w}–${d}–${l}, goals ${gf}:${ga}.`;
    }
 
-   const player=career.find(p=>q.includes(stripDiacritics(p.name))||p.name.split(' ').some(part=>part.length>4&&q.includes(stripDiacritics(part))));
+   const normalizedCareer=career.map(p=>{
+     const parts=stripDiacritics(p.name).split(/\s+/).filter(Boolean);
+     return {p,full:parts.join(' '),surname:parts[parts.length-1]||'',first:parts[0]||''};
+   });
+   const playerMatch=
+     normalizedCareer.find(x=>q.includes(x.full)) ||
+     normalizedCareer.find(x=>x.surname.length>=4&&q.includes(x.surname)) ||
+     (()=>{const firstMatches=normalizedCareer.filter(x=>x.first.length>=4&&q.includes(x.first));return firstMatches.length===1?firstMatches[0]:undefined;})();
+   const player=playerMatch?.p;
    if(player&&(q.includes('gol')||q.includes('goal')||q.includes('zapasu')||q.includes('games'))){
      return lang==='cs'?`${player.name} má od roku 2020 evidováno ${player.goals} gólů v ${player.games} zápasech.`:`${player.name} has ${player.goals} goals in ${player.games} recorded games since 2020.`;
    }

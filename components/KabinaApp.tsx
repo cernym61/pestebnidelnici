@@ -1,7 +1,7 @@
 'use client';
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { CalendarDays, ExternalLink, Languages, LogIn, LogOut, MapPin, Navigation, RefreshCw, ShieldCheck, UserRound, Users, X } from 'lucide-react';
+import { CalendarDays, ExternalLink, Languages, LogIn, LogOut, Mail, MapPin, Navigation, RefreshCw, ShieldCheck, UserRound, Users, X } from 'lucide-react';
 import type { Session } from '@supabase/supabase-js';
 import { fallbackMatches, fallbackPlayers, fallbackStandings, Match, PlayerStat, SEASON, SOURCE_URL, Standing, TEAM } from '@/lib/data';
 import { supabase } from '@/lib/supabase';
@@ -15,8 +15,8 @@ type Venue = { code:string; name:string; address:string; notes:string|null };
 
 
 const copy = {
-  cs: { tagline:'JEDEN TÝM. JEDNA KABINA.', league:'PSMF · 5D · podzim 2026', verified:'Automatická synchronizace PSMF', refresh:'Obnovit PSMF', matches:'Zápasy', table:'Tabulka', stats:'Statistiky', h2h:'Vzájemné zápasy', heading:'Jdeme hrát.', sub:'Potvrď účast a měj přehled o dalších zápasech.', next:'NEJBLIŽŠÍ ZÁPAS', away:'Venku', home:'Doma', count:'Počítáme s tebou?', yes:'Přijdu', no:'Nepřijdu', maybe:'Zatím nevím', saved:'Uloženo do týmové kabiny.', upcoming:'Další zápasy', past:'Odehráno', pos:'Poř.', team:'Tým', played:'Z', wins:'V', draws:'R', losses:'P', score:'Skóre', pts:'B', player:'Hráč', goals:'Góly', games:'Zápasy', history:'Historii vzájemných zápasů doplníme automaticky ze starších sezon PSMF.', account:'Týmová kabina', login:'Přihlásit', logout:'Odhlásit', signup:'Vytvořit účet', email:'E-mail', password:'Heslo', choosePlayer:'Který hráč jsi?', haveAccount:'Už mám účet', newAccount:'Jsem tu poprvé', signedAs:'Přihlášen jako', loginNeeded:'Pro potvrzení účasti se přihlas.', responses:'Odpovědi týmu', noResponses:'Zatím nikdo neodpověděl.', confirmEmail:'Účet je vytvořený. Potvrď e-mail a potom se přihlas.', playerLinked:'Účet je propojen s hráčem.', genericError:'Něco se nepovedlo. Zkus to prosím znovu.', synced:'PSMF aktualizováno.', venue:'Hřiště', address:'Adresa', google:'Google Maps', waze:'Waze', resend:'Poslat ověřovací e-mail znovu', resent:'Ověřovací e-mail byl znovu odeslán.' },
-  en: { tagline:'ONE TEAM. ONE LOCKER ROOM.', league:'PSMF · 5D · autumn 2026', verified:'Automatic PSMF sync', refresh:'Refresh PSMF', matches:'Matches', table:'Table', stats:'Stats', h2h:'Head-to-head', heading:"We're playing.", sub:'Confirm your availability and keep track of upcoming matches.', next:'NEXT MATCH', away:'Away', home:'Home', count:'Can we count on you?', yes:"I'm in", no:"I'm out", maybe:'Not sure yet', saved:'Saved to the team locker room.', upcoming:'Upcoming matches', past:'Results', pos:'Pos.', team:'Team', played:'P', wins:'W', draws:'D', losses:'L', score:'GD', pts:'Pts', player:'Player', goals:'Goals', games:'Games', history:'Historical head-to-head results will be synced from older PSMF seasons.', account:'Team locker room', login:'Sign in', logout:'Sign out', signup:'Create account', email:'Email', password:'Password', choosePlayer:'Which player are you?', haveAccount:'I already have an account', newAccount:"I'm new here", signedAs:'Signed in as', loginNeeded:'Sign in to confirm your availability.', responses:'Team responses', noResponses:'No responses yet.', confirmEmail:'Account created. Confirm your email and then sign in.', playerLinked:'Your account is linked to the player.', genericError:'Something went wrong. Please try again.', synced:'PSMF refreshed.', venue:'Venue', address:'Address', google:'Google Maps', waze:'Waze', resend:'Resend confirmation email', resent:'Confirmation email sent again.' }
+  cs: { tagline:'JEDEN TÝM. JEDNA KABINA.', league:'PSMF · 5D · podzim 2026', verified:'Automatická synchronizace PSMF', refresh:'Obnovit PSMF', matches:'Zápasy', table:'Tabulka', stats:'Statistiky', h2h:'Vzájemné zápasy', heading:'Jdeme hrát.', sub:'Potvrď účast a měj přehled o dalších zápasech.', next:'NEJBLIŽŠÍ ZÁPAS', away:'Venku', home:'Doma', count:'Počítáme s tebou?', yes:'Přijdu', no:'Nepřijdu', maybe:'Zatím nevím', saved:'Uloženo do týmové kabiny.', upcoming:'Další zápasy', past:'Odehráno', pos:'Poř.', team:'Tým', played:'Z', wins:'V', draws:'R', losses:'P', score:'Skóre', pts:'B', player:'Hráč', goals:'Góly', games:'Zápasy', history:'Historii vzájemných zápasů doplníme automaticky ze starších sezon PSMF.', account:'Týmová kabina', login:'Přihlásit', logout:'Odhlásit', signup:'Vytvořit účet', email:'E-mail', password:'Heslo', choosePlayer:'Který hráč jsi?', haveAccount:'Už mám účet', newAccount:'Jsem tu poprvé', signedAs:'Přihlášen jako', loginNeeded:'Pro potvrzení účasti se přihlas.', responses:'Odpovědi týmu', noResponses:'Zatím nikdo neodpověděl.', confirmEmail:'Účet je vytvořený. Potvrď e-mail a potom se přihlas.', playerLinked:'Účet je propojen s hráčem.', genericError:'Něco se nepovedlo. Zkus to prosím znovu.', synced:'PSMF aktualizováno.', venue:'Hřiště', address:'Adresa', google:'Google Maps', waze:'Waze', resend:'Poslat ověřovací e-mail znovu', resent:'Ověřovací e-mail byl znovu odeslán.', testReminder:'Poslat test reminder sobě', testReminderSent:'Testovací reminder byl odeslán jen na tvůj e-mail.' },
+  en: { tagline:'ONE TEAM. ONE LOCKER ROOM.', league:'PSMF · 5D · autumn 2026', verified:'Automatic PSMF sync', refresh:'Refresh PSMF', matches:'Matches', table:'Table', stats:'Stats', h2h:'Head-to-head', heading:"We're playing.", sub:'Confirm your availability and keep track of upcoming matches.', next:'NEXT MATCH', away:'Away', home:'Home', count:'Can we count on you?', yes:"I'm in", no:"I'm out", maybe:'Not sure yet', saved:'Saved to the team locker room.', upcoming:'Upcoming matches', past:'Results', pos:'Pos.', team:'Team', played:'P', wins:'W', draws:'D', losses:'L', score:'GD', pts:'Pts', player:'Player', goals:'Goals', games:'Games', history:'Historical head-to-head results will be synced from older PSMF seasons.', account:'Team locker room', login:'Sign in', logout:'Sign out', signup:'Create account', email:'Email', password:'Password', choosePlayer:'Which player are you?', haveAccount:'I already have an account', newAccount:"I'm new here", signedAs:'Signed in as', loginNeeded:'Sign in to confirm your availability.', responses:'Team responses', noResponses:'No responses yet.', confirmEmail:'Account created. Confirm your email and then sign in.', playerLinked:'Your account is linked to the player.', genericError:'Something went wrong. Please try again.', synced:'PSMF refreshed.', venue:'Venue', address:'Address', google:'Google Maps', waze:'Waze', resend:'Resend confirmation email', resent:'Confirmation email sent again.', testReminder:'Send test reminder to me', testReminderSent:'Test reminder was sent only to your email.' }
 } as const;
 
 function fmtDate(iso:string, lang:Lang) { return new Intl.DateTimeFormat(lang==='cs'?'cs-CZ':'en-GB',{day:'numeric',month:'long'}).format(new Date(iso+'T12:00:00')); }
@@ -44,6 +44,7 @@ export default function KabinaApp(){
   const [authBusy,setAuthBusy] = useState(false);
   const [saving,setSaving] = useState(false);
   const [syncing,setSyncing] = useState(false);
+  const [reminderBusy,setReminderBusy] = useState(false);
   const t = copy[lang];
 
   const loadPublicData = useCallback(async()=>{
@@ -86,6 +87,18 @@ export default function KabinaApp(){
     const { data: sub } = supabase.auth.onAuthStateChange((_event,newSession)=>{ setSession(newSession); setTimeout(()=>loadCabin(newSession),0); });
     return ()=>sub.subscription.unsubscribe();
   },[loadCabin]);
+
+  async function sendTestReminder(){
+    if(!session) return;
+    setReminderBusy(true);
+    try{
+      const r=await fetch('/api/send-reminders',{method:'POST',headers:{Authorization:`Bearer ${session.access_token}`}});
+      const body=await r.json().catch(()=>({}));
+      if(!r.ok) throw new Error(body?.error || 'reminder');
+      alert(t.testReminderSent);
+    }catch(error:any){ alert(error?.message || t.genericError); }
+    finally{ setReminderBusy(false); }
+  }
 
   async function refreshPsmf(){
     setSyncing(true);
@@ -138,7 +151,7 @@ export default function KabinaApp(){
     {tab==='table' && <section className="panel"><h2>{t.table}</h2><div className="tableWrap"><table><thead><tr><th>{t.pos}</th><th>{t.team}</th><th>{t.played}</th><th>{t.wins}</th><th>{t.draws}</th><th>{t.losses}</th><th>{t.score}</th><th>{t.pts}</th></tr></thead><tbody>{standings.map((r,i)=><tr key={r[0]} className={r[0]===TEAM?'ours':''}><td>{i+1}.</td><td>{r[0]}</td><td>{r[1]}</td><td>{r[2]}</td><td>{r[3]}</td><td>{r[4]}</td><td>{r[5]}</td><td><b>{r[6]}</b></td></tr>)}</tbody></table></div></section>}
     {tab==='stats' && <section className="panel"><h2>{t.stats}</h2><div className="tableWrap"><table><thead><tr><th>{t.player}</th><th>{t.games}</th><th>{t.goals}</th></tr></thead><tbody>{players.map(r=><tr key={r[0]}><td>{r[0]}</td><td>{r[1]}</td><td><b>{r[2]}</b></td></tr>)}</tbody></table></div></section>}
     {tab==='h2h' && <section className="panel empty"><h2>{t.h2h}</h2><p>{t.history}</p></section>}
-    <section className="accountCard"><div className="accountIcon"><Users/></div><div><strong>{t.account}</strong><p>{profile ? `${t.signedAs}: ${profile.display_name}` : t.loginNeeded}</p></div>{session ? <button className="miniBtn" onClick={logout}>{t.logout}</button> : <button className="miniBtn" onClick={()=>setAuthOpen(true)}>{t.login}</button>}</section>
+    <section className="accountCard"><div className="accountIcon"><Users/></div><div><strong>{t.account}</strong><p>{profile ? `${t.signedAs}: ${profile.display_name}` : t.loginNeeded}</p>{session && profile && <button className="testReminderBtn" onClick={sendTestReminder} disabled={reminderBusy}><Mail size={16}/>{reminderBusy?'…':t.testReminder}</button>}</div>{session ? <button className="miniBtn" onClick={logout}>{t.logout}</button> : <button className="miniBtn" onClick={()=>setAuthOpen(true)}>{t.login}</button>}</section>
     <footer>Neoficiální týmová aplikace · Data PSMF</footer>
 
 

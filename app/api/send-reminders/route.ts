@@ -63,3 +63,36 @@ export async function GET(){
     console.error(error); return NextResponse.json({ok:false,error:error?.message??'Reminder failed'},{status:500});
   }
 }
+
+export async function POST(request:Request){
+  try{
+    const authHeader=request.headers.get('authorization') || '';
+    const token=authHeader.startsWith('Bearer ')?authHeader.slice(7):'';
+    if(!token) return NextResponse.json({ok:false,error:'Missing session token'},{status:401});
+
+    const admin=getSupabaseAdmin();
+    const {data:authData,error:authError}=await admin.auth.getUser(token);
+    if(authError || !authData.user) return NextResponse.json({ok:false,error:'Invalid session'},{status:401});
+
+    const {data:player,error:pErr}=await admin.from('players').select('id,display_name,user_id').eq('user_id',authData.user.id).maybeSingle();
+    if(pErr) throw pErr;
+    if(!player) return NextResponse.json({ok:false,error:'Account is not linked to a player'},{status:400});
+
+    const {data:matches,error:mErr}=await admin.from('matches').select('id,kickoff,venue_code,home_team,away_team').is('home_score',null).order('kickoff').limit(1);
+    if(mErr) throw mErr;
+    const match=matches?.[0];
+    if(!match) return NextResponse.json({ok:false,error:'No upcoming match'},{status:400});
+
+    const email=authData.user.email;
+    if(!email) return NextResponse.json({ok:false,error:'Account has no email'},{status:400});
+    const opponent=match.home_team===TEAM?match.away_team:match.home_team;
+    const when=fmtKickoff(match.kickoff);
+    const subject=`TEST · ⚽ Potvrď účast: ${opponent}`;
+    const html=`<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;color:#153427"><div style="font-size:12px;font-weight:bold;color:#758073;margin-bottom:12px">TESTOVACÍ E-MAIL · přijde pouze tobě</div><h2 style="margin-bottom:8px">Ahoj ${esc(player.display_name)},</h2><p>tohle je test týmové připomínky před zápasem proti <strong>${esc(opponent)}</strong>.</p><p><strong>${esc(when)}</strong>${match.venue_code?` · ${esc(match.venue_code)}`:''}</p><p>V ostrém provozu dostane podobný e-mail jen hráč, který ještě nevyplnil účast.</p><p style="margin:26px 0"><a href="https://www.pestebnidelnici.cz" style="background:#1f5a39;color:white;padding:13px 18px;border-radius:10px;text-decoration:none;font-weight:bold">Otevřít Kabinu</a></p><p style="font-size:12px;color:#758073">Tento test se nezapisuje do reminder logu a nijak neovlivní automatické připomínky.</p></div>`;
+    await sendEmail(email,subject,html);
+    return NextResponse.json({ok:true,sentTo:email,player:player.display_name,opponent});
+  }catch(error:any){
+    console.error(error); return NextResponse.json({ok:false,error:error?.message??'Test reminder failed'},{status:500});
+  }
+}
+

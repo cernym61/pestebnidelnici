@@ -25,7 +25,6 @@ export async function sendPush(input:PushInput){
       include_aliases:{external_id:input.externalIds},
       headings:{cs:input.titleCs,en:input.titleEn||input.titleCs},
       contents:{cs:input.bodyCs,en:input.bodyEn||input.bodyCs},
-      url:input.url || SITE_URL,
       web_url:input.url || SITE_URL,
       chrome_web_icon:`${SITE_URL}/icon-192.png`,
       firefox_icon:`${SITE_URL}/icon-192.png`

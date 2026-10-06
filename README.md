@@ -1,3 +1,7 @@
+# Kabina Hanspaulka v2.7.2
+
+Fix OneSignal Web Push: removed conflicting `url` field and kept `web_url` for web notifications.
+
 # Kabina Hanspaulka v2.7
 
 Pěstební dělníci A – týmová webová aplikace.

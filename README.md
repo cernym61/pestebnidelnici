@@ -1,14 +1,16 @@
-# Kabina · Pěstební dělníci A
+# Kabina Hanspaulka v2.2
 
-Next.js týmová aplikace pro Hanspaulskou ligu.
+Novinky:
+- plný širší kádr 14 hráčů z jara + podzimu 2026,
+- automatický import nových hráčů z aktuální stránky PSMF,
+- automatický import zápasů, výsledků, tabulky a hráčských statistik,
+- ruční tlačítko „Obnovit PSMF“,
+- Vercel Cron jednou denně.
 
-## V2 – přihlášení a týmová účast
+## Po nahrání na GitHub
+1. Supabase SQL Editor -> Database: spusť `supabase/update-v2.2.sql`.
+2. Ve Vercelu přidej tajnou proměnnou `SUPABASE_SERVICE_ROLE_KEY` (Production).
+3. Redeploy.
+4. Otevři `/api/sync-psmf` nebo klikni na webu „Obnovit PSMF“.
 
-1. V Supabase SQL Editoru (Database) spusť `supabase/update-v2.sql`.
-2. Ve Vercelu nastav:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
-3. Nahraj tuto verzi do GitHub repozitáře a Vercel ji automaticky nasadí.
-4. V Supabase Authentication > URL Configuration nastav Site URL na `https://www.pestebnidelnici.cz` a Redirect URLs přidej `https://www.pestebnidelnici.cz/**`.
-
-Pozn.: PSMF data jsou v této verzi stále ve statickém `lib/data.ts`. Automatická synchronizace PSMF bude další krok.
+Nikdy nedávej `SUPABASE_SERVICE_ROLE_KEY` do proměnné začínající `NEXT_PUBLIC_` a neposílej ji veřejně.

@@ -1,6 +1,6 @@
 {
   "name": "kabina-hanspaulka",
-  "version": "0.1.0",
+  "version": "0.2.2",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -13,7 +13,8 @@
     "lucide-react": "^0.468.0",
     "next": "^15.1.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "node-html-parser": "^7.0.1"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

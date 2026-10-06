@@ -361,9 +361,13 @@ export default function KabinaApp(){
        return;
      }
      throw new Error(b?.error||'AI unavailable');
-   }catch(err){
+   }catch(err:any){
      console.warn('Kabina AI fallback',err);
-     setAiAnswer(`${t.aiFallback}\n\n${answerStatsQuestion(q)}`);
+     const detail=String(err?.message||'Unknown AI error');
+     const diagnostic=profile?.role==='admin'
+       ? `${lang==='cs'?'Technická diagnostika':'Technical diagnostics'}: ${detail}\n\n`
+       : '';
+     setAiAnswer(`${diagnostic}${t.aiFallback}\n\n${answerStatsQuestion(q)}`);
      setAiSource('local');
    }finally{setAiBusy(false);}
  }

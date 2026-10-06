@@ -40,10 +40,17 @@ export async function POST(req:NextRequest){
 
     // Free-tier guardrail. OpenRouter Free currently allows 50 requests/day.
     const since=dayStartIso();
-    const [{count:userCount},{count:globalCount}]=await Promise.all([
+    const [userUsage,globalUsage]=await Promise.all([
       admin.from('ai_requests').select('*',{count:'exact',head:true}).eq('user_id',userData.user.id).gte('created_at',since),
       admin.from('ai_requests').select('*',{count:'exact',head:true}).gte('created_at',since)
     ]);
+    if(userUsage.error||globalUsage.error){
+      return NextResponse.json({
+        error:`Supabase ai_requests error: ${userUsage.error?.message||globalUsage.error?.message||'unknown error'}. Run supabase/update-v3.0.sql.`
+      },{status:500});
+    }
+    const userCount=userUsage.count||0;
+    const globalCount=globalUsage.count||0;
     if((userCount||0)>=USER_DAILY_LIMIT){
       return NextResponse.json({error:'Daily player AI limit reached'},{status:429});
     }
@@ -61,6 +68,17 @@ export async function POST(req:NextRequest){
       admin.from('player_season_stats').select('season,player_name,games,goals').limit(500),
       admin.from('players').select('display_name,psmf_games,psmf_goals,active').eq('active',true).order('display_name')
     ]);
+
+    const contextErrors=[
+      ['seasons',seasons.error],['matches',matches.error],['historical_matches',historyMatches.error],
+      ['standings',standings.error],['historical_standings',historyStandings.error],
+      ['player_season_stats',playerStats.error],['players',players.error]
+    ].filter(([,e])=>Boolean(e));
+    if(contextErrors.length){
+      return NextResponse.json({
+        error:'Supabase sports data error: '+contextErrors.map(([name,e]:any)=>`${name}: ${e.message}`).join(' | ')
+      },{status:500});
+    }
 
     const sportsContext={
       team:TEAM,
@@ -99,7 +117,8 @@ export async function POST(req:NextRequest){
 
     const payload=await response.json().catch(()=>({}));
     if(!response.ok){
-      return NextResponse.json({error:payload?.error?.message||payload?.message||`OpenRouter ${response.status}`},{status:502});
+      const msg=payload?.error?.message||payload?.message||'Unknown OpenRouter error';
+      return NextResponse.json({error:`OpenRouter ${response.status}: ${msg}`},{status:502});
     }
     const answer=payload?.choices?.[0]?.message?.content;
     if(typeof answer!=='string'||!answer.trim()){

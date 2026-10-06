@@ -1,39 +1,14 @@
-# Kabina Hanspaulka v3.0.0
+# Kabina Hanspaulka v3.0.1
 
-## Opravdový Kabina AI agent
-Kabina AI nyní volá skutečný jazykový model přes **OpenRouter Free Models Router** (`openrouter/free`).
+Diagnostická oprava Kabina AI.
 
-### Co umí
-- volné otázky nad historií týmu,
-- výpočty gólů a bodů napříč sezonami,
-- porovnávání sezon,
-- vzájemné zápasy,
-- forma,
-- hráčské statistiky,
-- současná tabulka a soupeři,
-- kombinované otázky typu „porovnej poslední dvě sezony a řekni, kdo byl nejlepší střelec“.
+- Správce nyní uvidí skutečný důvod, proč OpenRouter požadavek selhal.
+- Rozliší se například:
+  - chybějící `OPENROUTER_API_KEY`,
+  - OpenRouter 401 / 402 / 429 / jiná chyba,
+  - chybějící tabulka `ai_requests`,
+  - chyba některé sportovní tabulky nebo sloupce v Supabase.
+- Běžní hráči stále dostanou jen bezpečný fallback bez technických detailů.
+- AI zůstává na `openrouter/free`.
 
-### Bezplatnost
-OpenRouter Free má nulovou cenu za tokeny a Free plán má aktuálně 50 API requestů denně.
-Kabina si proto hlídá vlastní rezervu:
-- max. **5 AI dotazů na hráče denně**
-- max. **40 AI dotazů za celý tým denně**
-- při vyčerpání limitu nebo výpadku AI se automaticky použije dosavadní lokální statistický fallback.
-
-Tím se Kabina sama nepřepne na placený model.
-
-### Soukromí
-Do AI se posílají pouze sportovní data: výsledky, tabulky, sezony a hráčské statistiky.
-Neposílají se e-maily, hesla, komentáře ani auth údaje.
-
-## Nasazení
-1. Supabase → SQL Editor → spusť `supabase/update-v3.0.sql`.
-2. OpenRouter → vytvoř API key.
-3. Vercel → Environment Variables:
-   - `OPENROUTER_API_KEY` = API key z OpenRouteru
-   - Type: Secret
-   - Environment: Production
-4. Nahraj celý projekt na GitHub.
-5. Počkej na Vercel Ready.
-
-Správa fotografií adminem z v2.9 zůstává zachována.
+Po nasazení polož jako admin jeden dotaz a pošli přesný řádek `Technická diagnostika: ...`.

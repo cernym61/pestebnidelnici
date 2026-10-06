@@ -1,51 +1,23 @@
-# Kabina Hanspaulka v2.5
+# Kabina Hanspaulka v2.6
 
-Web Pěstebních dělníků A pro `pestebnidelnici.cz`.
+Produkční verze reminderů.
 
-## Co je nové ve v2.5
+## Novinky v2.6
+- Ostrý automatický reminder 2 kalendářní dny před zápasem.
+- Reminder dostanou pouze aktivní registrovaní hráči, kteří ještě neodpověděli na účast.
+- Odesílatel: `Pěstební dělníci A <kabina@pestebnidelnici.cz>`.
+- E-mail obsahuje aktuální pořadí a body obou týmů, V-R-P, skóre.
+- E-mail obsahuje vzájemnou bilanci od roku 2020 a až tři poslední vzájemné zápasy.
+- Hřiště, adresa, Google Maps a Waze.
+- Celý e-mail je nejprve česky a ve spodní části anglicky.
+- Testovací reminder používá stejná produkční data, ale jde pouze přihlášenému uživateli.
+- `update-v2.6.sql` zároveň obnovuje admin RPC funkce a Martina Černého jako admina.
 
-- společná týmová fotka v horní části webu (`public/team.jpg`),
-- profilová fotka každého hráče přes Supabase Storage,
-- komentáře pod každým budoucím zápasem,
-- odpovědi na komentáře, editace/smazání vlastního komentáře; captain/admin může mazat komentáře,
-- možnost zrušit již zadanou účast,
-- odehrané zápasy: výhra zeleně, remíza oranžově, prohra červeně,
-- historie sezon PSMF od podzimu 2020 do současnosti,
-- souhrn každé sezony (umístění, V–R–P, skóre, body),
-- historické vzájemné zápasy se soupeři,
-- kariérní statistiky hráčů od roku 2020 podle dostupných dat PSMF,
-- e-mailový odesílatel je vždy `Pěstební dělníci A <kabina@pestebnidelnici.cz>` a předmět je čistší.
+## Nasazení
+1. V Supabase spusť `supabase/update-v2.6.sql`.
+2. Nahraj celý projekt na GitHub přes stávající repozitář.
+3. Počkej na Vercel Deployment = Ready.
+4. Pro náhled použij `Poslat test reminder sobě`.
 
-## Nasazení aktualizace
-
-1. V Supabase otevři **SQL Editor → Create a new snippet → Database**.
-2. Vlož celý obsah `supabase/update-v2.5.sql` a klikni **Run**.
-3. Nahraj celý obsah tohoto projektu do stávajícího GitHub repozitáře a potvrď přepsání souborů.
-4. Počkej, až Vercel dokončí nový deployment.
-5. Na webu klikni na **Obnovit PSMF**. První synchronizace naplní i historii sezon.
-
-Nové environment variables nejsou potřeba. Stávající Supabase a Resend nastavení z v2.4 zůstává.
-
-## Poznámka k historii
-
-Synchronizace používá týmové stránky PSMF pro tyto sezony:
-
-- podzim 2020,
-- podzim 2021,
-- jaro + podzim 2022,
-- jaro + podzim 2023,
-- jaro + podzim 2024,
-- jaro + podzim 2025,
-- jaro + podzim 2026.
-
-Sezona označená jako „podzim 2020“ byla kvůli tehdejšímu přerušení dohrávána ještě v roce 2021; web zachovává označení sezony PSMF.
-
-## v2.5.1 – správa týmu
-Po spuštění `supabase/update-v2.5.sql` se první již propojený účet automaticky stane prvním adminem, pokud zatím žádný admin neexistuje. Admin poté ve webu u svého profilu uvidí **Správa týmu** a může měnit role Hráč/Kapitán/Admin, aktivovat/deaktivovat hráče a odpojovat účty. Databáze brání tomu, aby poslední aktivní admin sám sobě odebral admin práva, deaktivoval se nebo odpojil svůj účet.
-
-
-## v2.5.2
-- oprava psaní komentářů (textarea už neztrácí focus po každém znaku),
-- soupeři ve Vzájemných zápasech zahrnují i aktuální rozpis; Princ Praha FC se zobrazí i před prvním vzájemným utkáním,
-- samostatná záložka Správa pro admina,
-- update-v2.5.2.sql nastaví Černého Martina jako admina.
+## Automatika
+V `vercel.json` zůstává denní kontrola reminderů. Endpoint odešle zprávu pouze tehdy, když je zápas přesně dva pražské kalendářní dny daleko, a pouze hráčům bez odpovědi. Záznam `reminder_log` chrání proti opakovanému odeslání stejné připomínky.

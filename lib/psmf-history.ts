@@ -27,10 +27,46 @@ function findTable(root:any, required:string[], cols?:number){ return root.query
 function rows(table:any){ return table?table.querySelectorAll('tr').slice(1):[]; }
 function teams(cell:any){ const names=(cell?.querySelectorAll('a')??[]).map((a:any)=>clean(a.text)).filter(Boolean); return names.length>=2?names.slice(0,2):[]; }
 
+function attr(tag:string,name:string){
+  const m=tag.match(new RegExp(`${name}\\s*=\\s*["']([^"']+)["']`,'i'));
+  return m?.[1]||'';
+}
+function readableHtml(fragment:string){
+  const withImages=fragment.replace(/<img\b[^>]*>/gi,(tag)=>{
+    const alt=attr(tag,'alt'), title=attr(tag,'title'), cls=attr(tag,'class'), src=attr(tag,'src');
+    const bits=[alt,title,cls,src].filter(Boolean).join(' ');
+    const normalized=bits.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+    const isVs=/\bvs\b/.test(normalized);
+    const isStar=!isVs && /(star|hvezd|hvěz|best.?player|player.?of.?match|man.?of.?match|motm)/i.test(normalized);
+    if(isStar)return ' [★ HRÁČ ZÁPASU] ';
+    return bits?` [OBRÁZEK ${bits}] `:' ';
+  });
+  const formatted=withImages
+    .replace(/<br\s*\/?>/gi,'\n')
+    .replace(/<\/(tr|p|div|li|h1|h2|h3|h4|h5|section|article)>/gi,'\n')
+    .replace(/<\/td>/gi,' | ');
+  const text=parse(`<div>${formatted}</div>`).text;
+  return text.split(/\n+/).map(clean).filter(Boolean).join('\n').slice(0,60000);
+}
+function extractMatchDetails(html:string,root:any){
+  const headings=root.querySelectorAll('h1,h2,h3,h4,h5');
+  const startNode=headings.find((x:any)=>clean(x.text).includes('Detaily utkání'));
+  const endNode=headings.find((x:any)=>clean(x.text)==='Statistiky');
+  if(!startNode)return '';
+  const startTag=String(startNode.toString());
+  const endTag=endNode?String(endNode.toString()):'';
+  const start=html.indexOf(startTag);
+  if(start<0)return '';
+  const end=endTag?html.indexOf(endTag,start+startTag.length):-1;
+  return readableHtml(html.slice(start,end>start?end:undefined));
+}
+
 async function fetchSeason(s:any, now:string){
   const response=await fetch(s.url,{cache:'no-store',headers:{'user-agent':'PestebniDelniciKabina/1.0'}});
   if(!response.ok) throw new Error(`${s.key}: PSMF returned ${response.status}`);
-  const root=parse(await response.text());
+  const html=await response.text();
+  const root=parse(html);
+  const detailsText=extractMatchDetails(html,root);
 
   const standingTable=findTable(root,['Pořadí','Tým','Odehrané zápasy','Počet bodů']);
   let summary:any={season:s.key,label:s.label,year:s.year,phase:s.phase,division:s.division,team_name:s.team,source_url:s.url,synced_at:now};
@@ -57,20 +93,25 @@ async function fetchSeason(s:any, now:string){
     return {season:s.key,player_name:name,games:int(c[1].text),goals:int(c[2].text),synced_at:now};
   }).filter(Boolean);
 
-  return {summary,standings,matches,stats};
+  const details={season:s.key,label:s.label,source_url:s.url,details_text:detailsText,synced_at:now};
+  return {summary,standings,matches,stats,details};
 }
 
 export async function syncHistory(admin:any, now:string){
   const settled=await Promise.allSettled(HISTORY_SEASONS.map(s=>fetchSeason(s,now)));
-  let seasons=0,standings=0,matches=0,stats=0; const errors:string[]=[];
+  let seasons=0,standings=0,matches=0,stats=0,details=0; const errors:string[]=[];
   for(let i=0;i<settled.length;i++){
     const item=settled[i];
     if(item.status==='rejected'){ errors.push(`${HISTORY_SEASONS[i].key}: ${item.reason?.message||item.reason}`); continue; }
-    const {summary,standings:st,matches:ms,stats:ss}=item.value;
+    const {summary,standings:st,matches:ms,stats:ss,details:detail}=item.value;
     const a=await admin.from('seasons').upsert(summary,{onConflict:'season'}); if(a.error){errors.push(`${summary.season}: ${a.error.message}`);continue;} seasons++;
     if(st.length){ const h=await admin.from('historical_standings').upsert(st,{onConflict:'season,team'}); if(h.error) errors.push(`${summary.season} standings: ${h.error.message}`); else standings+=st.length; }
     if(ms.length){ const b=await admin.from('historical_matches').upsert(ms,{onConflict:'psmf_key'}); if(b.error) errors.push(`${summary.season} matches: ${b.error.message}`); else matches+=ms.length; }
     if(ss.length){ const c=await admin.from('player_season_stats').upsert(ss,{onConflict:'season,player_name'}); if(c.error) errors.push(`${summary.season} stats: ${c.error.message}`); else stats+=ss.length; }
+    if(detail.details_text){
+      const d=await admin.from('psmf_season_details').upsert(detail,{onConflict:'season'});
+      if(d.error) errors.push(`${summary.season} details: ${d.error.message}`); else details++;
+    }
   }
-  return {historySeasons:seasons,historyStandings:standings,historyMatches:matches,historyStats:stats,historyErrors:errors};
+  return {historySeasons:seasons,historyStandings:standings,historyMatches:matches,historyStats:stats,historyDetails:details,historyErrors:errors};
 }

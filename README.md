@@ -1,13 +1,10 @@
-# Kabina Hanspaulka v3.2.1
+# Kabina Hanspaulka v3.2.3
 
-Hotfix v3.2.0.
+UI hotfix.
 
-Opravena JSX syntaktická chyba v novém přehledu událostí v Historii, kvůli které Vercel hlásil `Unexpected token` v `components/KabinaApp.tsx`.
+- Skryta technická diagnostika OpenRouteru z odpovědí na webu.
+- Při 429 nebo jiné chybě AI se už uživateli nezobrazuje technická hláška.
+- Web rovnou použije lokální statistický fallback.
+- Technická chyba zůstává pouze v serverové konzoli/logu pro debugging.
 
-Funkce zůstávají:
-- minuty, ŽK, ČK a ★ hráč zápasu ve Statistikách,
-- střelci a minuty gólů v Historii,
-- karty a hráč zápasu u konkrétního utkání,
-- data od roku 2020.
-
-Není potřeba nový SQL. Po nasazení dej Správa → Obnovit PSMF.
+Není potřeba nový SQL ani nový API klíč.

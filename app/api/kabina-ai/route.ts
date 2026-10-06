@@ -142,7 +142,12 @@ CALCULATIONS: Show a short season/match breakdown when useful. "Last two seasons
         'X-Title':'Pestebni delnici A - Kabina AI'
       },
       body:JSON.stringify({
-        model:'google/gemma-4-31b-it:free',
+        models:[
+          'nvidia/nemotron-3-ultra-550b-a55b:free',
+          'thinkingmachines/inkling:free',
+          'nvidia/nemotron-3.5-lightning:free'
+        ],
+        provider:{allow_fallbacks:true},
         temperature:0.15,
         max_tokens:650,
         messages:[
@@ -168,7 +173,7 @@ CALCULATIONS: Show a short season/match breakdown when useful. "Last two seasons
     await admin.from('ai_requests').delete().lt('created_at',prune);
 
     const remaining=Math.max(0,USER_DAILY_LIMIT-(userCount||0)-1);
-    return NextResponse.json({answer:answer.trim(),remaining,model:payload?.model||'openrouter/free'});
+    return NextResponse.json({answer:answer.trim(),remaining,model:payload?.model||'free-fallback-chain'});
   }catch(e:any){
     console.error('Kabina AI',e);
     return NextResponse.json({error:e?.message||'Kabina AI failed'},{status:500});

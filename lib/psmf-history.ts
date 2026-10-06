@@ -32,24 +32,45 @@ function attr(tag:string,name:string){
   return m?.[1]||'';
 }
 function readableHtml(fragment:string){
-  const withImages=fragment.replace(/<img\b[^>]*>/gi,(tag)=>{
-    const alt=attr(tag,'alt'), title=attr(tag,'title'), cls=attr(tag,'class'), src=attr(tag,'src');
-    const bits=[alt,title,cls,src].filter(Boolean).join(' ');
-    const normalized=bits.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  const markerFromTag=(tag:string)=>{
+    const attrs=['class','title','aria-label','data-title','data-tooltip','data-icon','src','alt']
+      .map(name=>attr(tag,name)).filter(Boolean).join(' ');
+    const normalized=attrs.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+
+    // PSMF can render the star/card as an IMG, I/SPAN icon, CSS class or tooltip.
+    // Keep all of those semantic markers before node-html-parser strips the tags.
     const isVs=/\bvs\b/.test(normalized);
-    const isStar=!isVs && /(star|hvezd|hvěz|best.?player|player.?of.?match|man.?of.?match|motm)/i.test(normalized);
-    const isYellow=/(yellow|zluta|žluta|zluty|žluty|yellow.?card)/i.test(normalized);
-    const isRed=/(red|cervena|červena|cerveny|červeny|red.?card)/i.test(normalized);
+    const isStar=!isVs && /(^|[\s_\-\/.])(fa-?star|icon-?star|star(?:\.svg|\.png)?|hvezd|best-?player|player-?of-?match|man-?of-?match|motm)([\s_\-\/.]|$)/i.test(normalized);
+    const isYellow=/(yellow.?card|card.?yellow|zluta.?karta|zluty.?kart|icon.?yellow)/i.test(normalized);
+    const isRed=/(red.?card|card.?red|cervena.?karta|cerveny.?kart|icon.?red)/i.test(normalized);
     if(isStar)return ' [★ HRÁČ ZÁPASU] ';
     if(isYellow)return ' [ŽK] ';
     if(isRed)return ' [ČK] ';
+    return '';
+  };
+
+  // Preserve semantic markers from *any opening tag*, not just <img>.
+  // This fixes PSMF stars that are commonly rendered by a span/i CSS icon.
+  let enriched=fragment.replace(/<(?!\/|!)[a-z][^>]*>/gi,(tag)=>{
+    const marker=markerFromTag(tag);
+    return marker?`${marker}${tag}`:tag;
+  });
+
+  enriched=enriched.replace(/<img\b[^>]*>/gi,(tag)=>{
+    const marker=markerFromTag(tag);
+    if(marker)return marker;
+    const alt=attr(tag,'alt'), title=attr(tag,'title'), cls=attr(tag,'class'), src=attr(tag,'src');
+    const bits=[alt,title,cls,src].filter(Boolean).join(' ');
     return bits?` [OBRÁZEK ${bits}] `:' ';
   });
-  const formatted=withImages
+
+  const formatted=enriched
     .replace(/<br\s*\/?>/gi,'\n')
     .replace(/<\/(tr|p|div|li|h1|h2|h3|h4|h5|section|article)>/gi,'\n')
     .replace(/<\/td>/gi,' | ');
-  const text=parse(`<div>${formatted}</div>`).text;
+  const text=parse(`<div>${formatted}</div>`).text
+    .replace(/\u2605/g,' ★ ')
+    .replace(/\u2b50/g,' ⭐ ');
   return text.split(/\n+/).map(clean).filter(Boolean).join('\n').slice(0,60000);
 }
 function extractMatchDetails(html:string,root:any){

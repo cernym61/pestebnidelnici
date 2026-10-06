@@ -1,33 +1,44 @@
-# Kabina · Hanspaulka v2.4
+# Kabina Hanspaulka v2.5
 
-Next.js týmová aplikace Pěstebních dělníků A.
+Web Pěstebních dělníků A pro `pestebnidelnici.cz`.
 
-## Co je ve v2.4
-- automatická synchronizace zápasů, výsledků, tabulky a hráčů z PSMF
-- automatická synchronizace **všech hřišť** z https://www.psmf.cz/hriste/
-- kliknutí na kód hřiště otevře detail s názvem, adresou, poznámkou a tlačítky Google Maps / Waze
-- přihlášení a docházka přes Supabase
-- bezplatné e-mailové připomínky přes Resend: cron běží každý den odpoledne a e-mail odešle jen hráčům, kteří ještě neodpověděli a zápas je přesně za 2 dny
-- ochrana proti duplicitnímu reminderu přes `reminder_log`
-- tlačítko pro znovuodeslání potvrzovacího e-mailu
+## Co je nové ve v2.5
 
-## Nasazení v2.4
-1. V Supabase SQL Editoru spusť `supabase/update-v2.4.sql`.
-2. Nahraj celý obsah projektu na GitHub (přepiš stávající soubory).
-3. Ve Vercelu zkontroluj stávající proměnné Supabase.
-4. Pro reminder vytvoř zdarma účet na Resend, ověř doménu `pestebnidelnici.cz` a do Vercelu přidej:
-   - `RESEND_API_KEY` (Secret)
-   - `REMINDER_FROM_EMAIL` (Config) = `Kabina Pěstební dělníci <kabina@pestebnidelnici.cz>`
-5. Redeploy.
-6. Na webu klikni `Obnovit PSMF`, aby se okamžitě načetl kompletní seznam hřišť.
+- společná týmová fotka v horní části webu (`public/team.jpg`),
+- profilová fotka každého hráče přes Supabase Storage,
+- komentáře pod každým budoucím zápasem,
+- odpovědi na komentáře, editace/smazání vlastního komentáře; captain/admin může mazat komentáře,
+- možnost zrušit již zadanou účast,
+- odehrané zápasy: výhra zeleně, remíza oranžově, prohra červeně,
+- historie sezon PSMF od podzimu 2020 do současnosti,
+- souhrn každé sezony (umístění, V–R–P, skóre, body),
+- historické vzájemné zápasy se soupeři,
+- kariérní statistiky hráčů od roku 2020 podle dostupných dat PSMF,
+- e-mailový odesílatel je vždy `Pěstební dělníci A <kabina@pestebnidelnici.cz>` a předmět je čistší.
 
-## Reminder logika
-Vercel Cron volá `/api/send-reminders` jednou denně odpoledne. Endpoint nic neodešle, pokud není zápas přesně za dva kalendářní dny. Pokud zápas je, e-mail dostanou jen registrovaní hráči, kteří k danému zápasu ještě nemají odpověď v `attendance`.
+## Nasazení aktualizace
 
-Základní provoz lze držet na free tarifech Vercel + Supabase + Resend (v rámci jejich aktuálních limitů).
+1. V Supabase otevři **SQL Editor → Create a new snippet → Database**.
+2. Vlož celý obsah `supabase/update-v2.5.sql` a klikni **Run**.
+3. Nahraj celý obsah tohoto projektu do stávajícího GitHub repozitáře a potvrď přepsání souborů.
+4. Počkej, až Vercel dokončí nový deployment.
+5. Na webu klikni na **Obnovit PSMF**. První synchronizace naplní i historii sezon.
 
+Nové environment variables nejsou potřeba. Stávající Supabase a Resend nastavení z v2.4 zůstává.
 
-## v2.4
-- Přidáno bezpečné tlačítko **Poslat test reminder sobě** pro přihlášeného hráče.
-- Testovací e-mail jde pouze na e-mail aktuálně přihlášeného účtu.
-- Test se nezapisuje do `reminder_log` a neovlivňuje ostré automatické připomínky.
+## Poznámka k historii
+
+Synchronizace používá týmové stránky PSMF pro tyto sezony:
+
+- podzim 2020,
+- podzim 2021,
+- jaro + podzim 2022,
+- jaro + podzim 2023,
+- jaro + podzim 2024,
+- jaro + podzim 2025,
+- jaro + podzim 2026.
+
+Sezona označená jako „podzim 2020“ byla kvůli tehdejšímu přerušení dohrávána ještě v roce 2021; web zachovává označení sezony PSMF.
+
+## v2.5.1 – správa týmu
+Po spuštění `supabase/update-v2.5.sql` se první již propojený účet automaticky stane prvním adminem, pokud zatím žádný admin neexistuje. Admin poté ve webu u svého profilu uvidí **Správa týmu** a může měnit role Hráč/Kapitán/Admin, aktivovat/deaktivovat hráče a odpojovat účty. Databáze brání tomu, aby poslední aktivní admin sám sobě odebral admin práva, deaktivoval se nebo odpojil svůj účet.

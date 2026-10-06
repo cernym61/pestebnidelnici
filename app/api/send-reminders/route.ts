@@ -20,7 +20,9 @@ function esc(s:string){ return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",
 
 async function sendEmail(to:string, subject:string, html:string){
   const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.REMINDER_FROM_EMAIL || 'Kabina Pěstební dělníci <kabina@pestebnidelnici.cz>';
+  const configured = process.env.REMINDER_FROM_EMAIL || 'kabina@pestebnidelnici.cz';
+  const address = configured.match(/<([^>]+)>/)?.[1] || configured;
+  const from = `Pěstební dělníci A <${address}>`;
   if(!apiKey) throw new Error('Missing RESEND_API_KEY');
   const r=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:`Bearer ${apiKey}`,'Content-Type':'application/json'},body:JSON.stringify({from,to,subject,html})});
   if(!r.ok) throw new Error(`Resend ${r.status}: ${await r.text()}`);
@@ -51,7 +53,7 @@ export async function GET(){
         if(uErr || !userResult.user?.email){ skipped++; continue; }
         const opponent=match.home_team===TEAM?match.away_team:match.home_team;
         const when=fmtKickoff(match.kickoff);
-        const subject=`⚽ Potvrď účast: ${opponent}`;
+        const subject=`⚽ Pěstební dělníci A · Potvrď účast proti ${opponent}`;
         const html=`<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;color:#153427"><h2 style="margin-bottom:8px">Ahoj ${esc(player.display_name)},</h2><p>za dva dny hrajeme proti <strong>${esc(opponent)}</strong>.</p><p><strong>${esc(when)}</strong>${match.venue_code?` · ${esc(match.venue_code)}`:''}</p><p>Ještě nemáš vyplněnou účast. Klikni prosím na tlačítko a dej vědět, jestli dorazíš.</p><p style="margin:26px 0"><a href="https://www.pestebnidelnici.cz" style="background:#1f5a39;color:white;padding:13px 18px;border-radius:10px;text-decoration:none;font-weight:bold">Vyplnit účast</a></p><p style="font-size:12px;color:#758073">Automatická připomínka týmové Kabiny. Pokud už jsi mezitím odpověděl, nemusíš nic řešit.</p></div>`;
         await sendEmail(userResult.user.email,subject,html);
         await admin.from('reminder_log').insert({match_id:match.id,player_id:player.id,kind:'attendance-2d',sent_to:userResult.user.email});
@@ -87,7 +89,7 @@ export async function POST(request:Request){
     if(!email) return NextResponse.json({ok:false,error:'Account has no email'},{status:400});
     const opponent=match.home_team===TEAM?match.away_team:match.home_team;
     const when=fmtKickoff(match.kickoff);
-    const subject=`TEST · ⚽ Potvrď účast: ${opponent}`;
+    const subject=`⚽ Pěstební dělníci A · Potvrď účast proti ${opponent}`;
     const html=`<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;color:#153427"><div style="font-size:12px;font-weight:bold;color:#758073;margin-bottom:12px">TESTOVACÍ E-MAIL · přijde pouze tobě</div><h2 style="margin-bottom:8px">Ahoj ${esc(player.display_name)},</h2><p>tohle je test týmové připomínky před zápasem proti <strong>${esc(opponent)}</strong>.</p><p><strong>${esc(when)}</strong>${match.venue_code?` · ${esc(match.venue_code)}`:''}</p><p>V ostrém provozu dostane podobný e-mail jen hráč, který ještě nevyplnil účast.</p><p style="margin:26px 0"><a href="https://www.pestebnidelnici.cz" style="background:#1f5a39;color:white;padding:13px 18px;border-radius:10px;text-decoration:none;font-weight:bold">Otevřít Kabinu</a></p><p style="font-size:12px;color:#758073">Tento test se nezapisuje do reminder logu a nijak neovlivní automatické připomínky.</p></div>`;
     await sendEmail(email,subject,html);
     return NextResponse.json({ok:true,sentTo:email,player:player.display_name,opponent});

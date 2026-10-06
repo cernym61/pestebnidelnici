@@ -2,9 +2,10 @@ import { NextResponse } from 'next/server';
 import { parse } from 'node-html-parser';
 import { getSupabaseAdmin } from '@/lib/supabase-admin';
 import { SEASON, SOURCE_URL, TEAM } from '@/lib/data';
+import { syncHistory } from '@/lib/psmf-history';
 
 export const dynamic = 'force-dynamic';
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 const VENUES_URL = 'https://www.psmf.cz/hriste/';
 function clean(s:string){ return s.replace(/\u00a0/g,' ').replace(/\s+/g,' ').trim(); }
@@ -103,11 +104,10 @@ async function syncVenues(admin:any, now:string){
 async function sync(){
   const admin = getSupabaseAdmin();
   const now = new Date().toISOString();
-  const team = await syncTeam(admin,now);
-  const venues = await syncVenues(admin,now);
+  const [team,venues,history] = await Promise.all([syncTeam(admin,now),syncVenues(admin,now),syncHistory(admin,now)]);
   await admin.from('sync_meta').upsert({ key:'psmf-current-team', last_synced_at:now, source_url:SOURCE_URL },{onConflict:'key'});
   await admin.from('sync_meta').upsert({ key:'psmf-venues', last_synced_at:now, source_url:VENUES_URL },{onConflict:'key'});
-  return {...team, venues, syncedAt:now};
+  return {...team, venues, ...history, syncedAt:now};
 }
 
 export async function GET(){

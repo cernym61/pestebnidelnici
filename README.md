@@ -134,3 +134,22 @@ Desktopová tabulka zůstává beze změny na PC.
 - užší rozestupy a radiusy vhodné pro menší displej
 
 Není potřeba žádný nový SQL.
+
+
+## v3.6.5 — mobilní Statistiky: Tabulka / Karty
+
+Na telefonu je nahoře ve Statistikách nový přepínač:
+- **Tabulka** — výchozí, kompaktní přehled hráčů
+- **Karty** — detailnější mobilní karty z v3.6.4
+
+Kompaktní mobilní tabulka zobrazuje:
+- hráče
+- zápasy
+- góly
+- ★ hráče zápasu
+- kapitánství
+- zápasy v bráně
+
+Na desktopu se nic nemění a zůstává plná tabulka.
+
+Není potřeba nový SQL.

@@ -330,3 +330,44 @@
   .mobileStatGrid{grid-template-columns:repeat(2,1fr)}
   .mobileStatGrid>div.wide{grid-column:span 2}
 }
+
+
+/* v3.6.5 — mobilní přepínač Statistiky: tabulka / karty */
+.mobileStatsMode,.mobileCompactStats{display:none}
+
+@media(max-width:700px){
+  .mobileStatsMode{
+    display:grid;grid-template-columns:1fr 1fr;gap:4px;
+    margin:20px 0 -8px;padding:4px;background:#e9eee5;border:1px solid #dce3d8;border-radius:12px;
+  }
+  .mobileStatsMode button{
+    border:0;background:transparent;color:#667267;padding:9px 10px;border-radius:9px;
+    font-size:12px;font-weight:850;cursor:pointer;
+  }
+  .mobileStatsMode button.active{
+    background:#fff;color:#183d2b;box-shadow:0 2px 7px rgba(20,52,39,.08);
+  }
+
+  .mobileStatsList{display:none}
+  .mobileStatsList.show{display:grid}
+
+  .mobileCompactStats{display:none;margin-top:12px;overflow:hidden;border:1px solid var(--line);border-radius:13px;background:#fff}
+  .mobileCompactStats.show{display:block}
+  .mobileCompactStats table{min-width:0;width:100%;table-layout:fixed}
+  .mobileCompactStats th,.mobileCompactStats td{
+    padding:9px 5px;font-size:11px;text-align:center;border-bottom:1px solid #e7ebe3;
+  }
+  .mobileCompactStats th{
+    font-size:8px;letter-spacing:.04em;color:#788278;background:#f7f9f5;
+  }
+  .mobileCompactStats th:first-child,.mobileCompactStats td:first-child{
+    position:static;box-shadow:none;background:inherit;text-align:left;width:46%;
+  }
+  .mobileCompactStats th:not(:first-child),.mobileCompactStats td:not(:first-child){width:10.8%}
+  .mobileCompactStats tbody tr:last-child td{border-bottom:0}
+  .mobileCompactPlayer{display:flex;align-items:center;gap:6px;min-width:0}
+  .mobileCompactPlayer b,.mobileCompactStats td:first-child>b{
+    display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;
+  }
+  .mobileCompactPlayer .avatar.xs{width:20px;height:20px}
+}

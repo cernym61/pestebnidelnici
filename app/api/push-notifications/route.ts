@@ -30,12 +30,15 @@ export async function POST(request:Request){
       const title=String(body?.title||'').trim();
       const message=String(body?.message||'').trim();
       if(!title || !message) return NextResponse.json({ok:false,error:'Title and message are required'},{status:400});
-      let ids:string[]=Array.isArray(body?.playerIds)?body.playerIds.filter((x:any)=>typeof x==='string'):[];
-      if(!ids.length){
-        const {data,error}=await admin.from('players').select('id').eq('active',true).not('user_id','is',null);
-        if(error) throw error;
-        ids=(data||[]).map((x:any)=>x.id);
-      }
+      const requested:string[]=Array.isArray(body?.playerIds)?body.playerIds.filter((x:any)=>typeof x==='string'):[];
+      if(!requested.length)return NextResponse.json({ok:false,error:'Select at least one recipient'},{status:400});
+
+      // Server-side validation: only active players with linked accounts can receive an admin push.
+      const {data:allowed,error:allowedErr}=await admin.from('players').select('id').eq('active',true).not('user_id','is',null).in('id',requested);
+      if(allowedErr)throw allowedErr;
+      const ids=[...new Set((allowed||[]).map((x:any)=>String(x.id)))];
+      if(!ids.length)return NextResponse.json({ok:false,error:'No valid recipients selected'},{status:400});
+
       const result=await sendPush({externalIds:ids,titleCs:title,bodyCs:message,titleEn:title,bodyEn:message,url:SITE_URL});
       return NextResponse.json({ok:true,count:ids.length,result});
     }

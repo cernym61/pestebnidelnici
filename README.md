@@ -153,3 +153,43 @@ Kompaktní mobilní tabulka zobrazuje:
 Na desktopu se nic nemění a zůstává plná tabulka.
 
 Není potřeba nový SQL.
+
+
+## v3.6.6 — jednodušší účast na zápase
+
+Účast má nově pouze dvě aktivní odpovědi:
+- **Přijdu**
+- **Nepřijdu**
+
+Volba **Zatím nevím** byla z UI odstraněna.
+
+V týmovém přehledu jsou tři skupiny:
+- Přijdu
+- Nepřijdu
+- **Nevyjádřil se**
+
+Do „Nevyjádřil se“ se počítají pouze aktivní hráči, kteří už mají vytvořený / propojený účet (`user_id` není NULL) a na aktuální zápas ještě neodpověděli Ano/Ne.
+
+Horní počítadlo je nově:
+`počet vyjádřených / počet registrovaných hráčů`
+
+Staré hodnoty `maybe` v databázi se v novém UI berou jako nevyjádřená odpověď. Nový SQL není potřeba.
+
+
+## v3.6.7 — push notifikace primárně nevyjádřeným
+
+Ve Správě se při otevření sekce push automaticky předvyberou:
+- aktivní hráči,
+- kteří mají propojený účet,
+- a u nejbližšího zápasu nemají odpověď Přijdu / Nepřijdu.
+
+Příjemci označení „Nevyjádřil se“ jsou v seznamu zvýraznění.
+
+Rychlé volby:
+- **Nevyjádření** — znovu vybere jen ty, kteří neodpověděli
+- **Vybrat všechny**
+- **Zrušit výběr**
+
+Prázdný výběr už z bezpečnostních důvodů neznamená „poslat všem“. Bez vybraného příjemce se push neodešle.
+
+Není potřeba nový SQL.

@@ -2,6 +2,15 @@ import { parse } from 'node-html-parser';
 import { LEGACY_TEAM, SOURCE_URL, TEAM } from '@/lib/data';
 
 export const HISTORY_SEASONS = [
+  {key:'2015-podzim',label:'Podzim 2015',year:2015,phase:'podzim',division:'8L',team:LEGACY_TEAM,url:'https://www.psmf.cz/souteze/2015-hanspaulska-liga-podzim/8-l/tymy/pestebni-delnici/'},
+  {key:'2016-jaro',label:'Jaro 2016',year:2016,phase:'jaro',division:'7H',team:LEGACY_TEAM,url:'https://www.psmf.cz/souteze/2016-hanspaulska-liga-jaro/7-h/tymy/pestebni-delnici/'},
+  {key:'2016-podzim',label:'Podzim 2016',year:2016,phase:'podzim',division:'8C',team:LEGACY_TEAM,url:'https://www.psmf.cz/souteze/2016-hanspaulska-liga-podzim/8-c/tymy/pestebni-delnici/'},
+  {key:'2017-jaro',label:'Jaro 2017',year:2017,phase:'jaro',division:'7C',team:LEGACY_TEAM,url:'https://www.psmf.cz/souteze/2017-hanspaulska-liga-jaro/7-c/tymy/pestebni-delnici/'},
+  {key:'2017-podzim',label:'Podzim 2017',year:2017,phase:'podzim',division:'6C',team:LEGACY_TEAM,url:'https://www.psmf.cz/souteze/2017-hanspaulska-liga-podzim/6-c/tymy/pestebni-delnici/'},
+  {key:'2018-jaro',label:'Jaro 2018',year:2018,phase:'jaro',division:'6D',team:LEGACY_TEAM,url:'https://www.psmf.cz/souteze/2018-hanspaulska-liga-jaro/6-d/tymy/pestebni-delnici/'},
+  {key:'2018-podzim',label:'Podzim 2018',year:2018,phase:'podzim',division:'6C',team:LEGACY_TEAM,url:'https://www.psmf.cz/souteze/2018-hanspaulska-liga-podzim/6-c/tymy/pestebni-delnici/'},
+  {key:'2019-jaro',label:'Jaro 2019',year:2019,phase:'jaro',division:'5B',team:LEGACY_TEAM,url:'https://www.psmf.cz/souteze/2019-hanspaulska-liga-jaro/5-b/tymy/pestebni-delnici/'},
+  {key:'2019-podzim',label:'Podzim 2019',year:2019,phase:'podzim',division:'6C',team:LEGACY_TEAM,url:'https://www.psmf.cz/souteze/2019-hanspaulska-liga-podzim/6-c/tymy/pestebni-delnici/'},
   {key:'2020-podzim',label:'Podzim 2020',year:2020,phase:'podzim',division:'5A',team:LEGACY_TEAM,url:'https://www.psmf.cz/souteze/2020-hanspaulska-liga-podzim/5-a/tymy/pestebni-delnici/'},
   {key:'2021-podzim',label:'Podzim 2021',year:2021,phase:'podzim',division:'5B',team:LEGACY_TEAM,url:'https://www.psmf.cz/souteze/2021-hanspaulska-liga-podzim/5-b/tymy/pestebni-delnici/'},
   {key:'2022-jaro',label:'Jaro 2022',year:2022,phase:'jaro',division:'5A',team:LEGACY_TEAM,url:'https://www.psmf.cz/souteze/2022-hanspaulska-liga-jaro/5-a/tymy/pestebni-delnici/'},
@@ -40,10 +49,12 @@ function readableHtml(fragment:string){
     // PSMF can render the star/card as an IMG, I/SPAN icon, CSS class or tooltip.
     // Keep all of those semantic markers before node-html-parser strips the tags.
     const isVs=/\bvs\b/.test(normalized);
-    const isStar=!isVs && /(^|[\s_\-\/.])(fa-?star|icon-?star|star(?:\.svg|\.png)?|hvezd|best-?player|player-?of-?match|man-?of-?match|motm)([\s_\-\/.]|$)/i.test(normalized);
+    const isStar=!isVs && /(^|[\s_\-\/.])(fa-?star(?:-o)?|icon-?star|star(?:\.svg|\.png)?|hvezd|best-?player|player-?of-?match|man-?of-?match|motm)([\s_\-\/.]|$)/i.test(normalized);
+    const isCaptain=/(captain|kapitan|kapitán|team.?captain|icon.?captain)/i.test(normalized);
     const isYellow=/(yellow.?card|card.?yellow|zluta.?karta|zluty.?kart|icon.?yellow)/i.test(normalized);
     const isRed=/(red.?card|card.?red|cervena.?karta|cerveny.?kart|icon.?red)/i.test(normalized);
     if(isStar)return ' [★ HRÁČ ZÁPASU] ';
+    if(isCaptain)return ' [C KAPITÁN] ';
     if(isYellow)return ' [ŽK] ';
     if(isRed)return ' [ČK] ';
     return '';
@@ -77,13 +88,14 @@ function extractMatchDetails(html:string,root:any){
   const headings=root.querySelectorAll('h1,h2,h3,h4,h5');
   const startNode=headings.find((x:any)=>clean(x.text).includes('Detaily utkání'));
   const endNode=headings.find((x:any)=>clean(x.text)==='Statistiky');
-  if(!startNode)return '';
+  if(!startNode)return {text:'',html:''};
   const startTag=String(startNode.toString());
   const endTag=endNode?String(endNode.toString()):'';
   const start=html.indexOf(startTag);
-  if(start<0)return '';
+  if(start<0)return {text:'',html:''};
   const end=endTag?html.indexOf(endTag,start+startTag.length):-1;
-  return readableHtml(html.slice(start,end>start?end:undefined));
+  const raw=html.slice(start,end>start?end:undefined);
+  return {text:readableHtml(raw),html:raw.slice(0,180000)};
 }
 
 async function fetchSeason(s:any, now:string){
@@ -91,7 +103,8 @@ async function fetchSeason(s:any, now:string){
   if(!response.ok) throw new Error(`${s.key}: PSMF returned ${response.status}`);
   const html=await response.text();
   const root=parse(html);
-  const detailsText=extractMatchDetails(html,root);
+  const detailsBlock=extractMatchDetails(html,root);
+  const detailsText=detailsBlock.text;
 
   const standingTable=findTable(root,['Pořadí','Tým','Odehrané zápasy','Počet bodů']);
   let summary:any={season:s.key,label:s.label,year:s.year,phase:s.phase,division:s.division,team_name:s.team,source_url:s.url,synced_at:now};
@@ -118,7 +131,7 @@ async function fetchSeason(s:any, now:string){
     return {season:s.key,player_name:name,games:int(c[1].text),goals:int(c[2].text),synced_at:now};
   }).filter(Boolean);
 
-  const details={season:s.key,label:s.label,source_url:s.url,details_text:detailsText,synced_at:now};
+  const details={season:s.key,label:s.label,source_url:s.url,details_text:detailsText,details_html:detailsBlock.html,synced_at:now};
   return {summary,standings,matches,stats,details};
 }
 

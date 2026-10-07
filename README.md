@@ -1,10 +1,29 @@
-# Kabina Hanspaulka v3.2.3
+# Kabina Hanspaulka v3.3.1
 
-UI hotfix.
+## Změny
 
-- Skryta technická diagnostika OpenRouteru z odpovědí na webu.
-- Při 429 nebo jiné chybě AI se už uživateli nezobrazuje technická hláška.
-- Web rovnou použije lokální statistický fallback.
-- Technická chyba zůstává pouze v serverové konzoli/logu pro debugging.
+### Kabina AI
+AI box je nyní pouze v záložce **Statistiky**.
+Ve **Vzájemných zápasech** už se nezobrazuje.
 
-Není potřeba nový SQL ani nový API klíč.
+### Vzájemné zápasy
+U každého vzájemného zápasu se kromě výsledku nově zobrazí:
+- střelec gólu,
+- minuta gólu,
+- ★ hráč zápasu, pokud je v datech PSMF.
+
+### Brankáři
+Statistiky brankářů nyní počítají:
+- kolikrát byl hráč brankářem,
+- kolik gólů v těchto zápasech celkem inkasoval.
+
+Brankář se určuje podle týmového pravidla:
+**první hráč uvedený v sestavě = brankář**.
+
+Příklad:
+`Adam Kolář — 8 zápasů v bráně · 21 inkasovaných gólů`
+
+## Nasazení
+Nový SQL není potřeba.
+Stačí nasadit v3.3.1. Pokud po nasazení některé starší zápasy nemají detaily,
+klikni **Správa → Obnovit PSMF**.

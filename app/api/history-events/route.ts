@@ -8,7 +8,7 @@ export async function GET(){
   try{
     const admin=getSupabaseAdmin();
     const [{data:details,error:de},{data:stats,error:se}]=await Promise.all([
-      admin.from('psmf_season_details').select('season,details_text').order('season'),
+      admin.from('psmf_season_details').select('season,details_text,details_html').order('season'),
       admin.from('player_season_stats').select('season,player_name').order('season')
     ]);
     if(de)throw de;if(se)throw se;

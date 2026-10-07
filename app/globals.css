@@ -119,3 +119,7 @@
 .goalChip{border-color:#bfd5b9;background:#f5fbf2}.starChip{border-color:#e3d6a4;background:#fffbea}
 .eventNone{font-size:11px;color:#8a978d;font-style:italic}
 @media(max-width:700px){.richStats{overflow-x:auto}.historyRich{grid-template-columns:68px 1fr}.historyRich .venueBtn{grid-column:2}.matchEventSummary{margin-top:8px}}
+
+/* v3.3 all-time stats */
+.overallPanel{background:linear-gradient(135deg,#f7fbf5,#edf5e9)}
+.overallSummary strong{font-size:22px}

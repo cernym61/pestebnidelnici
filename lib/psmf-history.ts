@@ -84,6 +84,23 @@ function readableHtml(fragment:string){
     .replace(/\u2b50/g,' ⭐ ');
   return text.split(/\n+/).map(clean).filter(Boolean).join('\n').slice(0,60000);
 }
+
+function annotatePlayerBadges(raw:string){
+  let out=raw;
+
+  // Preserve literal visual symbols before HTML -> text conversion.
+  out=out.replace(/★|⭐/g,' [★ HRÁČ ZÁPASU] ');
+
+  // PSMF may render the captain as a standalone "C" badge before the player name.
+  out=out.replace(/>\s*C\s*</g,'> [C KAPITÁN] <');
+
+  // Common icon-element variants.
+  out=out.replace(/<(?:i|span)[^>]*(?:fa-star|icon-star|star)[^>]*>\s*<\/(?:i|span)>/gi,' [★ HRÁČ ZÁPASU] ');
+  out=out.replace(/<(?:i|span)[^>]*(?:captain|kapitan)[^>]*>\s*<\/(?:i|span)>/gi,' [C KAPITÁN] ');
+
+  return out;
+}
+
 function extractMatchDetails(html:string,root:any){
   const headings=root.querySelectorAll('h1,h2,h3,h4,h5');
   const startNode=headings.find((x:any)=>clean(x.text).includes('Detaily utkání'));
@@ -95,7 +112,8 @@ function extractMatchDetails(html:string,root:any){
   if(start<0)return {text:'',html:''};
   const end=endTag?html.indexOf(endTag,start+startTag.length):-1;
   const raw=html.slice(start,end>start?end:undefined);
-  return {text:readableHtml(raw),html:raw.slice(0,180000)};
+  const annotated=annotatePlayerBadges(raw);
+  return {text:readableHtml(annotated),html:raw};
 }
 
 async function fetchSeason(s:any, now:string){

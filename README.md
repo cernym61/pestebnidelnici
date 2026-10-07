@@ -1,32 +1,34 @@
-# Kabina Hanspaulka v3.4.2
+# Kabina Hanspaulka v3.5.0
 
-Oprava Gemini + dramatické zmenšení AI kontextu.
+## AI odstraněna
+Kabina AI je z webu kompletně pryč:
+- žádný AI panel,
+- žádné Gemini/OpenRouter volání,
+- žádné AI klíče nejsou pro web potřeba.
 
-## Skutečný problém
-Google AI Studio ukazovalo, že Gemini API klíč funguje. Předchozí verze ale:
-1. posílala do Gemini obrovský balík celé historie PSMF (řádově stovky tisíc input tokenů na jediný dotaz),
-2. používala v REST payloadu nesprávný camelCase název `systemInstruction`.
+## Oprava ★ hráče zápasu
+Problém byl v HTML parseru, ne ve významu hvězdičky.
 
-Oficiální REST příklad Gemini používá `system_instruction`.
+Na PSMF je vizuálně např.:
+`★ Jan Dusil`
 
-## v3.4.2
-- Gemini používá `gemini-3.7-flash` Free Tier.
-- API klíč jde přes oficiální `x-goog-api-key` header.
-- REST payload používá `system_instruction`.
-- Do AI se už neposílá celé syrové HTML/text všech sezon.
-- Server nejprve rozpozná hráče nebo soupeře a připraví malý strukturovaný profil.
-- U dotazu na hráče server předem spočítá:
-  - zápasy
-  - minuty
-  - góly / góly na zápas
-  - sezonní rozpad
-  - poslední start
-  - poslední gól + zápas/minutu
-  - ŽK / ČK
-  - ★ hráč zápasu
-  - kapitánské zápasy
-  - brankářské zápasy, inkasované góly a průměr
+a kapitán:
+`C Mikuláš Veselý`
 
-To výrazně snižuje spotřebu Free Tieru a zrychluje odpověď.
+Hvězdička a C ale mohou být v HTML jako samostatný element těsně před odkazem se jménem.
+Při převodu HTML na čistý text se marker v předchozích verzích ztratil nebo oddělil od hráče.
 
-Není potřeba SQL ani nový API klíč.
+v3.5.0:
+1. zachová skutečné ★ / ⭐ před převodem HTML,
+2. zachová samostatný badge C,
+3. zachová ikonové varianty star/captain,
+4. marker se přiřazuje jen hráči, jehož jméno je bezprostředně za ním,
+5. první jméno sestavy dál znamená brankáře.
+
+## Důležité po nasazení
+Klikni:
+**Správa → Obnovit PSMF**
+
+Staré uložené detailní texty už některé hvězdičky neobsahují; nový sync je musí načíst z webu PSMF znovu.
+
+Nový SQL není potřeba.

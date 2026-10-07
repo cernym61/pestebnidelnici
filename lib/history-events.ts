@@ -43,44 +43,43 @@ function markerMinutes(text:string,names:string[],marker:string){
   }
   return out;
 }
-function nearestMarkerBefore(line:string,name:string,markerPattern:string){
+function markerBeforeName(line:string,name:string,kind:'star'|'captain'){
   const idx=fold(line).indexOf(fold(name));
   if(idx<0)return false;
-  const before=line.slice(Math.max(0,idx-100),idx);
-  // Limit to the current player token, not the previous player in the comma-separated lineup.
-  const local=before.slice(Math.max(before.lastIndexOf(','),before.lastIndexOf('–'),before.lastIndexOf('-'))+1);
-  return new RegExp(markerPattern,'i').test(local);
+
+  // Check only the short fragment directly before this specific player.
+  const before=line.slice(Math.max(0,idx-120),idx);
+  const boundary=Math.max(
+    before.lastIndexOf(','),
+    before.lastIndexOf(';'),
+    before.lastIndexOf('|'),
+    before.lastIndexOf('–')
+  );
+  const local=before.slice(boundary+1);
+
+  if(kind==='star')return /\[★ HRÁČ ZÁPASU\]|★|⭐/i.test(local);
+  return /\[C KAPITÁN\]|(?:^|\s)C(?:\s|$)/i.test(local);
 }
-function hasStar(line:string,names:string[]){
-  return names.some(name=>nearestMarkerBefore(
-    line,name,
-    String.raw`(?:\[★\s*HRÁČ\s*ZÁPASU\]|★|⭐|\bstar\b|\bmotm\b)`
-  ));
-}
-function hasCaptain(line:string,names:string[]){
-  return names.some(name=>nearestMarkerBefore(
-    line,name,
-    String.raw`(?:\[C\s*KAPITÁN\]|\bC\b|\bkapit[aá]n\b|\bcaptain\b)`
-  ));
-}
+
 function lineupLine(lines:string[],players:string[]){
   let best=''; let bestCount=0;
   for(const line of lines){
-    if(!/[–-]/.test(line))continue;
     let count=0;
-    for(const p of players){
-      if(variants(p).some(v=>fold(line).includes(fold(v))))count++;
+    for(const player of players){
+      if(variants(player).some(v=>fold(line).includes(fold(v))))count++;
     }
     if(count>bestCount){best=line;bestCount=count;}
   }
   return bestCount>=2?best:'';
 }
+
 function orderedTeamPlayers(line:string,players:string[]){
   const hits:{player:string;idx:number}[]=[];
+  const normalized=fold(line);
   for(const player of players){
     let best=-1;
     for(const v of variants(player)){
-      const idx=fold(line).indexOf(fold(v));
+      const idx=normalized.indexOf(fold(v));
       if(idx>=0&&(best<0||idx<best))best=idx;
     }
     if(best>=0)hits.push({player,idx:best});
@@ -121,8 +120,8 @@ export function parseSeasonDetails(detailsText:string,players:string[]):TeamMatc
       for(const minute of goalMinutes(text,names))goals.push({player,minute});
       for(const minute of markerMinutes(text,names,'[ŽK]'))yellowCards.push({player,minute});
       for(const minute of markerMinutes(text,names,'[ČK]'))redCards.push({player,minute});
-      if(lineup && hasStar(lineup,names))manOfMatch.push(player);
-      if(lineup && hasCaptain(lineup,names))captains.push(player);
+      if(lineup && names.some(name=>markerBeforeName(lineup,name,'star')))manOfMatch.push(player);
+      if(lineup && names.some(name=>markerBeforeName(lineup,name,'captain')))captains.push(player);
     }
     return {
       date,

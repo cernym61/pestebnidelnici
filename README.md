@@ -236,3 +236,32 @@ Spusť jednou:
 `supabase/update-v3.7.1.sql`
 
 Tím se smažou chybné uložené souřadnice a při dalším otevření mapy se doplní správně.
+
+
+## v3.7.2 — oprava dlouhého načítání mapy
+
+Předchozí verze se při prvním otevření pokoušela geokódovat všech ~43 hřišť v jediném serverovém requestu.
+Kvůli slušnému limitu cca 1 požadavek/s to trvalo přes 40 sekund a serverless request mohl skončit timeoutem.
+
+Nově:
+- API zpracuje maximálně 5 chybějících hřišť na jeden request,
+- mapa se zobrazí okamžitě v Praze,
+- souřadnice se doplňují postupně na pozadí,
+- horní text ukazuje počet zbývajících hřišť,
+- po dokončení se všechny souřadnice uloží v Supabase a další otevření mapy už je okamžité.
+
+Není potřeba nový SQL oproti v3.7.1.
+
+
+## v3.7.3 — oprava `Map data failed`
+
+Mapové API je odolnější vůči výpadku / pomalé odpovědi OpenStreetMap geokódování:
+- geokódování má timeout 3,5 s,
+- zpracovávají se jen 2 nová hřiště na jeden request,
+- chyba geokódování jednoho hřiště už neshodí celé API,
+- hledání je omezené na ČR,
+- pokud přesná adresa nevyjde, zkusí se název hřiště + Praha,
+- pomocné dotazy na počty zápasů už nemohou shodit mapu,
+- při chybě se zobrazí konkrétní serverová zpráva a tlačítko „Zkusit znovu“.
+
+Nový SQL není potřeba.

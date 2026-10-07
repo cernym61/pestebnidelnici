@@ -3,7 +3,7 @@ import { getSupabaseAdmin } from "@/lib/supabase-admin";
 
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
-export const maxDuration=30;
+export const maxDuration=15;
 
 const sleep=(ms:number)=>new Promise(r=>setTimeout(r,ms));
 
@@ -20,22 +20,46 @@ function hasValidCoords(v:any){
 }
 
 
-async function geocode(address:string,name:string){
-  const q=[address,name,"Česko"].filter(Boolean).join(", ");
-  const url=`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=cz&q=${encodeURIComponent(q)}`;
-  const r=await fetch(url,{
-    headers:{
-      "User-Agent":"PestebniDelnici-Kabina/1.0 (https://www.pestebnidelnici.cz)",
-      "Accept-Language":"cs"
-    },
-    cache:"no-store"
-  });
-  if(!r.ok)return null;
-  const data=await r.json().catch(()=>[]);
-  const first=Array.isArray(data)?data[0]:null;
-  if(!first)return null;
-  const latitude=Number(first.lat),longitude=Number(first.lon);
-  return Number.isFinite(latitude)&&Number.isFinite(longitude)?{latitude,longitude}:null;
+async function fetchGeocode(query:string){
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),3500);
+  try{
+    const url=`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=cz&viewbox=12,51.5,19,48&bounded=1&q=${encodeURIComponent(query)}`;
+    const r=await fetch(url,{
+      headers:{
+        "User-Agent":"PestebniDelnici-Kabina/1.0 (https://www.pestebnidelnici.cz)",
+        "Accept-Language":"cs,en;q=0.8"
+      },
+      cache:"no-store",
+      signal:controller.signal
+    });
+    if(!r.ok)return null;
+    const data=await r.json().catch(()=>[]);
+    const first=Array.isArray(data)?data[0]:null;
+    if(!first)return null;
+    const latitude=Number(first.lat),longitude=Number(first.lon);
+    if(!Number.isFinite(latitude)||!Number.isFinite(longitude))return null;
+    if(latitude<48||latitude>51.5||longitude<12||longitude>19)return null;
+    return {latitude,longitude};
+  }catch{
+    return null;
+  }finally{
+    clearTimeout(timeout);
+  }
+}
+
+async function geocode(address:string,name:string,code:string){
+  // Prefer the actual address. If that fails, try the venue name/code with Prague context.
+  const queries=[
+    `${address}, Česko`,
+    `${name}, Praha, Česko`,
+    `${code} PSMF, Praha, Česko`
+  ].filter(Boolean);
+  for(const q of queries){
+    const point=await fetchGeocode(q);
+    if(point)return point;
+  }
+  return null;
 }
 
 export async function GET(){
@@ -48,27 +72,36 @@ export async function GET(){
 
     const venues=(data||[]) as any[];
 
-    // Geocode only missing coordinates, once; store them so subsequent opens are instant.
-    for(const v of venues){
-      if(hasValidCoords(v))continue;
-      if(!v.address)continue;
+    // Geocode only a small batch per request.
+    // 43 venues at ~1 request/second cannot fit into a normal serverless request,
+    // so the client calls this endpoint repeatedly until all coordinates are cached.
+    const missing=venues.filter(v=>!hasValidCoords(v)&&v.address);
+    const batch=missing.slice(0,2);
+    for(const v of batch){
       v.latitude=null;v.longitude=null;
-      const point=await geocode(String(v.address),String(v.name||v.code));
+      const point=await geocode(String(v.address),String(v.name||v.code),String(v.code));
       if(point){
         v.latitude=point.latitude;v.longitude=point.longitude;
         await admin.from("venues").update(point).eq("code",v.code);
       }
-      await sleep(900);
+      if(v!==batch[batch.length-1])await sleep(350);
     }
-
-    const [{data:matches,error:me}]=await Promise.all([
-      admin.from("historical_matches").select("venue_code").not("venue_code","is",null)
-    ]);
-    if(me)console.warn("venue-map historical count",me.message);
+    const pending=Math.max(0,missing.length-batch.length);
 
     const counts=new Map<string,number>();
-    for(const m of matches||[]){
-      if(m.venue_code)counts.set(m.venue_code,(counts.get(m.venue_code)||0)+1);
+    try{
+      const [{data:historical},{data:current}]=await Promise.all([
+        admin.from("historical_matches").select("venue_code").not("venue_code","is",null),
+        admin.from("matches").select("venue_code,home_score,kickoff").not("venue_code","is",null)
+      ]);
+      for(const m of historical||[]){
+        if(m.venue_code)counts.set(m.venue_code,(counts.get(m.venue_code)||0)+1);
+      }
+      for(const m of current||[]){
+        if(m.venue_code)counts.set(m.venue_code,(counts.get(m.venue_code)||0)+1);
+      }
+    }catch(e){
+      console.warn("venue-map counts",e);
     }
 
     const {data:future}=await admin.from("matches")
@@ -86,9 +119,10 @@ export async function GET(){
           latitude:Number(v.latitude),longitude:Number(v.longitude),
           matches:counts.get(v.code)||0,nextMatch:v.code===nextVenue
         })),
-      nextVenue
+      nextVenue,
+      pending
     },{headers:{"Cache-Control":"no-store"}});
   }catch(e:any){
-    return NextResponse.json({error:e?.message||"Venue map failed"},{status:500});
+    console.error("venue-map fatal",e); return NextResponse.json({error:e?.message||String(e)||"Venue map failed"},{status:500});
   }
 }

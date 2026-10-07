@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabase-admin';
-import { parseSeasonDetails } from '@/lib/history-events';
+import { detailsTextFromRawHtml, parseSeasonDetails } from '@/lib/history-events';
 
 export const runtime='nodejs';
 
@@ -19,7 +19,14 @@ export async function GET(){
       players.set(x.season,arr);
     }
     const seasons:Record<string,any>={};
-    for(const d of details||[])seasons[d.season]=parseSeasonDetails(d.details_text,players.get(d.season)||[]);
+    for(const d of details||[]){
+      // Parse exact PSMF DOM classes from stored raw HTML.
+      // Fall back to details_text only for old rows that do not have HTML.
+      const sourceText=d.details_html
+        ? detailsTextFromRawHtml(d.details_html)
+        : String(d.details_text||'');
+      seasons[d.season]=parseSeasonDetails(sourceText,players.get(d.season)||[]);
+    }
     return NextResponse.json({seasons});
   }catch(e:any){
     return NextResponse.json({error:e?.message||'History events failed'},{status:500});

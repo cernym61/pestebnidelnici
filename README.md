@@ -1,34 +1,45 @@
-# Kabina Hanspaulka v3.5.0
+# Kabina Hanspaulka v3.5.2
 
-## AI odstraněna
-Kabina AI je z webu kompletně pryč:
-- žádný AI panel,
-- žádné Gemini/OpenRouter volání,
-- žádné AI klíče nejsou pro web potřeba.
+## ★ Hráč zápasu – oprava přímo z raw HTML
 
-## Oprava ★ hráče zápasu
-Problém byl v HTML parseru, ne ve významu hvězdičky.
+Předchozí chyba byla v architektuře:
+`/api/history-events` stále počítalo role z `details_text`.
 
-Na PSMF je vizuálně např.:
-`★ Jan Dusil`
+To znamenalo, že i když jsme při synchronizaci začali rozpoznávat `is-best`,
+statistiky byly pořád závislé na již převedeném textu.
 
-a kapitán:
-`C Mikuláš Veselý`
+v3.5.2 proto čte přímo uložené `details_html`.
 
-Hvězdička a C ale mohou být v HTML jako samostatný element těsně před odkazem se jménem.
-Při převodu HTML na čistý text se marker v předchozích verzích ztratil nebo oddělil od hráče.
+PSMF skutečně používá:
+- `<span class="is-best">...` = ★ hráč zápasu
+- `<span class="is-captain">...` = kapitán
 
-v3.5.0:
-1. zachová skutečné ★ / ⭐ před převodem HTML,
-2. zachová samostatný badge C,
-3. zachová ikonové varianty star/captain,
-4. marker se přiřazuje jen hráči, jehož jméno je bezprostředně za ním,
-5. první jméno sestavy dál znamená brankáře.
+CSS `::before` se už vůbec neřeší. Server vezme samotnou class z DOM,
+vloží interní marker před konkrétní jméno a až potom parsuje zápas.
 
-## Důležité po nasazení
-Klikni:
-**Správa → Obnovit PSMF**
+Hráč může být současně:
+- `is-best`
+- `is-captain`
+- první v sestavě (brankář)
 
-Staré uložené detailní texty už některé hvězdičky neobsahují; nový sync je musí načíst z webu PSMF znovu.
+Role se navzájem nevylučují.
 
-Nový SQL není potřeba.
+## Diagnostika
+Přidán endpoint:
+`/api/history-events-debug`
+
+U každé sezony vrátí:
+- kolikrát je v raw HTML `is-best`
+- kolikrát `is-captain`
+- kolik hráčů zápasu parser skutečně přiřadil
+- konkrétní jména a datum
+
+Díky tomu už nemusíme hádat, kde se role ztrácí.
+
+## Po nasazení
+Pokud už je `details_html` v databázi, nový sync není pro samotné čtení class nutný.
+Pro jistotu aktuálnosti dat ale doporučeno:
+Správa → Obnovit PSMF
+
+SQL není potřeba.
+AI zůstává odstraněná.

@@ -113,3 +113,87 @@
 
 
 
+
+
+/* v3.6 — týmová nástěnka, příspěvky a ankety */
+.boardSection{margin-top:42px}
+.boardHero{border-radius:22px;padding:27px 30px;background:linear-gradient(135deg,#173d2a,#28563d);color:#fff;display:flex;align-items:flex-end;justify-content:space-between;gap:20px;box-shadow:var(--shadow)}
+.boardHero h2{margin:8px 0 5px;font-size:42px;letter-spacing:-.04em}
+.boardHero p{margin:0;color:rgba(255,255,255,.72);font-size:16px}
+.boardEyebrow{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:900;letter-spacing:.12em;color:#b8d582}
+.boardRole{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:7px 10px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.06em}
+.postComposer{margin-top:14px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--shadow)}
+.postComposerHead{display:flex;align-items:center;gap:11px;margin-bottom:16px}
+.postComposerHead>div:last-child{display:grid;gap:2px}.postComposerHead strong{font-size:17px}.postComposerHead span{font-size:12px;color:var(--muted)}
+.postComposerIcon{width:38px;height:38px;border-radius:12px;background:#edf3e8;display:grid;place-items:center;color:#315a40}
+.postFields{display:grid;gap:11px}
+.postFields label,.pollBuilder>label{display:grid;gap:7px}.postFields label>span,.pollBuilder label>span{font-size:12px;font-weight:850;color:#5e6c61}
+.postFields input,.postFields textarea,.pollBuilder input{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px 13px;background:#fbfcfa;color:var(--ink);font:inherit;outline:0}
+.postFields textarea{min-height:112px;resize:vertical;line-height:1.5}
+.postFields input:focus,.postFields textarea:focus,.pollBuilder input:focus{border-color:#7b9c83;box-shadow:0 0 0 3px rgba(31,90,57,.07)}
+.pollToggle{margin:14px 0 0;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:850;color:#294d38;cursor:pointer}
+.pollToggle input{accent-color:#1f5a39}
+.pollBuilder{margin-top:12px;background:#f5f8f2;border:1px solid #e1e7dc;border-radius:15px;padding:14px;display:grid;gap:10px}
+.pollOptionBuilder{display:grid;gap:7px}.pollOptionBuilder>div{display:grid;grid-template-columns:27px 1fr auto;align-items:center;gap:7px}
+.pollOptionBuilder>div>span{width:25px;height:25px;border-radius:8px;background:#e5ede1;display:grid;place-items:center;font-size:10px;font-weight:900;color:#3b5d46}
+.pollOptionBuilder button{border:0;background:transparent;color:#9b4a44;display:grid;place-items:center;cursor:pointer;padding:6px}
+.addPollOption{justify-self:start;border:1px dashed #c8d5c4;background:#fff;border-radius:9px;padding:7px 9px;display:flex;align-items:center;gap:5px;color:#31583e;font-size:12px;font-weight:800;cursor:pointer}
+.notifyChoices{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:15px}
+.notifyChoices>label{display:grid;grid-template-columns:auto auto 1fr;align-items:center;gap:8px;border:1px solid var(--line);border-radius:13px;padding:11px 12px;background:#fbfcfa;cursor:pointer}
+.notifyChoices input{accent-color:#1f5a39}.notifyChoices div{display:grid;gap:2px}.notifyChoices strong{font-size:12px}.notifyChoices small{font-size:10px;color:var(--muted);line-height:1.3}
+.notifyIcon{width:30px;height:30px;border-radius:9px;display:grid;place-items:center}.notifyIcon.email{background:#edf2e8;color:#315a40}.notifyIcon.push{background:#edf0f6;color:#435d84}
+.publishPostBtn{margin-top:13px;width:100%;border:0;border-radius:12px;background:#1f5a39;color:#fff;padding:13px 15px;display:flex;align-items:center;justify-content:center;gap:7px;font-weight:900;cursor:pointer}
+.publishPostBtn:disabled{opacity:.5;cursor:not-allowed}
+.boardFeed{display:grid;gap:12px;margin-top:14px}
+.teamPost{background:#fff;border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--shadow)}
+.teamPostTop{display:flex;align-items:center;justify-content:space-between;gap:12px}.teamPostAuthor{display:flex;align-items:center;gap:9px}.teamPostAuthor>div{display:grid;gap:2px}
+.teamPostAuthor strong{font-size:13px}.teamPostAuthor span{font-size:10px;color:var(--muted)}
+.postDeleteBtn{width:34px;height:34px;border-radius:10px;border:1px solid #eadedb;background:#fff9f7;color:#a24d45;display:grid;place-items:center;cursor:pointer}
+.teamPost h3{margin:17px 0 7px;font-size:23px;letter-spacing:-.025em}.teamPostBody{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6;color:#405047;font-size:14px}
+.postDelivery{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}.postDelivery span{display:inline-flex;align-items:center;gap:5px;border-radius:999px;background:#eff4eb;color:#55705c;padding:5px 8px;font-size:9px;font-weight:850;text-transform:uppercase;letter-spacing:.04em}
+.postPoll{margin-top:17px;border-top:1px solid #e6eae2;padding-top:15px}.postPollTitle{display:flex;align-items:center;gap:9px;margin-bottom:10px}.postPollTitle>div{display:grid;gap:2px}.postPollTitle strong{font-size:14px}.postPollTitle span{font-size:10px;color:var(--muted)}
+.postPollOptions{display:grid;gap:7px}.postPollOptions button{position:relative;overflow:hidden;border:1px solid #dce3d8;background:#fbfcfa;border-radius:11px;padding:10px 11px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;color:#2a4032}
+.postPollOptions button.chosen{border-color:#80a28a}.pollBar{position:absolute;inset:0 auto 0 0;background:#edf4e9;pointer-events:none}.chosen .pollBar{background:#e4efe2}
+.pollChoice,.pollCount{position:relative;z-index:1}.pollChoice{display:flex;align-items:center;gap:8px}.pollChoice b{font-size:12px}.pollRadio{width:14px;height:14px;border:1.5px solid #9ba89d;border-radius:50%}.pollCount{font-size:10px;font-weight:850;color:#647568}
+.myVoteHint{margin-top:8px;display:flex;align-items:center;gap:5px;color:#617468;font-size:10px}
+.boardEmpty,.boardLogin{margin-top:14px;border:1px dashed #cbd3c7;border-radius:16px;background:#fafbf8;padding:20px;color:var(--muted)}
+.boardEmpty{display:flex;align-items:center;justify-content:center;gap:8px;min-height:95px}.boardLogin{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:11px}.boardLogin>div{display:grid;gap:3px}.boardLogin strong{color:var(--ink)}.boardLogin span{font-size:12px}
+.tabs button{display:inline-flex;align-items:center;gap:5px}
+@media(max-width:700px){
+ .boardSection{margin-top:28px}.boardHero{padding:22px 19px;align-items:flex-start}.boardHero h2{font-size:35px}.boardRole{display:none}
+ .postComposer{padding:15px}.notifyChoices{grid-template-columns:1fr}.teamPost{padding:16px}.teamPost h3{font-size:21px}.boardLogin{grid-template-columns:auto 1fr}.boardLogin .miniBtn{grid-column:1/-1}
+}
+
+
+/* v3.6.1 — výraznější navigační badge + pohodlnější statistiky */
+.tabs button{position:relative}
+.tabLabel{display:inline-flex;align-items:center;gap:5px}
+.tabBadge{
+  position:absolute;right:-13px;top:4px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;
+  background:#e74727;color:#fff;border:2px solid var(--bg);display:grid;place-items:center;
+  font-size:10px;font-weight:950;line-height:1;box-shadow:0 2px 7px rgba(149,46,27,.28)
+}
+.tabs button.active .tabBadge{border-color:#fff}
+.statsPanelHead{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:4px}
+.statsPanelHead h2{margin:0}
+.tableScrollControls{display:flex;align-items:center;gap:6px;background:#f1f4ed;border:1px solid #e0e6dc;border-radius:12px;padding:4px}
+.tableScrollControls button{width:34px;height:34px;border:0;border-radius:9px;background:#fff;color:#1f4a35;font-size:25px;line-height:1;display:grid;place-items:center;cursor:pointer;box-shadow:0 1px 3px rgba(20,52,39,.08)}
+.tableScrollControls button:hover{background:#e5eee1}
+.tableScrollControls span{font-size:10px;font-weight:850;color:#6f7a70;text-transform:uppercase;letter-spacing:.04em;padding:0 3px;white-space:nowrap}
+.statsScroller{scrollbar-width:auto;scrollbar-color:#7f8b82 #e9ede7;padding-bottom:8px}
+.statsScroller::-webkit-scrollbar{height:14px}
+.statsScroller::-webkit-scrollbar-track{background:#e9ede7;border-radius:999px}
+.statsScroller::-webkit-scrollbar-thumb{background:#7f8b82;border-radius:999px;border:3px solid #e9ede7}
+.richStats table{min-width:900px}
+.richStats th:first-child,.richStats td:first-child{
+  position:sticky;left:0;z-index:3;background:#fff;box-shadow:8px 0 12px -12px rgba(20,52,39,.45)
+}
+.richStats th:first-child{z-index:4;background:#fff}
+.richStats tr:hover td:first-child{background:#f8faf6}
+@media(max-width:700px){
+  .tabBadge{right:-10px;top:2px}
+  .statsPanelHead{align-items:flex-start;flex-direction:column}
+  .tableScrollControls{width:100%;justify-content:space-between}
+  .tableScrollControls span{flex:1;text-align:center}
+  .richStats table{min-width:860px}
+}

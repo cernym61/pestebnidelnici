@@ -1,45 +1,64 @@
-# Kabina Hanspaulka v3.5.2
+# Kabina Hanspaulka v3.6.0
 
-## ★ Hráč zápasu – oprava přímo z raw HTML
+## Novinka: týmová Nástěnka
 
-Předchozí chyba byla v architektuře:
-`/api/history-events` stále počítalo role z `details_text`.
+Přibyla samostatná záložka **Nástěnka**.
 
-To znamenalo, že i když jsme při synchronizaci začali rozpoznávat `is-best`,
-statistiky byly pořád závislé na již převedeném textu.
+### Správce a kapitán
+Role `admin` a `captain` mohou zveřejnit nový příspěvek:
+- nadpis
+- text
+- volitelná anketa
+- 2 až 8 vlastních odpovědí
+- volba „Poslat všem e-mail“
+- volba „Poslat všem push notifikaci“
 
-v3.5.2 proto čte přímo uložené `details_html`.
+Admin může smazat libovolný příspěvek.
+Kapitán může smazat vlastní příspěvek.
 
-PSMF skutečně používá:
-- `<span class="is-best">...` = ★ hráč zápasu
-- `<span class="is-captain">...` = kapitán
+### Ankety
+Každý přihlášený aktivní hráč může hlasovat.
+Anketa je jednovýběrová:
+- jeden hráč = jeden hlas
+- kliknutím na jinou možnost lze hlas změnit
+- výsledky se zobrazují živě jako počet hlasů + procenta
 
-CSS `::before` se už vůbec neřeší. Server vezme samotnou class z DOM,
-vloží interní marker před konkrétní jméno a až potom parsuje zápas.
+### E-mail
+Pokud autor při publikaci zapne e-mail:
+- zpráva jde všem aktivním hráčům s účtem a e-mailem
+- obsahuje nadpis, text, případnou anketu a tlačítko přímo na Nástěnku
+- používá stávající Resend konfiguraci
 
-Hráč může být současně:
-- `is-best`
-- `is-captain`
-- první v sestavě (brankář)
+### Push
+Pokud autor zapne push:
+- notifikace jde všem aktivním hráčům s účtem
+- doručí se těm, kteří mají OneSignal push povolený
+- kliknutí na notifikaci otevře přímo Nástěnku
+- používá stávající OneSignal konfiguraci
 
-Role se navzájem nevylučují.
+## Důležité — SQL
+Před použitím spusť v Supabase SQL Editoru:
 
-## Diagnostika
-Přidán endpoint:
-`/api/history-events-debug`
+`supabase/update-v3.6.sql`
 
-U každé sezony vrátí:
-- kolikrát je v raw HTML `is-best`
-- kolikrát `is-captain`
-- kolik hráčů zápasu parser skutečně přiřadil
-- konkrétní jména a datum
+Tím se vytvoří:
+- `team_posts`
+- `team_post_poll_options`
+- `team_post_votes`
 
-Díky tomu už nemusíme hádat, kde se role ztrácí.
-
-## Po nasazení
-Pokud už je `details_html` v databázi, nový sync není pro samotné čtení class nutný.
-Pro jistotu aktuálnosti dat ale doporučeno:
-Správa → Obnovit PSMF
-
-SQL není potřeba.
+Žádné nové environment proměnné nejsou potřeba.
 AI zůstává odstraněná.
+
+
+## v3.6.1 — navigační upozornění a lepší statistiky
+
+- Nástěnka je hned za Zápasy.
+- Zápasy mají červený badge `1`, pokud přihlášený hráč ještě neodpověděl na účast u nejbližšího zápasu.
+- Nástěnka má červený badge s počtem anket, ve kterých přihlášený hráč ještě nehlasoval.
+- Po zahlasování badge z Nástěnky automaticky zmizí / sníží se.
+- Po vyplnění účasti zmizí badge ze Zápasů.
+- Statistiky mají tlačítka pro posun tabulky vlevo/vpravo.
+- Spodní scrollbar je vyšší a lépe uchopitelný.
+- První sloupec s hráčem je při horizontálním posunu sticky, takže jméno zůstává vidět.
+
+SQL z v3.6 (`supabase/update-v3.6.sql`) zůstává stejný; žádný nový SQL pro v3.6.1 není potřeba.

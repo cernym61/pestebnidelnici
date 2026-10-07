@@ -197,3 +197,136 @@
   .tableScrollControls span{flex:1;text-align:center}
   .richStats table{min-width:860px}
 }
+
+
+/* v3.6.4 — iPhone / mobile layout */
+.mobileStatsList{display:none}
+
+@media(max-width:700px){
+  html,body{overflow-x:hidden}
+  body{-webkit-text-size-adjust:100%}
+  .shell{padding:18px 12px 38px;max-width:100vw}
+
+  /* Header */
+  .teamHeroHeader{min-height:220px;margin:-18px -12px 16px;border-radius:0 0 22px 22px;background-position:center 38%}
+  .heroHeaderContent{padding:20px 16px;align-items:flex-end}
+  .heroHeaderContent h1{font-size:38px;line-height:.95}
+  .heroHeaderContent .tag{font-size:10px;letter-spacing:.18em;margin-bottom:10px}
+  .glassBtn{padding:9px 10px;font-size:12px}
+  .sourceCard{margin:14px 0 12px;padding:13px 14px;border-radius:15px;align-items:flex-start}
+  .sourceCard strong{font-size:14px}
+  .sourceCard .muted{font-size:11px;margin-top:4px}
+
+  /* Navigation behaves like a native horizontal tab bar */
+  .tabs{
+    position:sticky;top:0;z-index:30;
+    gap:8px;margin:0 -12px;padding:0 12px;
+    background:rgba(247,248,243,.96);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line);
+    scrollbar-width:none;
+  }
+  .tabs::-webkit-scrollbar{display:none}
+  .tabs button{
+    flex:0 0 auto;padding:13px 9px 11px;font-size:13px;border-bottom-width:3px;
+  }
+  .tabBadge{right:-5px;top:2px;min-width:18px;height:18px;font-size:9px}
+
+  /* Match tab */
+  .intro{margin:24px 0 12px}
+  .intro h2{font-size:31px}
+  .intro p{font-size:14px;max-width:100%}
+  .heroCard{padding:20px 15px;border-radius:18px;border-top-width:6px}
+  .heroTop{font-size:11px}
+  .heroTop b{padding:6px 8px;font-size:11px}
+  .teams{margin:22px 0 18px;align-items:center;gap:9px}
+  .teams h3{font-size:29px;line-height:1.05}
+  .teams small{font-size:12px}
+  .vs{font-size:23px}
+  .meta{gap:12px;font-size:13px}
+  .heroCard hr{margin:18px 0}
+  .attendanceHead{font-size:15px;gap:8px}
+  .attendance{gap:8px}
+  .attendance button{padding:13px 10px;border-radius:11px}
+  .responseBoard{margin-top:18px;padding-top:15px}
+  .responseCols{gap:8px}
+  .responseCols>div{min-height:auto;padding:10px}
+  .heroCard .discussion{margin:16px -15px -20px;padding:15px}
+  .commentComposer{grid-template-columns:1fr}
+  .commentComposer button{padding:11px}
+  .replyComment,.replyComposer{margin-left:20px}
+
+  .sectionTitle{font-size:20px;margin:27px 0 10px}
+  .matchRow{grid-template-columns:1fr auto;padding:13px 12px;gap:8px;border-radius:13px}
+  .matchTeams{grid-column:1/-1;justify-content:flex-start;flex-wrap:wrap;gap:7px}
+  .dateBox b{font-size:13px}.dateBox span{font-size:11px}
+  .matchRow .venueBtn{font-size:11px}
+  .result{padding:5px 7px}
+
+  /* Generic panels */
+  .panel{margin-top:24px;padding:16px 13px;border-radius:18px}
+  .panel h2{font-size:29px}
+  .panelHead{align-items:flex-start;flex-direction:column;margin-bottom:12px}
+  .seasonSelect{width:100%;max-width:none}
+  .seasonSummary{grid-template-columns:repeat(2,1fr);gap:7px}
+  .seasonSummary>div{padding:10px}
+  .seasonSummary span{font-size:10px}.seasonSummary strong{font-size:15px}
+
+  /* Stats: native cards instead of sideways table */
+  .statsPanel .statsPanelHead{display:block}
+  .statsPanel .tableScrollControls{display:none}
+  .statsPanel .statsScroller{display:none}
+  .mobileStatsList{display:grid;gap:9px;margin-top:14px}
+  .mobileStatCard{border:1px solid var(--line);background:#fbfcf9;border-radius:14px;padding:12px}
+  .mobileStatPlayer{display:flex;align-items:center;gap:9px;padding-bottom:10px;border-bottom:1px solid #e7ebe3}
+  .mobileStatPlayer>div{display:grid;gap:2px}
+  .mobileStatPlayer strong{font-size:13px}
+  .mobileStatPlayer span{font-size:10px;color:var(--muted)}
+  .mobileStatGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:9px}
+  .mobileStatGrid>div{background:#f0f4ed;border-radius:9px;padding:8px 6px;display:grid;gap:3px;text-align:center;min-width:0}
+  .mobileStatGrid>div.wide{grid-column:span 3}
+  .mobileStatGrid span{font-size:8px;line-height:1.15;text-transform:uppercase;letter-spacing:.03em;color:#6f7a70;overflow-wrap:anywhere}
+  .mobileStatGrid b{font-size:15px;color:#173d2a}
+
+  /* History & H2H */
+  .historyRich .matchTeams{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;width:100%}
+  .historyRich .matchTeams>b{font-size:12px}
+  .historyRich .matchEventSummary{grid-column:1/-1;margin-top:8px}
+  .matchEventSummary>div{gap:5px}
+  .eventChip{font-size:9px;padding:4px 6px}
+  .eventLabel{font-size:9px}
+  .h2hSummary{flex-wrap:wrap;gap:7px}
+
+  /* Board */
+  .boardSection{margin-top:20px}
+  .boardHero{padding:18px 15px;border-radius:17px}
+  .boardHero h2{font-size:30px}
+  .boardHero p{font-size:12px}
+  .postComposer{padding:13px;border-radius:16px}
+  .postFields input,.postFields textarea,.pollBuilder input{font-size:16px} /* avoids iOS zoom */
+  .notifyChoices{grid-template-columns:1fr}
+  .teamPost{padding:14px;border-radius:16px}
+  .teamPost h3{font-size:19px}
+  .teamPostBody{font-size:13px}
+  .postPollOptions button{min-height:44px}
+
+  /* Auth & controls */
+  .authModal{max-height:90dvh;overflow-y:auto;border-radius:18px;padding:20px 16px}
+  .authModal h2{font-size:27px}
+  .authForm input,.authForm select{font-size:16px}
+  .navButtons{grid-template-columns:1fr}
+  .accountCard{padding:15px;border-radius:16px}
+
+  /* Keep safe distance from iPhone home indicator in standalone mode */
+  @supports(padding:max(0px)){
+    .shell{padding-bottom:max(38px,env(safe-area-inset-bottom))}
+    .tabs{padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right))}
+  }
+}
+
+@media(max-width:390px){
+  .heroHeaderContent h1{font-size:34px}
+  .teams h3{font-size:26px}
+  .mobileStatGrid{grid-template-columns:repeat(2,1fr)}
+  .mobileStatGrid>div.wide{grid-column:span 2}
+}

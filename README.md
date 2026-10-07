@@ -72,3 +72,65 @@ Opraven TypeScript build error ve funkci pro horizontální posun statistik.
 Helper nyní správně přijímá `{ current: HTMLDivElement | null }`.
 
 Žádná funkce se nemění a není potřeba nový SQL.
+
+
+## v3.6.3 — automatické aktualizace iPhone + soukromí
+
+### iPhone „Přidat na plochu“
+iOS může standalone webovou aplikaci držet dlouho otevřenou / v cache.
+v3.6.3 proto:
+- při otevření aplikace kontroluje `/api/app-version`,
+- stejnou kontrolu udělá při návratu aplikace do popředí,
+- při novém deploymentu automaticky otevře URL s novým `appv`,
+- hlavní dokument `/` dostává `no-store / no-cache` hlavičky.
+
+Uživatel tedy nemusí mazat ikonu z plochy a přidávat web znovu.
+
+### Soukromí
+Nástěnka, příspěvky a ankety jsou dostupné pouze přihlášeným aktivním hráčům.
+Záložka Nástěnka se nepřihlášenému návštěvníkovi vůbec nezobrazuje.
+
+Účast na zápase:
+- attendance tabulka je přes RLS dostupná jen přihlášeným,
+- seznam hráčů se zvýrazněnou účastí je nově také pouze pro přihlášené aktivní hráče,
+- `public_player_roster` už není přístupný roli `anon`,
+- ID hráčů se nepřihlášenému návštěvníkovi nezobrazuje.
+
+Veřejný návštěvník tedy neuvidí kdo jde / nejde / váhá ani počty odpovědí.
+
+### SQL
+Spusť:
+`supabase/update-v3.6.3.sql`
+
+Pokud jsi ještě nespustil SQL pro Nástěnku, spusť předtím také:
+`supabase/update-v3.6.sql`
+
+
+## v3.6.4 — iPhone / mobilní rozhraní
+
+Web má nově samostatně doladěné chování pro telefony.
+
+### Statistiky
+Na mobilu se už nepoužívá široká tabulka s horizontálním scrollbarem.
+Každý hráč se zobrazí jako přehledná karta:
+- zápasy + minuty
+- góly
+- ŽK / ČK
+- ★ hráč zápasu
+- kapitán
+- brankář
+- inkasované góly, pokud chytal
+
+Desktopová tabulka zůstává beze změny na PC.
+
+### Další mobilní úpravy
+- kompaktnější hero a zápasová karta
+- sticky horizontální navigace
+- lepší rozložení historie a H2H
+- nástěnka a ankety optimalizované pro dotyk
+- formulářová pole mají 16 px, aby Safari při psaní automaticky nezoomoval
+- lepší modaly
+- respektuje iPhone safe-area / Home Indicator
+- užší rozestupy a radiusy vhodné pro menší displej
+
+Není potřeba žádný nový SQL.

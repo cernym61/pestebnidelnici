@@ -1,29 +1,20 @@
-# Kabina Hanspaulka v3.3.1
+# Kabina Hanspaulka v3.3.2
 
-## Změny
+Hotfix k v3.3.1.
 
-### Kabina AI
-AI box je nyní pouze v záložce **Statistiky**.
-Ve **Vzájemných zápasech** už se nezobrazuje.
+V `components/KabinaApp.tsx` byly po postupných úpravách duplicitní překladové klíče v objektu `copy`.
+Next.js proto při TypeScript kontrole hlásil:
 
-### Vzájemné zápasy
-U každého vzájemného zápasu se kromě výsledku nově zobrazí:
-- střelec gólu,
-- minuta gólu,
-- ★ hráč zápasu, pokud je v datech PSMF.
+`An object literal cannot have multiple properties with the same name.`
 
-### Brankáři
-Statistiky brankářů nyní počítají:
-- kolikrát byl hráč brankářem,
-- kolik gólů v těchto zápasech celkem inkasoval.
+v3.3.2 duplicitní klíče odstranila.
 
-Brankář se určuje podle týmového pravidla:
-**první hráč uvedený v sestavě = brankář**.
+Funkce z v3.3.1 zůstávají:
+- AI pouze ve Statistikách,
+- vzájemné zápasy se střelci a minutami gólů,
+- brankáři: počet zápasů + inkasované góly,
+- historie od roku 2015,
+- kapitáni a ★ hráč zápasu,
+- Gemini jako primární free AI provider a OpenRouter jako fallback.
 
-Příklad:
-`Adam Kolář — 8 zápasů v bráně · 21 inkasovaných gólů`
-
-## Nasazení
-Nový SQL není potřeba.
-Stačí nasadit v3.3.1. Pokud po nasazení některé starší zápasy nemají detaily,
-klikni **Správa → Obnovit PSMF**.
+Není potřeba nový SQL.

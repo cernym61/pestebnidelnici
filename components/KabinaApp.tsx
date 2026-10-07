@@ -39,7 +39,7 @@ function fmtDateTime(iso:string,lang:Lang){return new Intl.DateTimeFormat(lang==
 function googleMaps(address:string){return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;}
 function waze(address:string){return `https://www.waze.com/ul?q=${encodeURIComponent(address)}&navigate=yes`;}
 function ours(name:string){return name.startsWith('Pěstební dělníci');}
-const APP_VERSION='3.7.5';
+const APP_VERSION='3.7.6';
 
 function stripDiacritics(value:string){return value.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();}
 function parseScore(score:string|null|undefined){const m=String(score||'').match(/(\d+)\s*:\s*(\d+)/);return m?[Number(m[1]),Number(m[2])] as const:null;}

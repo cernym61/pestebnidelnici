@@ -307,3 +307,28 @@ Na mapě přibylo tlačítko **Moje poloha**.
 Aktuální poloha se neukládá do Supabase ani nikam neposílá; používá se pouze lokálně v prohlížeči pro zobrazení na mapě.
 
 Nový SQL není potřeba.
+
+
+## v3.7.6 — detail hřiště nad mapou + spolehlivější poloha na iPhone
+
+### Detail hřiště
+Leaflet používá vlastní vrstvy s vysokým `z-index`, zatímco původní modal měl `z-index: 100`.
+Proto se část mapy vykreslovala přes detail hřiště.
+
+Opraveno:
+- všechny modaly jsou nad Leaflet mapou,
+- detail hřiště má vlastní ještě vyšší vrstvu,
+- mapa už nikdy nepřekryje adresu, Google Maps ani Waze.
+
+### Moje poloha
+iPhone může při okamžitém `enableHighAccuracy: true` čekat na GPS a skončit timeoutem.
+
+Nově:
+1. aplikace nejdřív zkusí rychlou síťovou / poslední známou polohu,
+2. okamžitě ji zobrazí na mapě,
+3. potom ji na pozadí zpřesní pomocí GPS,
+4. když první pokus selže, provede ještě jeden delší GPS pokus.
+
+Poloha se stále nikam neukládá ani neposílá do Supabase.
+
+Nový SQL není potřeba.

@@ -499,3 +499,11 @@
   .venueMapMetaActions{flex-direction:column;align-items:flex-end;gap:4px}
   .locationBtn{padding:7px 8px}
 }
+
+
+/* v3.7.6 — modaly musí být nad Leafletem */
+.modalBackdrop{z-index:5000}
+.venueModalBackdrop{z-index:5100!important}
+.venueModalBackdrop .venueModal{z-index:5101;position:relative}
+.leaflet-pane{z-index:400}
+.leaflet-top,.leaflet-bottom{z-index:900}

@@ -239,60 +239,86 @@ export default function VenueMap({lang,nextVenue,onVenueClick}:{lang:"cs"|"en";n
       setLocationError(lang==="cs"?"Tento prohlížeč neumí zjistit polohu.":"This browser does not support location.");
       return;
     }
+
     setLocating(true);
     setLocationError("");
 
-    navigator.geolocation.getCurrentPosition(
-      pos=>{
-        const L=leafletRef.current;
-        const map=mapRef.current;
-        if(!L||!map){setLocating(false);return;}
+    const showPosition=(pos:GeolocationPosition,zoom=true)=>{
+      const L=leafletRef.current;
+      const map=mapRef.current;
+      if(!L||!map)return;
 
-        const lat=pos.coords.latitude;
-        const lng=pos.coords.longitude;
-        const accuracy=Math.max(0,Number(pos.coords.accuracy||0));
+      const lat=pos.coords.latitude;
+      const lng=pos.coords.longitude;
+      const accuracy=Math.max(0,Number(pos.coords.accuracy||0));
 
-        if(userMarkerRef.current){
-          userMarkerRef.current.setLatLng([lat,lng]);
-        }else{
-          const icon=L.divIcon({
-            className:"userLocationWrap",
-            html:'<div class="userLocationDot"><span></span></div>',
-            iconSize:[28,28],
-            iconAnchor:[14,14]
-          });
-          userMarkerRef.current=L.marker([lat,lng],{
-            icon,
-            zIndexOffset:2000,
-            interactive:false
-          }).addTo(map);
-        }
+      if(userMarkerRef.current){
+        userMarkerRef.current.setLatLng([lat,lng]);
+      }else{
+        const icon=L.divIcon({
+          className:"userLocationWrap",
+          html:'<div class="userLocationDot"><span></span></div>',
+          iconSize:[28,28],
+          iconAnchor:[14,14]
+        });
+        userMarkerRef.current=L.marker([lat,lng],{
+          icon,
+          zIndexOffset:2000,
+          interactive:false
+        }).addTo(map);
+      }
 
-        if(accuracyCircleRef.current){
-          accuracyCircleRef.current.setLatLng([lat,lng]).setRadius(accuracy);
-        }else if(accuracy>0){
-          accuracyCircleRef.current=L.circle([lat,lng],{
-            radius:accuracy,
-            className:"userAccuracyCircle",
-            interactive:false
-          }).addTo(map);
-        }
+      if(accuracyCircleRef.current){
+        accuracyCircleRef.current.setLatLng([lat,lng]).setRadius(accuracy);
+      }else if(accuracy>0){
+        accuracyCircleRef.current=L.circle([lat,lng],{
+          radius:accuracy,
+          className:"userAccuracyCircle",
+          interactive:false
+        }).addTo(map);
+      }
 
+      if(zoom){
         userInteractedRef.current=true;
         map.setView([lat,lng],Math.max(map.getZoom(),14),{animate:true});
-        setLocationActive(true);
+      }
+      setLocationActive(true);
+    };
+
+    const fail=(err:GeolocationPositionError)=>{
+      setLocating(false);
+      const msg=err.code===1
+        ? (lang==="cs"
+            ?"Poloha nebyla povolena. Na iPhonu ji povol v Nastavení → Soukromí a zabezpečení → Polohové služby → Safari / webová aplikace."
+            :"Location permission was denied.")
+        : err.code===2
+          ? (lang==="cs"?"Aktuální polohu se nepodařilo zjistit. Zkontroluj, že máš zapnuté Polohové služby.":"Current location is unavailable.")
+          : (lang==="cs"?"Poloha se nepodařila zjistit včas. Zkus tlačítko ještě jednou nebo zkontroluj Polohové služby v iPhonu.":"Location request timed out.");
+      setLocationError(msg);
+    };
+
+    // iPhone often times out when high accuracy is required immediately.
+    // First get a quick network/cached position, then refine silently with GPS.
+    navigator.geolocation.getCurrentPosition(
+      pos=>{
+        showPosition(pos,true);
         setLocating(false);
+
+        navigator.geolocation.getCurrentPosition(
+          refined=>showPosition(refined,false),
+          ()=>{},
+          {enableHighAccuracy:true,timeout:20000,maximumAge:0}
+        );
       },
       err=>{
-        setLocating(false);
-        const msg=err.code===1
-          ? (lang==="cs"?"Poloha nebyla povolena. Můžeš ji povolit v nastavení prohlížeče.":"Location permission was denied.")
-          : err.code===2
-            ? (lang==="cs"?"Aktuální polohu se nepodařilo zjistit.":"Current location is unavailable.")
-            : (lang==="cs"?"Zjištění polohy trvalo příliš dlouho.":"Location request timed out.");
-        setLocationError(msg);
+        // One slower fallback attempt before showing an error.
+        navigator.geolocation.getCurrentPosition(
+          pos=>{showPosition(pos,true);setLocating(false);},
+          fail,
+          {enableHighAccuracy:true,timeout:20000,maximumAge:120000}
+        );
       },
-      {enableHighAccuracy:true,timeout:10000,maximumAge:30000}
+      {enableHighAccuracy:false,timeout:12000,maximumAge:600000}
     );
   };
 

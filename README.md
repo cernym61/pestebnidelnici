@@ -404,3 +404,31 @@ Spusť jednou:
 `supabase/update-v3.8.sql`
 
 Přidá `event_date`, `background_url` a vytvoří public Storage bucket `board-images`.
+
+
+## v3.8.1 — editor fotografie ankety
+
+Po výběru fotografie do pozadí se zobrazí jednoduchý editor:
+
+- náhled ve výsledném poměru **16:9**
+- **Přiblížení** 100–250 %
+- **Posun vodorovně**
+- **Posun svisle**
+- tlačítko **Obnovit**
+- možnost fotografii odebrat
+
+Při publikaci se fotografie v prohlížeči skutečně ořízne podle zvoleného nastavení a nahraje se už hotový výřez v rozměru 1600 × 900 px. Nastavení tedy není jen náhled — výsledná anketa používá přesně vytvořený výřez.
+
+Nový SQL není potřeba.
+
+
+## v3.8.2 — odebrání možností ankety
+
+Každá odpověď v editoru ankety má nově vlastní tlačítko **×**.
+
+- lze smazat libovolnou možnost, včetně předvyplněného Ano / Ne
+- lze se dostat i na 0 nebo 1 možnost a následně přidat nové vlastní odpovědi
+- publikování ankety zůstává chráněné: pro platnou anketu musí být alespoň 2 neprázdné možnosti
+- pokud jich zbývá méně, editor na to upozorní
+
+Nový SQL není potřeba.

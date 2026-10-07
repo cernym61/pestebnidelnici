@@ -681,3 +681,90 @@
   .pollPhotoPreview{min-height:125px}
   .archiveOption{grid-template-columns:1fr}
 }
+
+
+/* v3.8.1 — editor výřezu fotografie ankety */
+.pollCropEditor{display:grid;gap:10px}
+.pollPhotoPreview{
+  aspect-ratio:16/9;
+  min-height:0!important;
+  border-radius:14px;
+  overflow:hidden;
+  position:relative;
+  background:#dfe6da;
+}
+.pollPhotoPreview img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transition:transform .08s linear,object-position .08s linear;
+  will-change:transform,object-position;
+}
+.pollCropGuide{
+  position:absolute;inset:0;pointer-events:none;
+  border:1px solid rgba(255,255,255,.55);
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.08);
+}
+.pollCropGuide:before,.pollCropGuide:after{
+  content:"";position:absolute;background:rgba(255,255,255,.32)
+}
+.pollCropGuide:before{left:33.333%;top:0;bottom:0;width:1px;box-shadow:calc(33.333vw) 0 0 rgba(255,255,255,.32)}
+.pollCropGuide:after{top:33.333%;left:0;right:0;height:1px}
+.pollCropGuide span{
+  position:absolute;left:9px;bottom:9px;
+  background:rgba(15,39,27,.7);color:#fff;border-radius:7px;
+  padding:5px 7px;font-size:9px;font-weight:850;letter-spacing:.04em
+}
+.removePollPhotoBtn{
+  position:absolute;z-index:3;right:8px;top:8px;
+  border:0;background:rgba(255,255,255,.94);color:#8e403b;
+  border-radius:9px;padding:7px 8px;display:flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:850;cursor:pointer
+}
+.pollCropControls{
+  display:grid;grid-template-columns:repeat(3,1fr) auto;
+  gap:8px;align-items:end;padding:10px;
+  border:1px solid #dfe6da;background:#fbfcf9;border-radius:12px
+}
+.pollCropControls label{display:grid;gap:6px}
+.pollCropControls label>span{
+  display:flex;justify-content:space-between;gap:8px;
+  font-size:9px;font-weight:850;color:#627067
+}
+.pollCropControls label>span b{color:#244a35}
+.pollCropControls input[type="range"]{
+  width:100%;accent-color:#2b6744;cursor:pointer
+}
+.pollCropReset{
+  border:1px solid #d6dfd1;background:#fff;color:#31543e;border-radius:9px;
+  padding:8px 10px;font-size:10px;font-weight:850;cursor:pointer
+}
+@media(max-width:700px){
+  .pollCropControls{grid-template-columns:1fr}
+  .pollCropReset{width:100%}
+}
+
+
+/* v3.8.2 — mazání jednotlivých možností ankety */
+.removePollOptionBtn{
+  border:1px solid #eadbd7!important;
+  background:#fff8f6!important;
+  color:#a24d45!important;
+  border-radius:8px!important;
+  width:30px;height:30px;
+  display:grid!important;
+  place-items:center!important;
+  padding:0!important;
+}
+.removePollOptionBtn:hover{background:#fbecea!important}
+.pollOptionWarning{
+  color:#9a5b32;
+  background:#fff7ea;
+  border:1px solid #f0dfbf;
+  border-radius:9px;
+  padding:8px 10px;
+  font-size:10px;
+  font-weight:800;
+}

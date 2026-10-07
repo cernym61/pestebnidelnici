@@ -291,3 +291,19 @@ Detail zůstane otevřený, dokud:
 - nebo **Waze**.
 
 Nový SQL není potřeba.
+
+
+## v3.7.5 — volitelná aktuální poloha
+
+Na mapě přibylo tlačítko **Moje poloha**.
+
+- poloha se nikdy nezjišťuje automaticky,
+- prohlížeč / iPhone si vyžádá souhlas uživatele,
+- po povolení se zobrazí modrý bod a orientační kruh přesnosti,
+- mapa se přiblíží na aktuální polohu,
+- hřiště a clustery zůstávají normálně ovladatelné,
+- pokud uživatel polohu zakáže, mapa funguje dál bez ní.
+
+Aktuální poloha se neukládá do Supabase ani nikam neposílá; používá se pouze lokálně v prohlížeči pro zobrazení na mapě.
+
+Nový SQL není potřeba.

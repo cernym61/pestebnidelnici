@@ -22,6 +22,8 @@ export default function VenueMap({lang,nextVenue,onVenueClick}:{lang:"cs"|"en";n
   const boundsRef=useRef<any>(null);
   const userInteractedRef=useRef(false);
   const didInitialFitRef=useRef(false);
+  const userMarkerRef=useRef<any>(null);
+  const accuracyCircleRef=useRef<any>(null);
   const clickRef=useRef(onVenueClick);
   const langRef=useRef(lang);
   const nextVenueRef=useRef(nextVenue);
@@ -30,6 +32,9 @@ export default function VenueMap({lang,nextVenue,onVenueClick}:{lang:"cs"|"en";n
   const [error,setError]=useState("");
   const [count,setCount]=useState(0);
   const [pending,setPending]=useState(0);
+  const [locating,setLocating]=useState(false);
+  const [locationActive,setLocationActive]=useState(false);
+  const [locationError,setLocationError]=useState("");
 
   useEffect(()=>{clickRef.current=onVenueClick;},[onVenueClick]);
   useEffect(()=>{langRef.current=lang;},[lang]);
@@ -216,6 +221,8 @@ export default function VenueMap({lang,nextVenue,onVenueClick}:{lang:"cs"|"en";n
       if(mapRef.current){
         try{mapRef.current.remove();}catch{}
       }
+      userMarkerRef.current=null;
+      accuracyCircleRef.current=null;
       mapRef.current=null;
       clusterRef.current=null;
       leafletRef.current=null;
@@ -226,15 +233,84 @@ export default function VenueMap({lang,nextVenue,onVenueClick}:{lang:"cs"|"en";n
     };
   },[]);
 
+
+  const locateMe=()=>{
+    if(typeof navigator==="undefined"||!("geolocation" in navigator)){
+      setLocationError(lang==="cs"?"Tento prohlížeč neumí zjistit polohu.":"This browser does not support location.");
+      return;
+    }
+    setLocating(true);
+    setLocationError("");
+
+    navigator.geolocation.getCurrentPosition(
+      pos=>{
+        const L=leafletRef.current;
+        const map=mapRef.current;
+        if(!L||!map){setLocating(false);return;}
+
+        const lat=pos.coords.latitude;
+        const lng=pos.coords.longitude;
+        const accuracy=Math.max(0,Number(pos.coords.accuracy||0));
+
+        if(userMarkerRef.current){
+          userMarkerRef.current.setLatLng([lat,lng]);
+        }else{
+          const icon=L.divIcon({
+            className:"userLocationWrap",
+            html:'<div class="userLocationDot"><span></span></div>',
+            iconSize:[28,28],
+            iconAnchor:[14,14]
+          });
+          userMarkerRef.current=L.marker([lat,lng],{
+            icon,
+            zIndexOffset:2000,
+            interactive:false
+          }).addTo(map);
+        }
+
+        if(accuracyCircleRef.current){
+          accuracyCircleRef.current.setLatLng([lat,lng]).setRadius(accuracy);
+        }else if(accuracy>0){
+          accuracyCircleRef.current=L.circle([lat,lng],{
+            radius:accuracy,
+            className:"userAccuracyCircle",
+            interactive:false
+          }).addTo(map);
+        }
+
+        userInteractedRef.current=true;
+        map.setView([lat,lng],Math.max(map.getZoom(),14),{animate:true});
+        setLocationActive(true);
+        setLocating(false);
+      },
+      err=>{
+        setLocating(false);
+        const msg=err.code===1
+          ? (lang==="cs"?"Poloha nebyla povolena. Můžeš ji povolit v nastavení prohlížeče.":"Location permission was denied.")
+          : err.code===2
+            ? (lang==="cs"?"Aktuální polohu se nepodařilo zjistit.":"Current location is unavailable.")
+            : (lang==="cs"?"Zjištění polohy trvalo příliš dlouho.":"Location request timed out.");
+        setLocationError(msg);
+      },
+      {enableHighAccuracy:true,timeout:10000,maximumAge:30000}
+    );
+  };
+
   return <div className="venueMapShell">
     <div className="venueMapMeta">
       <div><b>{lang==="cs"?"Mapa hřišť":"Venue map"}</b><span>{count} {lang==="cs"?"hřišť":"venues"}</span></div>
-      {loading&&<span className="venueMapLoading">
+      <div className="venueMapMetaActions">
+        <button type="button" className={`locationBtn ${locationActive?"active":""}`} onClick={locateMe} disabled={locating} title={lang==="cs"?"Zobrazit moji aktuální polohu":"Show my current location"}>
+          <span>{locationActive?"●":"⌖"}</span>{locating?(lang==="cs"?"Hledám…":"Locating…"):(locationActive?(lang==="cs"?"Moje poloha":"My location"):(lang==="cs"?"Moje poloha":"My location"))}
+        </button>
+        {loading&&<span className="venueMapLoading">
         {lang==="cs"
           ? `Doplňuji polohy…${pending>0?` (${pending} zbývá)`:''}`
           : `Locating venues…${pending>0?` (${pending} remaining)`:''}`}
       </span>}
+      </div>
     </div>
+    {locationError&&<div className="venueLocationError">{locationError}</div>}
     {error&&<div className="venueMapError"><span>{error}</span><button type="button" onClick={()=>window.location.reload()}>{lang==="cs"?"Zkusit znovu":"Retry"}</button></div>}
     <div ref={mapEl} className="venueMapCanvas"/>
   </div>;

@@ -4,7 +4,7 @@ export const dynamic='force-dynamic';
 
 export async function GET(){
   return NextResponse.json(
-    {version:'3.7.4'},
+    {version:'3.7.5'},
     {headers:{
       'Cache-Control':'no-store, no-cache, must-revalidate, max-age=0',
       'Pragma':'no-cache',

@@ -464,3 +464,38 @@
 @media(max-width:700px){
   .venueMapCanvas{touch-action:none}
 }
+
+
+/* v3.7.5 — volitelná aktuální poloha na mapě */
+.venueMapMetaActions{display:flex;align-items:center;gap:9px}
+.locationBtn{
+  border:1px solid #d5ded1;background:#fff;color:#31523d;border-radius:9px;
+  padding:7px 9px;display:inline-flex;align-items:center;gap:6px;
+  font-size:10px;font-weight:850;cursor:pointer;white-space:nowrap
+}
+.locationBtn:hover{background:#f3f7ef}
+.locationBtn.active{background:#eaf3ff;border-color:#b6d3ef;color:#1766a8}
+.locationBtn:disabled{opacity:.6;cursor:wait}
+.locationBtn>span{font-size:14px;line-height:1}
+.venueLocationError{
+  padding:9px 13px;border-bottom:1px solid #efd8cf;background:#fff8f3;
+  color:#955247;font-size:11px
+}
+.userLocationWrap{background:transparent!important;border:0!important}
+.userLocationDot{
+  width:24px;height:24px;border-radius:50%;background:rgba(47,128,237,.18);
+  display:grid;place-items:center;border:1px solid rgba(47,128,237,.25)
+}
+.userLocationDot span{
+  width:12px;height:12px;border-radius:50%;background:#2f80ed;
+  border:3px solid #fff;box-shadow:0 1px 6px rgba(47,128,237,.6)
+}
+.userAccuracyCircle{
+  stroke:#2f80ed!important;stroke-width:1!important;fill:#2f80ed!important;
+  fill-opacity:.08!important
+}
+@media(max-width:700px){
+  .venueMapMeta{align-items:flex-start;gap:8px}
+  .venueMapMetaActions{flex-direction:column;align-items:flex-end;gap:4px}
+  .locationBtn{padding:7px 8px}
+}

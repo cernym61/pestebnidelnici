@@ -507,3 +507,41 @@
 .venueModalBackdrop .venueModal{z-index:5101;position:relative}
 .leaflet-pane{z-index:400}
 .leaflet-top,.leaflet-bottom{z-index:900}
+
+
+/* v3.7.7 — jednodušší příspěvek na nástěnce */
+.postTitleField>span{
+  font-size:13px!important;
+  font-weight:950!important;
+  color:#173d2a!important;
+}
+.postTitleField input{
+  font-weight:800;
+  font-size:16px;
+}
+
+
+/* v3.7.8 — vzájemné zápasy: aktuální soupeř, rok a liga */
+.currentOpponentBadge{
+  display:inline-flex;align-items:center;gap:8px;margin-top:10px;
+  background:#edf4e9;border:1px solid #d4e1cf;border-radius:11px;padding:7px 10px;color:#234c35
+}
+.currentOpponentBadge>span{font-size:16px}
+.currentOpponentBadge>div{display:grid;gap:1px}
+.currentOpponentBadge b{font-size:10px;text-transform:uppercase;letter-spacing:.05em}
+.currentOpponentBadge small{font-size:12px;font-weight:850}
+.h2hDateBox{min-width:165px}
+.h2hDateBox>b{white-space:nowrap}
+.h2hSeasonMeta{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}
+.h2hSeasonMeta em{
+  font-style:normal;background:#edf1e8;border-radius:999px;padding:3px 6px;
+  font-size:8px;font-weight:900;color:#60705f;text-transform:uppercase;letter-spacing:.03em
+}
+@media(max-width:700px){
+  .h2hHead{gap:10px}
+  .currentOpponentBadge{width:100%}
+  .h2hMatch{grid-template-columns:1fr auto}
+  .h2hDateBox{grid-column:1/-1;min-width:0;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .h2hDateBox>b{font-size:12px}
+  .h2hSeasonMeta{margin-top:0}
+}

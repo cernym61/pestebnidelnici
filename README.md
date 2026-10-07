@@ -332,3 +332,26 @@ Nově:
 Poloha se stále nikam neukládá ani neposílá do Supabase.
 
 Nový SQL není potřeba.
+
+
+## v3.7.7 — jednodušší příspěvky na Nástěnce
+
+- pole **Text příspěvku** bylo odstraněno
+- zůstává pouze **Nadpis**
+- nadpis je v editoru výraznější a tučnější
+- backend stále dostane interní `body`, aby nebylo potřeba měnit databázi ani API
+- pokud je interní body stejné jako nadpis, na publikovaném příspěvku se už duplicitně nezobrazuje
+
+Nový SQL není potřeba.
+
+
+## v3.7.8 — Vzájemné zápasy
+
+- jako výchozí soupeř se automaticky vybere tým z nejbližšího naplánovaného zápasu
+- pokud se nejbližší soupeř změní, výběr se automaticky přepne
+- uživatel může stále ručně vybrat jiný tým
+- u aktuálního soupeře se zobrazí zvýraznění „Teď hrajeme proti tomuto týmu“
+- každý historický zápas nově ukazuje celý datum včetně roku
+- každý zápas ukazuje rok, divizi/ligu (např. 5D) a část sezóny (jaro/podzim), pokud jsou tato data v tabulce `seasons`
+
+Nový SQL není potřeba.

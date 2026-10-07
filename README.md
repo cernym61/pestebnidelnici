@@ -1,20 +1,31 @@
-# Kabina Hanspaulka v3.3.2
+# Kabina Hanspaulka v3.4.1
 
-Hotfix k v3.3.1.
+Oprava Kabina AI.
 
-V `components/KabinaApp.tsx` byly po postupných úpravách duplicitní překladové klíče v objektu `copy`.
-Next.js proto při TypeScript kontrole hlásil:
+## Proč v3.4.0 stále padala do fallbacku
+Gemini REST požadavek používal nesprávný název pole `system_instruction`.
+Správně je `systemInstruction`.
 
-`An object literal cannot have multiple properties with the same name.`
+Současně byla AI přesunuta na stabilní bezplatný model:
+`gemini-3.7-flash`
 
-v3.3.2 duplicitní klíče odstranila.
+Google u Gemini 3.7 Flash aktuálně uvádí Free Tier zdarma.
 
-Funkce z v3.3.1 zůstávají:
-- AI pouze ve Statistikách,
-- vzájemné zápasy se střelci a minutami gólů,
-- brankáři: počet zápasů + inkasované góly,
-- historie od roku 2015,
-- kapitáni a ★ hráč zápasu,
-- Gemini jako primární free AI provider a OpenRouter jako fallback.
+## Chování při limitech
+- Žádný vlastní limit Kabiny už neexistuje.
+- 429 z free poskytovatele → uživatel dostane:
+  `Bezplatný limit AI je pro tuto chvíli vyčerpaný. Zkus to znovu později.`
+- Jiná chyba →:
+  `Kabina AI je právě dočasně nedostupná. Zkus dotaz znovu za chvíli.`
+- Web už při chybě AI nepředstírá odpověď lokálním fallbackem.
 
-Není potřeba nový SQL.
+## Vzhled
+AI box byl kompletně překreslen:
+- tmavá zelená hlavička,
+- nový prompt bar,
+- čtyři kompaktní rychlé dotazy,
+- samostatná karta odpovědi,
+- viditelný badge `v3.4.1`, takže lze na první pohled ověřit, že běží správný deployment.
+
+## Nasazení
+Není potřeba SQL ani nový API key.

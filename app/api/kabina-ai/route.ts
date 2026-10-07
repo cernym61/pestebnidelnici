@@ -5,15 +5,6 @@ import { parseSeasonDetails } from '@/lib/history-events';
 export const runtime='nodejs';
 
 const TEAM='Pěstební dělníci A';
-const USER_DAILY_LIMIT=5;
-const GLOBAL_DAILY_LIMIT=40;
-
-function todayUtc(){
-  return new Date().toISOString().slice(0,10);
-}
-function dayStartIso(){
-  return `${todayUtc()}T00:00:00.000Z`;
-}
 function compact<T>(rows:T[]|null|undefined,limit=250){
   return (rows||[]).slice(0,limit);
 }
@@ -40,25 +31,6 @@ export async function POST(req:NextRequest){
     const lang=body?.lang==='en'?'en':'cs';
     if(question.length<2)return NextResponse.json({error:'Question is empty'},{status:400});
 
-    // Free-tier guardrail. OpenRouter Free currently allows 50 requests/day.
-    const since=dayStartIso();
-    const [userUsage,globalUsage]=await Promise.all([
-      admin.from('ai_requests').select('*',{count:'exact',head:true}).eq('user_id',userData.user.id).gte('created_at',since),
-      admin.from('ai_requests').select('*',{count:'exact',head:true}).gte('created_at',since)
-    ]);
-    if(userUsage.error||globalUsage.error){
-      return NextResponse.json({
-        error:`Supabase ai_requests error: ${userUsage.error?.message||globalUsage.error?.message||'unknown error'}. Run supabase/update-v3.0.sql.`
-      },{status:500});
-    }
-    const userCount=userUsage.count||0;
-    const globalCount=globalUsage.count||0;
-    if((userCount||0)>=USER_DAILY_LIMIT){
-      return NextResponse.json({error:'Daily player AI limit reached'},{status:429});
-    }
-    if((globalCount||0)>=GLOBAL_DAILY_LIMIT){
-      return NextResponse.json({error:'Daily team AI limit reached'},{status:429});
-    }
 
     // Sports-only context: no emails, auth IDs, comments or other private account data.
     const [seasons,matches,historyMatches,standings,historyStandings,playerStats,players,seasonDetails,advancedStats]=await Promise.all([
@@ -126,6 +98,8 @@ export async function POST(req:NextRequest){
       ? `Jsi Kabina AI, statistický asistent týmu ${TEAM} v Hanspaulské lize.
 JAZYK: Odpovídej VÝHRADNĚ ČESKY. Ani úvod, mezikroky, nadpisy nebo vysvětlení nesmí být anglicky.
 STYL: Odpověz rovnou výsledkem. Nevyprávěj svůj postup, nepiš "podívám se", "musím zjistit", "looking at" apod.
+ROZSAH ODPOVĚDI: Nebuď strohý. U jednoduché otázky dej alespoň 3–5 užitečných vět nebo bodů. U dotazu na statistiky konkrétního hráče vytvoř přehledný mini-profil: zápasy, minuty, góly, průměr gólů na zápas, poslední známý start, poslední známý gól (datum/soupeř/minuta, pokud data existují), ŽK, ČK, počet ★ hráč zápasu, počet zápasů jako kapitán a pokud chytal, počet zápasů v bráně + inkasované góly/průměr. Přidej krátké shrnutí kariéry nebo sezonní rozpad, pokud je v datech. Když některý údaj chybí, napiš "v dostupných datech neuvedeno" místo vynechání celé odpovědi.
+FORMÁT: Používej krátké nadpisy a odrážky; žádné markdown tabulky. Důležité hodnoty zvýrazni pomocí běžného textu a dvojtečky.
 ZDROJE: Smíš používat POUZE data v dodaném JSON kontextu. Nic nevymýšlej.
 ČASOVÝ ROZSAH: Historii vyhodnocuj od prvního ročníku týmu v roce 2015 včetně.
 DETAILY ZÁPASŮ: psmf_match_details_since_2015 obsahuje text oficiálních detailů PSMF – sestavy, góly s minutami, případné karty, poločas, popis zápasu a rozhodčí. Použij ho při dotazech typu "kdy hráč naposledy hrál", "kdy dal gól", "v jakém zápase", "karta" apod.
@@ -139,6 +113,8 @@ VÝPOČTY: U výpočtů ukaž krátký rozpad po sezonách/zápasech, pokud je u
       : `You are Locker Room AI, the statistics assistant for ${TEAM} in the Hanspaulska league.
 LANGUAGE: Answer EXCLUSIVELY IN ENGLISH. Do not use Czech in the answer.
 STYLE: Give the final answer directly. Do not narrate your process or say "I need to check", "looking at", etc.
+ANSWER DEPTH: Do not be terse. For a simple question give at least 3–5 useful sentences or bullets. For a player-statistics request, produce a compact profile including appearances, minutes, goals, goals per game, latest known appearance, latest known goal (date/opponent/minute when available), yellow cards, red cards, ★ player-of-the-match count, captain appearances, and if the player was a goalkeeper, goalkeeper appearances + goals conceded/average. Add a short career summary or season breakdown when the data supports it. If a field is unavailable, say "not available in the supplied data" rather than omitting the whole answer.
+FORMAT: Use short headings and bullets; do not use markdown tables.
 SOURCES: Use ONLY the supplied JSON context. Never invent facts.
 TIME RANGE: Evaluate the complete team history from its first PSMF season in 2015 onward.
 MATCH DETAILS: psmf_match_details_since_2015 contains official PSMF match detail text: lineups, goals with minutes, cards when published, halftime score, match report and referees. Use it for questions such as when a player last played/scored/received a card.
@@ -160,24 +136,29 @@ ${question}`;
 
     let answer='';
     let usedModel='';
+    let quotaHit=false;
+    let providerAttempted=false;
+    let nonQuotaFailure=false;
 
     // Primary provider: Google Gemini free tier.
     if(geminiKey){
+      providerAttempted=true;
       try{
-        const gr=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${encodeURIComponent(geminiKey)}`,{
+        const gr=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:generateContent?key=${encodeURIComponent(geminiKey)}`,{
           method:'POST',
           headers:{'Content-Type':'application/json'},
           body:JSON.stringify({
-            system_instruction:{parts:[{text:system}]},
+            systemInstruction:{parts:[{text:system}]},
             contents:[{role:'user',parts:[{text:userPrompt}]}],
-            generationConfig:{temperature:0.15,maxOutputTokens:700}
+            generationConfig:{temperature:0.15,maxOutputTokens:1400}
           })
         });
         const gp=await gr.json().catch(()=>({}));
         if(gr.ok){
           answer=(gp?.candidates?.[0]?.content?.parts||[]).map((p:any)=>p?.text||'').join('').trim();
-          if(answer)usedModel='gemini-3-flash-preview';
+          if(answer)usedModel='gemini-3.7-flash';
         }else{
+          if(gr.status===429)quotaHit=true; else nonQuotaFailure=true;
           console.warn('Gemini AI error',gr.status,gp?.error?.message||gp);
         }
       }catch(e){console.warn('Gemini AI request failed',e);}
@@ -185,6 +166,7 @@ ${question}`;
 
     // Secondary provider: OpenRouter free models only.
     if(!answer && openRouterKey){
+      providerAttempted=true;
       try{
         const response=await fetch('https://openrouter.ai/api/v1/chat/completions',{
           method:'POST',
@@ -202,7 +184,7 @@ ${question}`;
             ],
             provider:{allow_fallbacks:true},
             temperature:0.15,
-            max_tokens:700,
+            max_tokens:1400,
             messages:[
               {role:'system',content:system},
               {role:'user',content:userPrompt}
@@ -214,20 +196,26 @@ ${question}`;
           answer=String(payload?.choices?.[0]?.message?.content||'').trim();
           if(answer)usedModel=payload?.model||'openrouter-free';
         }else{
+          if(response.status===429)quotaHit=true; else nonQuotaFailure=true;
           console.warn('OpenRouter AI error',response.status,payload?.error?.message||payload);
         }
       }catch(e){console.warn('OpenRouter AI request failed',e);}
     }
 
-    if(!answer)return NextResponse.json({error:'Free AI providers are temporarily unavailable'},{status:503});
+    if(!answer){
+      if(quotaHit && !nonQuotaFailure)return NextResponse.json({
+        error:lang==='cs'?'Bezplatný limit AI je pro tuto chvíli vyčerpaný. Zkus to znovu později.':'The free AI quota is currently exhausted. Please try again later.',
+        code:'FREE_QUOTA_EXHAUSTED'
+      },{status:429});
+      return NextResponse.json({error:'Free AI providers are temporarily unavailable',code:'AI_UNAVAILABLE'},{status:503});
+    }
 
     await admin.from('ai_requests').insert({user_id:userData.user.id,player_id:profile.id});
     // keep table small
     const prune=new Date(Date.now()-14*86400000).toISOString();
     await admin.from('ai_requests').delete().lt('created_at',prune);
 
-    const remaining=Math.max(0,USER_DAILY_LIMIT-(userCount||0)-1);
-    return NextResponse.json({answer:answer.trim(),remaining,model:usedModel});
+    return NextResponse.json({answer:answer.trim(),model:usedModel});
   }catch(e:any){
     console.error('Kabina AI',e);
     return NextResponse.json({error:e?.message||'Kabina AI failed'},{status:500});

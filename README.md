@@ -193,3 +193,27 @@ Rychlé volby:
 Prázdný výběr už z bezpečnostních důvodů neznamená „poslat všem“. Bez vybraného příjemce se push neodešle.
 
 Není potřeba nový SQL.
+
+
+## v3.7.0 — interaktivní mapa hřišť
+
+Přibyla záložka **Mapa hřišť**.
+
+Vzhled je inspirován mapou s modrými cluster bublinami:
+- interaktivní OpenStreetMap mapa
+- zoom + / −
+- modré cluster bubliny při oddálení
+- jednotlivé hřiště jako pin
+- nejbližší hřiště / zápas je zvýrazněný oranžovo-červeným fotbalovým pinem
+- kliknutí na hřiště otevře popup s názvem, adresou a počtem zápasů
+- tlačítko Detail hřiště používá existující modal s Google Maps / Waze
+- tlačítko ⌖ vpravo dole vrátí pohled na všechna hřiště
+- mobilní mapa je optimalizovaná pro iPhone
+
+Souřadnice se při prvním otevření doplní z adres přes OpenStreetMap Nominatim a uloží se do Supabase, takže další otevření je rychlé.
+
+### SQL
+Spusť jednou:
+`supabase/update-v3.7.sql`
+
+Přidá sloupce `latitude` a `longitude` do tabulky `venues`.

@@ -265,3 +265,29 @@ Mapové API je odolnější vůči výpadku / pomalé odpovědi OpenStreetMap ge
 - při chybě se zobrazí konkrétní serverová zpráva a tlačítko „Zkusit znovu“.
 
 Nový SQL není potřeba.
+
+
+## v3.7.4 — dotyková mapa + stabilní detail hřiště
+
+Opraveny dva problémy mapy:
+
+### 1. Po použití + / − nešlo mapou pohybovat prstem
+Příčina byla v průběžném načítání souřadnic. Každá nová dávka hřišť znovu překreslovala cluster a volala `fitBounds`, takže se uživateli mapa vracela zpět a působilo to, jako kdyby dragging nefungoval.
+
+Nově:
+- Leaflet mapa se vytvoří pouze jednou,
+- nové piny se jen postupně přidávají,
+- po prvním ručním zoomu nebo posunu se už mapa sama nepřesouvá,
+- dragging, touch zoom a double-tap zoom jsou explicitně povolené,
+- mapa má vlastní touch gesture plochu na iPhonu.
+
+### 2. Detail hřiště mizel
+Callback z mapy je stabilní a mapa se při otevření detailu znovu neinicializuje.
+Modal detailu se navíc už nezavírá kliknutím mimo něj.
+
+Detail zůstane otevřený, dokud:
+- uživatel nedá **X**,
+- neklikne **Google Maps**,
+- nebo **Waze**.
+
+Nový SQL není potřeba.

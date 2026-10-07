@@ -449,3 +449,18 @@
 /* v3.7.3 — mapa: odolnější načítání */
 .venueMapError{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .venueMapError button{border:0;background:#9a493e;color:#fff;border-radius:8px;padding:7px 10px;font-size:11px;font-weight:800;cursor:pointer}
+
+
+/* v3.7.4 — mapa: stabilní dotyk / popup / detail */
+.venueMapCanvas{
+  touch-action:none;
+  overscroll-behavior:contain;
+  -webkit-user-select:none;
+  user-select:none;
+}
+.venueMapCanvas .leaflet-container{touch-action:none}
+.venueModalBackdrop{cursor:default}
+.venueModalBackdrop .venueModal{cursor:auto}
+@media(max-width:700px){
+  .venueMapCanvas{touch-action:none}
+}

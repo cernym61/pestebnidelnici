@@ -6,6 +6,7 @@ export type TeamMatchEvent={
   manOfMatch:string[];
   captains:string[];
   goalkeepers:string[];
+  appearances:string[];
 };
 
 function esc(s:string){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
@@ -130,7 +131,8 @@ export function parseSeasonDetails(detailsText:string,players:string[]):TeamMatc
       redCards,
       manOfMatch:[...new Set(manOfMatch)],
       captains:[...new Set(captains)],
-      goalkeepers:[...new Set(goalkeepers)]
+      goalkeepers:[...new Set(goalkeepers)],
+      appearances:[...new Set(ordered)]
     };
   });
 }

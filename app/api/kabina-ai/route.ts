@@ -64,36 +64,107 @@ export async function POST(req:NextRequest){
       if(!list.includes(row.player_name))list.push(row.player_name);
       statsBySeason.set(row.season,list);
     }
-    const structuredEvents=(seasonDetails.data||[]).map((d:any)=>({
-      season:d.season,
-      events:parseSeasonDetails(String(d.details_text||''),statsBySeason.get(d.season)||[])
+
+    const structuredEvents=(seasonDetails.data||[]).flatMap((d:any)=>
+      parseSeasonDetails(String(d.details_text||''),statsBySeason.get(d.season)||[])
+        .map((event:any)=>({season:d.season,...event}))
+    );
+
+    const fold=(value:string)=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+    const key=(value:string)=>fold(value).split(/\s+/).filter(Boolean).sort().join('|');
+    const qFold=fold(question);
+
+    const playerCandidates=(players.data||[]).map((p:any)=>{
+      const display=String(p.display_name||'').trim();
+      const psmf=String(p.psmf_name||'').trim();
+      const names=[display,psmf].filter(Boolean);
+      const tokens=[...new Set(names.flatMap(n=>fold(n).split(/\s+/).filter((x:string)=>x.length>=4)))];
+      const exact=names.some(n=>qFold.includes(fold(n)));
+      const score=exact?100:tokens.reduce((sum:number,t:string)=>sum+(qFold.includes(t)?1:0),0);
+      return {display,psmf,score};
+    }).filter((x:any)=>x.score>0).sort((a:any,b:any)=>b.score-a.score);
+    const targetPlayer=playerCandidates[0]||null;
+    const targetKeys=targetPlayer?[targetPlayer.display,targetPlayer.psmf].filter(Boolean).map(key):[];
+    const isTarget=(name:string)=>targetKeys.includes(key(name));
+
+    const allOpponents=[...new Set([
+      ...(historyMatches.data||[]).flatMap((m:any)=>[m.home_team,m.away_team]),
+      ...(matches.data||[]).flatMap((m:any)=>[m.home_team,m.away_team])
+    ].filter((n:any)=>n&&!String(n).startsWith('Pěstební dělníci')))] as string[];
+    const targetOpponent=allOpponents.find((name:string)=>qFold.includes(fold(name)))||null;
+
+    const relevantStats=targetPlayer
+      ? (playerStats.data||[]).filter((x:any)=>isTarget(x.player_name))
+      : (playerStats.data||[]).slice(0,300);
+
+    const relevantEvents=targetPlayer
+      ? structuredEvents.filter((e:any)=>
+          (e.appearances||[]).some((n:string)=>isTarget(n)) ||
+          (e.goals||[]).some((x:any)=>isTarget(x.player)) ||
+          (e.yellowCards||[]).some((x:any)=>isTarget(x.player)) ||
+          (e.redCards||[]).some((x:any)=>isTarget(x.player)) ||
+          (e.manOfMatch||[]).some((n:string)=>isTarget(n)) ||
+          (e.captains||[]).some((n:string)=>isTarget(n)) ||
+          (e.goalkeepers||[]).some((n:string)=>isTarget(n))
+        )
+      : structuredEvents.slice(-120);
+
+    const matchIndex=(historyMatches.data||[]).map((m:any)=>({
+      season:m.season,date:String(m.kickoff).slice(0,10),kickoff:m.kickoff,home_team:m.home_team,away_team:m.away_team,
+      home_score:m.home_score,away_score:m.away_score,venue_code:m.venue_code
     }));
+    const findMatch=(season:string,date:string)=>matchIndex.find((m:any)=>m.season===season&&m.date===date);
+
+    let playerProfile:any=null;
+    if(targetPlayer){
+      const games=relevantStats.reduce((a:number,x:any)=>a+Number(x.games||0),0);
+      const goals=relevantStats.reduce((a:number,x:any)=>a+Number(x.goals||0),0);
+      const minutes=games*60;
+      const goalsList=relevantEvents.flatMap((e:any)=>(e.goals||[]).filter((g:any)=>isTarget(g.player)).map((g:any)=>({season:e.season,date:e.date,minute:g.minute,match:findMatch(e.season,e.date)}))).sort((a:any,b:any)=>String(b.date).localeCompare(String(a.date)));
+      const appearances=relevantEvents.filter((e:any)=>(e.appearances||[]).some((n:string)=>isTarget(n))).map((e:any)=>({season:e.season,date:e.date,match:findMatch(e.season,e.date)})).sort((a:any,b:any)=>String(b.date).localeCompare(String(a.date)));
+      const yellowCards=relevantEvents.flatMap((e:any)=>(e.yellowCards||[]).filter((x:any)=>isTarget(x.player)).map((x:any)=>({season:e.season,date:e.date,minute:x.minute,match:findMatch(e.season,e.date)})));
+      const redCards=relevantEvents.flatMap((e:any)=>(e.redCards||[]).filter((x:any)=>isTarget(x.player)).map((x:any)=>({season:e.season,date:e.date,minute:x.minute,match:findMatch(e.season,e.date)})));
+      const motm=relevantEvents.filter((e:any)=>(e.manOfMatch||[]).some((n:string)=>isTarget(n)));
+      const captain=relevantEvents.filter((e:any)=>(e.captains||[]).some((n:string)=>isTarget(n)));
+      const keeperEvents=relevantEvents.filter((e:any)=>(e.goalkeepers||[]).some((n:string)=>isTarget(n)));
+      let keeperGoalsAgainst=0;
+      for(const e of keeperEvents){
+        const m=findMatch(e.season,e.date);
+        if(!m)continue;
+        keeperGoalsAgainst+=String(m.home_team).startsWith('Pěstební dělníci')?Number(m.away_score||0):Number(m.home_score||0);
+      }
+      playerProfile={
+        player:targetPlayer.display||targetPlayer.psmf,
+        psmf_name:targetPlayer.psmf,
+        career:{games,minutes,goals,goals_per_game:games?Number((goals/games).toFixed(3)):0},
+        season_breakdown:relevantStats,
+        last_appearance:appearances[0]||null,
+        last_goal:goalsList[0]||null,
+        yellow_cards:yellowCards.length,
+        red_cards:redCards.length,
+        yellow_card_events:yellowCards.slice(0,20),
+        red_card_events:redCards.slice(0,20),
+        player_of_match_count:motm.length,
+        captain_matches:captain.length,
+        goalkeeper:{matches:keeperEvents.length,goals_conceded:keeperGoalsAgainst,average_conceded:keeperEvents.length?Number((keeperGoalsAgainst/keeperEvents.length).toFixed(2)):null}
+      };
+    }
+
+    const h2hMatches=targetOpponent
+      ? matchIndex.filter((m:any)=>m.home_team===targetOpponent||m.away_team===targetOpponent)
+      : [];
 
     const sportsContext={
       team:TEAM,
       current_date:new Date().toISOString().slice(0,10),
-      seasons:compact(seasons.data,30),
-      current_matches:compact(matches.data,80),
-      historical_matches:compact(historyMatches.data,250),
+      resolved_player_profile:playerProfile,
+      resolved_opponent:targetOpponent,
+      head_to_head_matches:h2hMatches,
+      relevant_structured_events:relevantEvents.slice(0,160),
+      relevant_player_season_stats:relevantStats,
       current_standings:compact(standings.data,40),
-      historical_standings:compact(historyStandings.data,300),
-      player_season_stats:compact(playerStats.data,500).map((x:any)=>({
-        ...x,
-        assumed_minutes:Number(x.games||0)*60,
-        minutes_rule:'Každý evidovaný start = 60 minut'
-      })),
-      current_players:compact(players.data,80).map((x:any)=>({
-        ...x,
-        assumed_minutes_current_season:Number(x.psmf_games||0)*60
-      })),
-      psmf_match_details_since_2015:compact(seasonDetails.data,30).map((x:any)=>({
-        season:x.season,label:x.label,source_url:x.source_url,
-        details_text:String(x.details_text||'').slice(0,60000)
-      })),
-      structured_match_events_since_2015:structuredEvents,
-      advanced_player_match_stats:compact(advancedStats.data,1000)
+      seasons:compact(seasons.data,30)
     };
-
     const system=lang==='cs'
       ? `Jsi Kabina AI, statistický asistent týmu ${TEAM} v Hanspaulské lize.
 JAZYK: Odpovídej VÝHRADNĚ ČESKY. Ani úvod, mezikroky, nadpisy nebo vysvětlení nesmí být anglicky.
@@ -102,7 +173,7 @@ ROZSAH ODPOVĚDI: Nebuď strohý. U jednoduché otázky dej alespoň 3–5 užit
 FORMÁT: Používej krátké nadpisy a odrážky; žádné markdown tabulky. Důležité hodnoty zvýrazni pomocí běžného textu a dvojtečky.
 ZDROJE: Smíš používat POUZE data v dodaném JSON kontextu. Nic nevymýšlej.
 ČASOVÝ ROZSAH: Historii vyhodnocuj od prvního ročníku týmu v roce 2015 včetně.
-DETAILY ZÁPASŮ: psmf_match_details_since_2015 obsahuje text oficiálních detailů PSMF – sestavy, góly s minutami, případné karty, poločas, popis zápasu a rozhodčí. Použij ho při dotazech typu "kdy hráč naposledy hrál", "kdy dal gól", "v jakém zápase", "karta" apod.
+DETAILY ZÁPASŮ: structured_match_events_since_2015 obsahuje text oficiálních detailů PSMF – sestavy, góly s minutami, případné karty, poločas, popis zápasu a rozhodčí. Použij ho při dotazech typu "kdy hráč naposledy hrál", "kdy dal gól", "v jakém zápase", "karta" apod.
 MINUTY: Pro tento tým platí pevné pravidlo zadané správcem: každý hráč, který je evidovaný jako účastník/sestava v daném utkání, odehrál 60 minut. Pro sezonní součty tedy vždy počítej minuty = počet zápasů × 60. Neoznačuj to jako odhad; je to interní pravidlo Kabiny.
 KARTY: Žluté a červené karty hledej v oficiálních detailech PSMF od roku 2015. Pokud u hráče karta v dostupném detailu není uvedena, nevymýšlej ji.
 HRÁČ ZÁPASU: Hráč zápasu je na PSMF označen hvězdičkou u jména. V textu detailů může být hvězdička serializovaná jako [★ HRÁČ ZÁPASU] nebo jiný star marker těsně u jména. Takto označeného hráče považuj za hráče zápasu. Nikdy hráče zápasu neurčuj podle vlastního názoru.
@@ -117,7 +188,7 @@ ANSWER DEPTH: Do not be terse. For a simple question give at least 3–5 useful 
 FORMAT: Use short headings and bullets; do not use markdown tables.
 SOURCES: Use ONLY the supplied JSON context. Never invent facts.
 TIME RANGE: Evaluate the complete team history from its first PSMF season in 2015 onward.
-MATCH DETAILS: psmf_match_details_since_2015 contains official PSMF match detail text: lineups, goals with minutes, cards when published, halftime score, match report and referees. Use it for questions such as when a player last played/scored/received a card.
+MATCH DETAILS: structured_match_events_since_2015 contains official PSMF match detail text: lineups, goals with minutes, cards when published, halftime score, match report and referees. Use it for questions such as when a player last played/scored/received a card.
 MINUTES: For this team, the administrator has defined a fixed rule: every player listed as having appeared in a match is credited with 60 minutes. Season totals are therefore minutes = appearances × 60. Treat this as a Locker Room rule, not an estimate.
 CARDS: Find yellow and red cards in official PSMF match details from 2015 onward. Never invent a card.
 MAN OF THE MATCH: On PSMF, the player of the match is marked with a star next to the player's name. In serialized match details this can appear as [★ HRÁČ ZÁPASU] or another star marker adjacent to the name. Treat that player as man of the match. Never choose one based on your own opinion.
@@ -144,11 +215,11 @@ ${question}`;
     if(geminiKey){
       providerAttempted=true;
       try{
-        const gr=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:generateContent?key=${encodeURIComponent(geminiKey)}`,{
+        const gr=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:generateContent',{
           method:'POST',
-          headers:{'Content-Type':'application/json'},
+          headers:{'Content-Type':'application/json','x-goog-api-key':geminiKey},
           body:JSON.stringify({
-            systemInstruction:{parts:[{text:system}]},
+            system_instruction:{parts:[{text:system}]},
             contents:[{role:'user',parts:[{text:userPrompt}]}],
             generationConfig:{temperature:0.15,maxOutputTokens:1400}
           })

@@ -1,31 +1,32 @@
-# Kabina Hanspaulka v3.4.1
+# Kabina Hanspaulka v3.4.2
 
-Oprava Kabina AI.
+Oprava Gemini + dramatické zmenšení AI kontextu.
 
-## Proč v3.4.0 stále padala do fallbacku
-Gemini REST požadavek používal nesprávný název pole `system_instruction`.
-Správně je `systemInstruction`.
+## Skutečný problém
+Google AI Studio ukazovalo, že Gemini API klíč funguje. Předchozí verze ale:
+1. posílala do Gemini obrovský balík celé historie PSMF (řádově stovky tisíc input tokenů na jediný dotaz),
+2. používala v REST payloadu nesprávný camelCase název `systemInstruction`.
 
-Současně byla AI přesunuta na stabilní bezplatný model:
-`gemini-3.7-flash`
+Oficiální REST příklad Gemini používá `system_instruction`.
 
-Google u Gemini 3.7 Flash aktuálně uvádí Free Tier zdarma.
+## v3.4.2
+- Gemini používá `gemini-3.7-flash` Free Tier.
+- API klíč jde přes oficiální `x-goog-api-key` header.
+- REST payload používá `system_instruction`.
+- Do AI se už neposílá celé syrové HTML/text všech sezon.
+- Server nejprve rozpozná hráče nebo soupeře a připraví malý strukturovaný profil.
+- U dotazu na hráče server předem spočítá:
+  - zápasy
+  - minuty
+  - góly / góly na zápas
+  - sezonní rozpad
+  - poslední start
+  - poslední gól + zápas/minutu
+  - ŽK / ČK
+  - ★ hráč zápasu
+  - kapitánské zápasy
+  - brankářské zápasy, inkasované góly a průměr
 
-## Chování při limitech
-- Žádný vlastní limit Kabiny už neexistuje.
-- 429 z free poskytovatele → uživatel dostane:
-  `Bezplatný limit AI je pro tuto chvíli vyčerpaný. Zkus to znovu později.`
-- Jiná chyba →:
-  `Kabina AI je právě dočasně nedostupná. Zkus dotaz znovu za chvíli.`
-- Web už při chybě AI nepředstírá odpověď lokálním fallbackem.
+To výrazně snižuje spotřebu Free Tieru a zrychluje odpověď.
 
-## Vzhled
-AI box byl kompletně překreslen:
-- tmavá zelená hlavička,
-- nový prompt bar,
-- čtyři kompaktní rychlé dotazy,
-- samostatná karta odpovědi,
-- viditelný badge `v3.4.1`, takže lze na první pohled ověřit, že běží správný deployment.
-
-## Nasazení
-Není potřeba SQL ani nový API key.
+Není potřeba SQL ani nový API klíč.

@@ -545,3 +545,139 @@
   .h2hDateBox>b{font-size:12px}
   .h2hSeasonMeta{margin-top:0}
 }
+
+
+/* v3.7.9 — o něco čitelnější rok / liga / část sezóny ve vzájemných zápasech */
+.h2hSeasonMeta{gap:5px;margin-top:6px}
+.h2hSeasonMeta em{
+  padding:4px 8px;
+  font-size:10px;
+  font-weight:900;
+  line-height:1.15;
+}
+@media(max-width:700px){
+  .h2hSeasonMeta em{
+    padding:4px 7px;
+    font-size:9px;
+  }
+}
+
+
+/* v3.8 — aktivní ankety, hlasující, datum, fotografie, reminder a archiv */
+.activePollArea{display:grid;gap:13px;margin-top:14px}
+.activePollCard{
+  position:relative;overflow:hidden;
+  border:2px solid #8eae70;
+  background:#fff;
+  background-position:center;
+  background-size:cover;
+}
+.activePollCard.needsVote{
+  border-color:#79a64f;
+  box-shadow:0 18px 42px rgba(77,116,54,.16);
+}
+.activePollCard[style]{
+  color:#fff;
+  border-color:rgba(255,255,255,.28);
+}
+.activePollCard[style] .teamPostAuthor span,
+.activePollCard[style] .teamPostBody,
+.activePollCard[style] .postPollTitle span,
+.activePollCard[style] .myVoteHint{color:rgba(255,255,255,.76)}
+.activePollCard[style] .teamPostAuthor strong,
+.activePollCard[style] h3,
+.activePollCard[style] .postPollTitle strong{color:#fff}
+.activePollCard[style] .postPoll{border-top-color:rgba(255,255,255,.2)}
+.activePollCard[style] .postPollOptions button{background:rgba(255,255,255,.92);border-color:rgba(255,255,255,.45)}
+.activePollCard[style] .pollVoters span{background:rgba(255,255,255,.13);color:#fff;border-color:rgba(255,255,255,.17)}
+.activePollCard[style] .pollVoters em{color:rgba(255,255,255,.67)}
+.activePollCard[style] .pollReminderTools{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.18)}
+.activePollCard[style] .pollReminderTools>span{color:rgba(255,255,255,.74)}
+
+.activePollRibbon{
+  display:flex;align-items:center;gap:6px;
+  margin:-4px 0 13px;
+  font-size:9px;font-weight:950;letter-spacing:.09em;text-transform:uppercase;color:#6a843f
+}
+.activePollRibbon>span{color:#8eb34f;font-size:12px}
+.activePollRibbon>b{
+  margin-left:auto;background:#e9f3df;color:#376028;padding:5px 8px;border-radius:999px;
+  font-size:9px;letter-spacing:.05em
+}
+.activePollCard[style] .activePollRibbon{color:#c8e5a3}
+.activePollCard[style] .activePollRibbon>span{color:#b6db81}
+.activePollCard[style] .activePollRibbon>b{background:#fff;color:#1f5a39}
+
+.activePollHeading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.activePollHeading h3{margin-top:10px}
+.pollDateBadge{
+  display:inline-flex;align-items:center;gap:6px;flex:0 0 auto;
+  border:1px solid #d9e3d4;background:#f3f7ef;color:#49604f;
+  border-radius:10px;padding:7px 9px;font-size:10px;font-weight:850
+}
+.activePollCard[style] .pollDateBadge{
+  background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2);color:#fff
+}
+.featuredPoll{margin-top:13px}
+.pollOptionWithVoters{display:grid;gap:5px}
+.pollVoters{display:flex;gap:5px;flex-wrap:wrap;padding:0 3px 4px}
+.pollVoters span{
+  display:inline-flex;align-items:center;gap:4px;
+  border:1px solid #e0e6dc;background:#f6f8f3;border-radius:999px;
+  padding:3px 6px 3px 3px;font-size:9px;color:#607066
+}
+.pollVoters em{font-style:normal;font-size:9px;color:#8a9389;padding:3px 2px}
+.pollReminderTools{
+  margin-top:14px;padding:11px;border:1px solid #e1e7dc;border-radius:12px;background:#f7f9f5;
+  display:flex;align-items:center;justify-content:space-between;gap:10px
+}
+.pollReminderTools>span{font-size:10px;color:#707c72}
+.pollReminderTools>div{display:flex;gap:6px;flex-wrap:wrap}
+.pollReminderTools button{
+  border:1px solid #d8e1d3;background:#fff;color:#31543e;border-radius:9px;
+  padding:7px 9px;display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:850;cursor:pointer
+}
+.pollReminderTools button:disabled{opacity:.55;cursor:wait}
+.composerDivider,.archiveDivider{
+  display:flex;align-items:center;gap:10px;margin:20px 0 10px;color:#788278;
+  font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em
+}
+.composerDivider:before,.composerDivider:after,.archiveDivider:before,.archiveDivider:after{content:"";height:1px;background:#dfe4da;flex:1}
+.pollBuilderTop{display:grid;grid-template-columns:1fr 180px;gap:9px}
+.pollBuilderTop label{display:grid;gap:7px}
+.pollBuilderTop label>span{font-size:12px;font-weight:850;color:#5e6c61}
+.pollBuilderTop input{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px 13px;background:#fff;color:var(--ink);font:inherit}
+.pollPhotoBuilder{margin-top:3px}
+.pollPhotoBtn{
+  border:1px dashed #bdcdb8;background:#fff;color:#31583e;border-radius:10px;
+  padding:9px 11px;display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:850;cursor:pointer
+}
+.pollPhotoPreview{
+  min-height:150px;border-radius:12px;background-position:center;background-size:cover;position:relative;overflow:hidden
+}
+.pollPhotoPreview:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent,rgba(10,36,24,.35))}
+.pollPhotoPreview button{
+  position:absolute;z-index:2;right:8px;top:8px;border:0;background:rgba(255,255,255,.92);color:#8e403b;
+  border-radius:9px;padding:7px 8px;display:flex;align-items:center;gap:4px;font-size:10px;font-weight:850;cursor:pointer
+}
+.secondaryBoardFeed{margin-top:14px}
+.archivedPolls{margin-top:28px}
+.archivedPollCard{
+  opacity:.72;background:#f0f1ed;border-style:dashed;box-shadow:none;margin-top:9px
+}
+.archivedPollCard h3{font-size:18px}
+.archiveOption{
+  display:grid;grid-template-columns:140px 1fr;gap:9px;border-top:1px solid #dfe3da;padding:8px 0;font-size:11px
+}
+.archiveOption span{color:#788278}
+
+@media(max-width:700px){
+  .activePollHeading{flex-direction:column}
+  .pollDateBadge{align-self:flex-start}
+  .pollReminderTools{align-items:flex-start;flex-direction:column}
+  .pollReminderTools>div{width:100%;display:grid;grid-template-columns:1fr 1fr}
+  .pollReminderTools button{justify-content:center}
+  .pollBuilderTop{grid-template-columns:1fr}
+  .pollPhotoPreview{min-height:125px}
+  .archiveOption{grid-template-columns:1fr}
+}

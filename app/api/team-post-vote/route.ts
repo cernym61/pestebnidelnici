@@ -23,6 +23,12 @@ export async function POST(request:Request){
     const optionId=String(body?.optionId||'');
     if(!postId||!optionId)return NextResponse.json({ok:false,error:'Missing poll selection'},{status:400});
 
+    const {data:post,error:postErr}=await admin.from('team_posts').select('id,event_date').eq('id',postId).maybeSingle();
+    if(postErr)throw postErr;
+    if(!post)return NextResponse.json({ok:false,error:'Poll not found'},{status:404});
+    const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Prague',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+    if(post.event_date&&String(post.event_date)<today)return NextResponse.json({ok:false,error:'Poll has ended'},{status:400});
+
     const {data:option,error:optionErr}=await admin.from('team_post_poll_options')
       .select('id,post_id').eq('id',optionId).eq('post_id',postId).maybeSingle();
     if(optionErr)throw optionErr;

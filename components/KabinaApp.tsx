@@ -24,14 +24,14 @@ type CommentRow={id:string;match_id:string;player_id:string;parent_id:string|nul
 type AdminPlayer={id:string;display_name:string;email:string|null;role:'player'|'captain'|'admin';active:boolean;user_id:string|null;avatar_url:string|null;registration_id:string|null;jersey_number:number|null};
 type PublicRosterRow={id:string;display_name:string;avatar_url:string|null;registration_id:string|null;jersey_number:number|null;attending:boolean};
 type TeamMatchEvent={date:string;goals:{player:string;minute:number}[];yellowCards:{player:string;minute:number|null}[];redCards:{player:string;minute:number|null}[];manOfMatch:string[];captains:string[];goalkeepers:string[];appearances:string[]};
-type TeamPostVote={playerId:string;playerName:string};
+type TeamPostVote={playerId:string;playerName:string;avatarUrl:string|null};
 type TeamPostOption={id:string;label:string;sortOrder:number;votes:TeamPostVote[]};
-type TeamPost={id:string;title:string;body:string;createdAt:string;updatedAt:string;author:{id:string;name:string;avatarUrl:string|null;role:string};pollQuestion:string|null;options:TeamPostOption[];myOptionId:string|null;emailSent:boolean;pushSent:boolean};
+type TeamPost={id:string;title:string;body:string;createdAt:string;updatedAt:string;author:{id:string;name:string;avatarUrl:string|null;role:string};pollQuestion:string|null;options:TeamPostOption[];myOptionId:string|null;emailSent:boolean;pushSent:boolean;eventDate:string|null;backgroundUrl:string|null;archived:boolean;canManage:boolean};
 
 
 const copy={
- cs:{tagline:'JEDEN TÝM. JEDNA KABINA.',league:'PSMF · 5D · podzim 2026',verified:'Automatická synchronizace PSMF',refresh:'Obnovit PSMF',matches:'Zápasy',map:'Mapa hřišť',table:'Tabulka',stats:'Statistiky',history:'Historie',h2h:'Vzájemné zápasy',heading:'Jdeme hrát.',sub:'Potvrď účast a měj přehled o dalších zápasech.',next:'NEJBLIŽŠÍ ZÁPAS',away:'Venku',home:'Doma',count:'Počítáme s tebou?',yes:'Přijdu',no:'Nepřijdu',maybe:'Zatím nevím',cancel:'Zrušit odpověď',saved:'Uloženo do týmové kabiny.',upcoming:'Další zápasy',past:'Odehráno',pos:'Poř.',team:'Tým',played:'Z',wins:'V',draws:'R',losses:'P',score:'Skóre',pts:'B',player:'Hráč',goals:'Góly',games:'Zápasy',account:'Týmová kabina',login:'Přihlásit',logout:'Odhlásit',signup:'Vytvořit účet',email:'E-mail',password:'Heslo',choosePlayer:'Který hráč jsi?',haveAccount:'Už mám účet',newAccount:'Jsem tu poprvé',signedAs:'Přihlášen jako',loginNeeded:'Pro týmové funkce se přihlas.',responses:'Odpovědi týmu',noResponses:'Zatím nikdo neodpověděl.',unanswered:'Nevyjádřil se',confirmEmail:'Účet je vytvořený. Potvrď e-mail a potom se přihlas.',playerLinked:'Účet je propojen s hráčem.',genericError:'Něco se nepovedlo. Zkus to prosím znovu.',synced:'PSMF aktualizováno včetně historie.',address:'Adresa',google:'Google Maps',waze:'Waze',resend:'Poslat ověřovací e-mail znovu',resent:'Ověřovací e-mail byl znovu odeslán.',testReminder:'Poslat test reminder sobě',testReminderSent:'Testovací reminder byl odeslán jen na tvůj e-mail.',comments:'Komentáře',writeComment:'Napiš zprávu k zápasu…',send:'Odeslat',reply:'Odpovědět',edit:'Upravit',delete:'Smazat',noComments:'Zatím žádné komentáře.',photo:'Profilová fotka',uploadPhoto:'Nahrát fotku',career:'Kariéra od 2020',season:'Sezóna',rank:'Umístění',record:'Bilance',selectOpponent:'Vyber soupeře',meetings:'Zápasy',h2hRecord:'Bilance V–R–P',nextOpponent:'Nejbližší soupeř',playingNow:'Teď hrajeme proti tomuto týmu',leagueLabel:'Liga',manageTeam:'Správa týmu',role:'Role',active:'Aktivní',unlink:'Odpojit účet',captain:'Kapitán',admin:'Admin',regularPlayer:'Hráč',noAccount:'Bez účtu',adminSaved:'Změna uložena.',adminTab:'Správa',noH2H:'Zatím žádný odehraný vzájemný zápas.',pushEnable:'Zapnout upozornění',pushEnabled:'Upozornění zapnutá',pushDenied:'Upozornění jsou v prohlížeči zakázaná.',pushTest:'Poslat test push sobě',pushTestSent:'Testovací push byl odeslán.',iosInstall:'Na iPhonu nejdřív otevři Sdílet → Přidat na plochu, spusť Kabinu z ikony a potom zapni upozornění.',adminPush:'Týmová push notifikace',pushTitle:'Nadpis',pushMessage:'Zpráva',pushRecipients:'Příjemci',pushAll:'Vybrat všechny',pushUnanswered:'Nevyjádření',pushNone:'Zrušit výběr',pushDefaultHint:'Automaticky jsou předvybraní registrovaní hráči, kteří se ještě nevyjádřili k nejbližšímu zápasu.',pushSend:'Odeslat push',pushSent:'Push notifikace byla odeslána.',ids:'ID hráčů',registrationId:'ID hráče',jersey:'Číslo dresu',goingPlayers:'Všichni hráči',noGoingPlayers:'Zatím nejsou evidováni žádní hráči.',attendingLegend:'Zeleně = potvrdil účast na nejbližší zápas',playerData:'Hráčské údaje',savePlayerData:'Uložit údaje',exportPdf:'Náhled PDF',attendanceCol:'Účast',pdfPreview:'Náhled PDF',pdfGenerating:'Připravuji PDF…',pdfDownload:'Stáhnout PDF',pdfClose:'Zavřít',forgotPassword:'Zapomenuté heslo?',forgotTitle:'Obnovit heslo',forgotIntro:'Zadej e-mail, na který ti pošleme odkaz pro nastavení nového hesla.',sendReset:'Poslat odkaz',resetSent:'Odkaz pro nastavení nového hesla byl odeslán na e-mail.',newPassword:'Nové heslo',repeatPassword:'Zopakovat heslo',setNewPassword:'Nastavit nové heslo',passwordChanged:'Heslo bylo změněno. Můžeš se přihlásit.',passwordMismatch:'Hesla se neshodují.',rateLimit:'Byl překročen limit e-mailů. Počkej chvíli a zkus to znovu. Pro ostrý provoz doporučujeme v Supabase nastavit vlastní SMTP přes Resend.',replacePhoto:'Vyměnit foto',removePhoto:'Smazat foto',photoRemoved:'Fotka byla smazána.',photoChanged:'Fotka byla změněna.',minutes:'Minuty',yellowCards:'ŽK',redCards:'ČK',motm:'★ Hráč zápasu',goalScorers:'Střelci',noGoals:'Bez vstřeleného gólu',keeper:'Brankář',overall:'Celková bilance od založení',winRate:'Úspěšnost',goalsForAgainst:'Skóre',goalsConceded:'Obdržené góly',keeperRecord:'Brankářská bilance',board:'Nástěnka',boardIntro:'Důležité týmové informace, oznámení a ankety.',newPost:'Nový příspěvek',postTitle:'Nadpis',poll:'Anketa',addPoll:'Přidat anketu',pollQuestion:'Otázka ankety',pollOption:'Možnost',addOption:'Přidat možnost',sendEmailAll:'Poslat všem e-mail',sendPushAll:'Poslat všem push notifikaci',publishPost:'Publikovat příspěvek',published:'Příspěvek byl zveřejněn.',vote:'Hlasovat',votes:'hlasů',yourVote:'Tvůj hlas',noPosts:'Zatím tu nejsou žádné příspěvky.',captainOrAdmin:'Příspěvek může přidat kapitán nebo správce.',deletePost:'Smazat příspěvek',notificationWarning:'Příspěvek se zveřejnil, ale některé notifikace se nepodařilo odeslat.'},
- en:{tagline:'ONE TEAM. ONE LOCKER ROOM.',league:'PSMF · 5D · autumn 2026',verified:'Automatic PSMF sync',refresh:'Refresh PSMF',matches:'Matches',map:'Venue map',table:'Table',stats:'Stats',history:'History',h2h:'Head-to-head',heading:"We're playing.",sub:'Confirm your availability and keep track of upcoming matches.',next:'NEXT MATCH',away:'Away',home:'Home',count:'Can we count on you?',yes:"I'm in",no:"I'm out",maybe:'Not sure yet',cancel:'Clear answer',saved:'Saved to the team locker room.',upcoming:'Upcoming matches',past:'Results',pos:'Pos.',team:'Team',played:'P',wins:'W',draws:'D',losses:'L',score:'Score',pts:'Pts',player:'Player',goals:'Goals',games:'Games',account:'Team locker room',login:'Sign in',logout:'Sign out',signup:'Create account',email:'Email',password:'Password',choosePlayer:'Which player are you?',haveAccount:'I already have an account',newAccount:"I'm new here",signedAs:'Signed in as',loginNeeded:'Sign in for team features.',responses:'Team responses',noResponses:'No responses yet.',unanswered:'No response',confirmEmail:'Account created. Confirm your email and then sign in.',playerLinked:'Your account is linked to the player.',genericError:'Something went wrong. Please try again.',synced:'PSMF refreshed including history.',address:'Address',google:'Google Maps',waze:'Waze',resend:'Resend confirmation email',resent:'Confirmation email sent again.',testReminder:'Send test reminder to me',testReminderSent:'Test reminder was sent only to your email.',comments:'Comments',writeComment:'Write a match message…',send:'Send',reply:'Reply',edit:'Edit',delete:'Delete',noComments:'No comments yet.',photo:'Profile photo',uploadPhoto:'Upload photo',career:'Career since 2015',season:'Season',rank:'Rank',record:'Record',selectOpponent:'Choose opponent',meetings:'Matches',h2hRecord:'W–D–L',nextOpponent:'Next opponent',playingNow:'This is our current opponent',leagueLabel:'League',manageTeam:'Manage team',role:'Role',active:'Active',unlink:'Unlink account',captain:'Captain',admin:'Admin',regularPlayer:'Player',noAccount:'No account',adminSaved:'Change saved.',adminTab:'Admin',noH2H:'No completed head-to-head match yet.',pushEnable:'Enable notifications',pushEnabled:'Notifications enabled',pushDenied:'Notifications are blocked in the browser.',pushTest:'Send test push to me',pushTestSent:'Test push was sent.',iosInstall:'On iPhone, first use Share → Add to Home Screen, open the locker room from the icon, then enable notifications.',adminPush:'Team push notification',pushTitle:'Title',pushMessage:'Message',pushRecipients:'Recipients',pushAll:'Select all',pushUnanswered:'No response',pushNone:'Clear selection',pushDefaultHint:'Registered players who have not answered the next match are selected by default.',pushSend:'Send push',pushSent:'Push notification sent.',ids:'Player IDs',registrationId:'Player ID',jersey:'Jersey number',goingPlayers:'All players',noGoingPlayers:'No players are listed yet.',attendingLegend:'Green = confirmed for the next match',playerData:'Player details',savePlayerData:'Save details',exportPdf:'PDF preview',attendanceCol:'Attendance',pdfPreview:'PDF preview',pdfGenerating:'Preparing PDF…',pdfDownload:'Download PDF',pdfClose:'Close',forgotPassword:'Forgot password?',forgotTitle:'Reset password',forgotIntro:'Enter your email and we will send you a link to set a new password.',sendReset:'Send reset link',resetSent:'Password reset link was sent to your email.',newPassword:'New password',repeatPassword:'Repeat password',setNewPassword:'Set new password',passwordChanged:'Password changed. You can sign in now.',passwordMismatch:'Passwords do not match.',rateLimit:'Email rate limit exceeded. Wait a little and try again. For production, configure custom SMTP in Supabase using Resend.',replacePhoto:'Replace photo',removePhoto:'Remove photo',photoRemoved:'Photo removed.',photoChanged:'Photo changed.',minutes:'Minutes',yellowCards:'YC',redCards:'RC',motm:'★ Player of the match',goalScorers:'Scorers',noGoals:'No goals scored',keeper:'Goalkeeper',overall:'All-time record since foundation',winRate:'Win rate',goalsForAgainst:'Goals',goalsConceded:'Goals conceded',keeperRecord:'Goalkeeper record',board:'Board',boardIntro:'Important team information, announcements and polls.',newPost:'New post',postTitle:'Title',poll:'Poll',addPoll:'Add a poll',pollQuestion:'Poll question',pollOption:'Option',addOption:'Add option',sendEmailAll:'Email everyone',sendPushAll:'Send push notification to everyone',publishPost:'Publish post',published:'Post published.',vote:'Vote',votes:'votes',yourVote:'Your vote',noPosts:'No posts yet.',captainOrAdmin:'A captain or admin can publish a post.',deletePost:'Delete post',notificationWarning:'The post was published, but some notifications could not be sent.'}
+ cs:{tagline:'JEDEN TÝM. JEDNA KABINA.',league:'PSMF · 5D · podzim 2026',verified:'Automatická synchronizace PSMF',refresh:'Obnovit PSMF',matches:'Zápasy',map:'Mapa hřišť',table:'Tabulka',stats:'Statistiky',history:'Historie',h2h:'Vzájemné zápasy',heading:'Jdeme hrát.',sub:'Potvrď účast a měj přehled o dalších zápasech.',next:'NEJBLIŽŠÍ ZÁPAS',away:'Venku',home:'Doma',count:'Počítáme s tebou?',yes:'Přijdu',no:'Nepřijdu',maybe:'Zatím nevím',cancel:'Zrušit odpověď',saved:'Uloženo do týmové kabiny.',upcoming:'Další zápasy',past:'Odehráno',pos:'Poř.',team:'Tým',played:'Z',wins:'V',draws:'R',losses:'P',score:'Skóre',pts:'B',player:'Hráč',goals:'Góly',games:'Zápasy',account:'Týmová kabina',login:'Přihlásit',logout:'Odhlásit',signup:'Vytvořit účet',email:'E-mail',password:'Heslo',choosePlayer:'Který hráč jsi?',haveAccount:'Už mám účet',newAccount:'Jsem tu poprvé',signedAs:'Přihlášen jako',loginNeeded:'Pro týmové funkce se přihlas.',responses:'Odpovědi týmu',noResponses:'Zatím nikdo neodpověděl.',unanswered:'Nevyjádřil se',confirmEmail:'Účet je vytvořený. Potvrď e-mail a potom se přihlas.',playerLinked:'Účet je propojen s hráčem.',genericError:'Něco se nepovedlo. Zkus to prosím znovu.',synced:'PSMF aktualizováno včetně historie.',address:'Adresa',google:'Google Maps',waze:'Waze',resend:'Poslat ověřovací e-mail znovu',resent:'Ověřovací e-mail byl znovu odeslán.',testReminder:'Poslat test reminder sobě',testReminderSent:'Testovací reminder byl odeslán jen na tvůj e-mail.',comments:'Komentáře',writeComment:'Napiš zprávu k zápasu…',send:'Odeslat',reply:'Odpovědět',edit:'Upravit',delete:'Smazat',noComments:'Zatím žádné komentáře.',photo:'Profilová fotka',uploadPhoto:'Nahrát fotku',career:'Kariéra od 2020',season:'Sezóna',rank:'Umístění',record:'Bilance',selectOpponent:'Vyber soupeře',meetings:'Zápasy',h2hRecord:'Bilance V–R–P',nextOpponent:'Nejbližší soupeř',playingNow:'Teď hrajeme proti tomuto týmu',leagueLabel:'Liga',manageTeam:'Správa týmu',role:'Role',active:'Aktivní',unlink:'Odpojit účet',captain:'Kapitán',admin:'Admin',regularPlayer:'Hráč',noAccount:'Bez účtu',adminSaved:'Změna uložena.',adminTab:'Správa',noH2H:'Zatím žádný odehraný vzájemný zápas.',pushEnable:'Zapnout upozornění',pushEnabled:'Upozornění zapnutá',pushDenied:'Upozornění jsou v prohlížeči zakázaná.',pushTest:'Poslat test push sobě',pushTestSent:'Testovací push byl odeslán.',iosInstall:'Na iPhonu nejdřív otevři Sdílet → Přidat na plochu, spusť Kabinu z ikony a potom zapni upozornění.',adminPush:'Týmová push notifikace',pushTitle:'Nadpis',pushMessage:'Zpráva',pushRecipients:'Příjemci',pushAll:'Vybrat všechny',pushUnanswered:'Nevyjádření',pushNone:'Zrušit výběr',pushDefaultHint:'Automaticky jsou předvybraní registrovaní hráči, kteří se ještě nevyjádřili k nejbližšímu zápasu.',pushSend:'Odeslat push',pushSent:'Push notifikace byla odeslána.',ids:'ID hráčů',registrationId:'ID hráče',jersey:'Číslo dresu',goingPlayers:'Všichni hráči',noGoingPlayers:'Zatím nejsou evidováni žádní hráči.',attendingLegend:'Zeleně = potvrdil účast na nejbližší zápas',playerData:'Hráčské údaje',savePlayerData:'Uložit údaje',exportPdf:'Náhled PDF',attendanceCol:'Účast',pdfPreview:'Náhled PDF',pdfGenerating:'Připravuji PDF…',pdfDownload:'Stáhnout PDF',pdfClose:'Zavřít',forgotPassword:'Zapomenuté heslo?',forgotTitle:'Obnovit heslo',forgotIntro:'Zadej e-mail, na který ti pošleme odkaz pro nastavení nového hesla.',sendReset:'Poslat odkaz',resetSent:'Odkaz pro nastavení nového hesla byl odeslán na e-mail.',newPassword:'Nové heslo',repeatPassword:'Zopakovat heslo',setNewPassword:'Nastavit nové heslo',passwordChanged:'Heslo bylo změněno. Můžeš se přihlásit.',passwordMismatch:'Hesla se neshodují.',rateLimit:'Byl překročen limit e-mailů. Počkej chvíli a zkus to znovu. Pro ostrý provoz doporučujeme v Supabase nastavit vlastní SMTP přes Resend.',replacePhoto:'Vyměnit foto',removePhoto:'Smazat foto',photoRemoved:'Fotka byla smazána.',photoChanged:'Fotka byla změněna.',minutes:'Minuty',yellowCards:'ŽK',redCards:'ČK',motm:'★ Hráč zápasu',goalScorers:'Střelci',noGoals:'Bez vstřeleného gólu',keeper:'Brankář',overall:'Celková bilance od založení',winRate:'Úspěšnost',goalsForAgainst:'Skóre',goalsConceded:'Obdržené góly',keeperRecord:'Brankářská bilance',board:'Nástěnka',boardIntro:'Důležité týmové informace, oznámení a ankety.',newPost:'Nový příspěvek',postTitle:'Nadpis',poll:'Anketa',addPoll:'Přidat anketu',pollQuestion:'Otázka ankety',pollOption:'Možnost',addOption:'Přidat možnost',sendEmailAll:'Poslat všem e-mail',sendPushAll:'Poslat všem push notifikaci',publishPost:'Publikovat příspěvek',published:'Příspěvek byl zveřejněn.',vote:'Hlasovat',votes:'hlasů',yourVote:'Tvůj hlas',noPosts:'Zatím tu nejsou žádné příspěvky.',captainOrAdmin:'Anketu může vytvořit každý přihlášený hráč.',deletePost:'Smazat příspěvek',notificationWarning:'Příspěvek se zveřejnil, ale některé notifikace se nepodařilo odeslat.',eventDate:'Datum akce',addPhoto:'Přidat fotku do pozadí',removePhotoPoll:'Odebrat fotku',activePoll:'AKTUÁLNÍ ANKETA',voteNow:'Hlasuj teď',whoVoted:'Kdo hlasoval',remindPush:'Připomenout push',remindEmail:'Připomenout e-mailem',archive:'Historie anket',noVoters:'Zatím nikdo',reminderSent:'Připomínka byla odeslána.',newPollBelow:'Vytvořit další anketu'},
+ en:{tagline:'ONE TEAM. ONE LOCKER ROOM.',league:'PSMF · 5D · autumn 2026',verified:'Automatic PSMF sync',refresh:'Refresh PSMF',matches:'Matches',map:'Venue map',table:'Table',stats:'Stats',history:'History',h2h:'Head-to-head',heading:"We're playing.",sub:'Confirm your availability and keep track of upcoming matches.',next:'NEXT MATCH',away:'Away',home:'Home',count:'Can we count on you?',yes:"I'm in",no:"I'm out",maybe:'Not sure yet',cancel:'Clear answer',saved:'Saved to the team locker room.',upcoming:'Upcoming matches',past:'Results',pos:'Pos.',team:'Team',played:'P',wins:'W',draws:'D',losses:'L',score:'Score',pts:'Pts',player:'Player',goals:'Goals',games:'Games',account:'Team locker room',login:'Sign in',logout:'Sign out',signup:'Create account',email:'Email',password:'Password',choosePlayer:'Which player are you?',haveAccount:'I already have an account',newAccount:"I'm new here",signedAs:'Signed in as',loginNeeded:'Sign in for team features.',responses:'Team responses',noResponses:'No responses yet.',unanswered:'No response',confirmEmail:'Account created. Confirm your email and then sign in.',playerLinked:'Your account is linked to the player.',genericError:'Something went wrong. Please try again.',synced:'PSMF refreshed including history.',address:'Address',google:'Google Maps',waze:'Waze',resend:'Resend confirmation email',resent:'Confirmation email sent again.',testReminder:'Send test reminder to me',testReminderSent:'Test reminder was sent only to your email.',comments:'Comments',writeComment:'Write a match message…',send:'Send',reply:'Reply',edit:'Edit',delete:'Delete',noComments:'No comments yet.',photo:'Profile photo',uploadPhoto:'Upload photo',career:'Career since 2015',season:'Season',rank:'Rank',record:'Record',selectOpponent:'Choose opponent',meetings:'Matches',h2hRecord:'W–D–L',nextOpponent:'Next opponent',playingNow:'This is our current opponent',leagueLabel:'League',manageTeam:'Manage team',role:'Role',active:'Active',unlink:'Unlink account',captain:'Captain',admin:'Admin',regularPlayer:'Player',noAccount:'No account',adminSaved:'Change saved.',adminTab:'Admin',noH2H:'No completed head-to-head match yet.',pushEnable:'Enable notifications',pushEnabled:'Notifications enabled',pushDenied:'Notifications are blocked in the browser.',pushTest:'Send test push to me',pushTestSent:'Test push was sent.',iosInstall:'On iPhone, first use Share → Add to Home Screen, open the locker room from the icon, then enable notifications.',adminPush:'Team push notification',pushTitle:'Title',pushMessage:'Message',pushRecipients:'Recipients',pushAll:'Select all',pushUnanswered:'No response',pushNone:'Clear selection',pushDefaultHint:'Registered players who have not answered the next match are selected by default.',pushSend:'Send push',pushSent:'Push notification sent.',ids:'Player IDs',registrationId:'Player ID',jersey:'Jersey number',goingPlayers:'All players',noGoingPlayers:'No players are listed yet.',attendingLegend:'Green = confirmed for the next match',playerData:'Player details',savePlayerData:'Save details',exportPdf:'PDF preview',attendanceCol:'Attendance',pdfPreview:'PDF preview',pdfGenerating:'Preparing PDF…',pdfDownload:'Download PDF',pdfClose:'Close',forgotPassword:'Forgot password?',forgotTitle:'Reset password',forgotIntro:'Enter your email and we will send you a link to set a new password.',sendReset:'Send reset link',resetSent:'Password reset link was sent to your email.',newPassword:'New password',repeatPassword:'Repeat password',setNewPassword:'Set new password',passwordChanged:'Password changed. You can sign in now.',passwordMismatch:'Passwords do not match.',rateLimit:'Email rate limit exceeded. Wait a little and try again. For production, configure custom SMTP in Supabase using Resend.',replacePhoto:'Replace photo',removePhoto:'Remove photo',photoRemoved:'Photo removed.',photoChanged:'Photo changed.',minutes:'Minutes',yellowCards:'YC',redCards:'RC',motm:'★ Player of the match',goalScorers:'Scorers',noGoals:'No goals scored',keeper:'Goalkeeper',overall:'All-time record since foundation',winRate:'Win rate',goalsForAgainst:'Goals',goalsConceded:'Goals conceded',keeperRecord:'Goalkeeper record',board:'Board',boardIntro:'Important team information, announcements and polls.',newPost:'New post',postTitle:'Title',poll:'Poll',addPoll:'Add a poll',pollQuestion:'Poll question',pollOption:'Option',addOption:'Add option',sendEmailAll:'Email everyone',sendPushAll:'Send push notification to everyone',publishPost:'Publish post',published:'Post published.',vote:'Vote',votes:'votes',yourVote:'Your vote',noPosts:'No posts yet.',captainOrAdmin:'Any signed-in player can create a poll.',deletePost:'Delete post',notificationWarning:'The post was published, but some notifications could not be sent.',eventDate:'Event date',addPhoto:'Add background photo',removePhotoPoll:'Remove photo',activePoll:'ACTIVE POLL',voteNow:'Vote now',whoVoted:'Who voted',remindPush:'Send push reminder',remindEmail:'Send email reminder',archive:'Poll history',noVoters:'No votes yet',reminderSent:'Reminder sent.',newPollBelow:'Create another poll'}
 } as const;
 
 function fmtDate(iso:string,lang:Lang){return new Intl.DateTimeFormat(lang==='cs'?'cs-CZ':'en-GB',{day:'numeric',month:'long'}).format(new Date(`${iso}T12:00:00`));}
@@ -39,7 +39,7 @@ function fmtDateTime(iso:string,lang:Lang){return new Intl.DateTimeFormat(lang==
 function googleMaps(address:string){return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;}
 function waze(address:string){return `https://www.waze.com/ul?q=${encodeURIComponent(address)}&navigate=yes`;}
 function ours(name:string){return name.startsWith('Pěstební dělníci');}
-const APP_VERSION='3.7.8';
+const APP_VERSION='3.8.0';
 
 function stripDiacritics(value:string){return value.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();}
 function parseScore(score:string|null|undefined){const m=String(score||'').match(/(\d+)\s*:\s*(\d+)/);return m?[Number(m[1]),Number(m[2])] as const:null;}
@@ -73,7 +73,7 @@ export default function KabinaApp(){
  const [publicRoster,setPublicRoster]=useState<PublicRosterRow[]>([]);
  const [pdfPreviewUrl,setPdfPreviewUrl]=useState<string|null>(null); const [pdfBusy,setPdfBusy]=useState(false);
  const [teamPosts,setTeamPosts]=useState<TeamPost[]>([]); const [teamPostsBusy,setTeamPostsBusy]=useState(false); const currentStatsWrapRef=useRef<HTMLDivElement>(null); const careerStatsWrapRef=useRef<HTMLDivElement>(null); const [mobileStatsMode,setMobileStatsMode]=useState<'cards'|'table'>('table');
- const [postTitle,setPostTitle]=useState(''); const [postBody,setPostBody]=useState(''); const [postPollEnabled,setPostPollEnabled]=useState(false); const [postPollQuestion,setPostPollQuestion]=useState(''); const [postPollOptions,setPostPollOptions]=useState<string[]>(['Ano','Ne']); const [postSendEmail,setPostSendEmail]=useState(false); const [postSendPush,setPostSendPush]=useState(false); const [postPublishing,setPostPublishing]=useState(false);
+ const [postTitle,setPostTitle]=useState(''); const [postBody,setPostBody]=useState(''); const [postPollEnabled,setPostPollEnabled]=useState(false); const [postPollQuestion,setPostPollQuestion]=useState(''); const [postPollOptions,setPostPollOptions]=useState<string[]>(['Ano','Ne']); const [postSendEmail,setPostSendEmail]=useState(false); const [postSendPush,setPostSendPush]=useState(false); const [postPublishing,setPostPublishing]=useState(false); const [postEventDate,setPostEventDate]=useState(''); const [postBackgroundFile,setPostBackgroundFile]=useState<File|null>(null); const [postBackgroundPreview,setPostBackgroundPreview]=useState(''); const postBackgroundInput=useRef<HTMLInputElement|null>(null); const [pollReminderBusy,setPollReminderBusy]=useState<string|null>(null);
 
  useEffect(()=>{
    if(typeof window==='undefined')return;
@@ -370,8 +370,18 @@ export default function KabinaApp(){
 
  useEffect(()=>{void loadTeamPosts();},[loadTeamPosts]);
 
+ async function uploadPollBackground(){
+   if(!postBackgroundFile||!session)return null;
+   const form=new FormData();
+   form.append('file',postBackgroundFile);
+   const r=await fetch('/api/team-post-image',{method:'POST',headers:{Authorization:`Bearer ${session.access_token}`},body:form});
+   const b=await r.json().catch(()=>({}));
+   if(!r.ok)throw new Error(b?.error||'image upload');
+   return String(b?.url||'')||null;
+ }
+
  async function publishTeamPost(){
-   if(!session||!profile||!['admin','captain'].includes(profile.role))return;
+   if(!session||!profile)return;
    const title=postTitle.trim(),body=postBody.trim()||postTitle.trim();
    if(!title)return;
    const options=postPollOptions.map(x=>x.trim()).filter(Boolean);
@@ -381,6 +391,8 @@ export default function KabinaApp(){
    }
    setPostPublishing(true);
    try{
+     const backgroundUrl=postPollEnabled?await uploadPollBackground():null;
+     const privileged=['admin','captain'].includes(profile.role);
      const r=await fetch('/api/team-posts',{
        method:'POST',
        headers:{'Content-Type':'application/json',Authorization:`Bearer ${session.access_token}`},
@@ -388,13 +400,16 @@ export default function KabinaApp(){
          title,body,
          pollQuestion:postPollEnabled?postPollQuestion.trim():null,
          pollOptions:postPollEnabled?options:[],
-         sendEmail:postSendEmail,
-         sendPush:postSendPush
+         eventDate:postPollEnabled&&postEventDate?postEventDate:null,
+         backgroundUrl,
+         sendEmail:privileged&&postSendEmail,
+         sendPush:privileged&&postSendPush
        })
      });
      const b=await r.json().catch(()=>({}));
      if(!r.ok)throw new Error(b?.error||'post');
-     setPostTitle('');setPostBody('');setPostPollEnabled(false);setPostPollQuestion('');setPostPollOptions(['Ano','Ne']);setPostSendEmail(false);setPostSendPush(false);
+     setPostTitle('');setPostBody('');setPostPollEnabled(false);setPostPollQuestion('');setPostPollOptions(['Ano','Ne']);setPostSendEmail(false);setPostSendPush(false);setPostEventDate('');setPostBackgroundFile(null);setPostBackgroundPreview('');
+     if(postBackgroundInput.current)postBackgroundInput.current.value='';
      await loadTeamPosts();
      if(Array.isArray(b?.warnings)&&b.warnings.length)alert(`${t.notificationWarning}\n\n${b.warnings.join('\n')}`);
      else alert(t.published);
@@ -417,7 +432,7 @@ export default function KabinaApp(){
  }
 
  async function deleteTeamPost(postId:string){
-   if(!session||!profile||!['admin','captain'].includes(profile.role))return;
+   if(!session||!profile)return;
    if(!confirm(lang==='cs'?'Opravdu smazat tento příspěvek?':'Delete this post?'))return;
    try{
      const r=await fetch(`/api/team-posts?id=${encodeURIComponent(postId)}`,{method:'DELETE',headers:{Authorization:`Bearer ${session.access_token}`}});
@@ -430,6 +445,23 @@ export default function KabinaApp(){
 
  function scrollStats(ref:{current:HTMLDivElement|null},direction:-1|1){
    ref.current?.scrollBy({left:direction*420,behavior:'smooth'});
+ }
+
+
+ async function remindPoll(postId:string,channel:'push'|'email'){
+   if(!session||!profile)return;
+   setPollReminderBusy(`${postId}:${channel}`);
+   try{
+     const r=await fetch('/api/team-post-reminder',{
+       method:'POST',
+       headers:{'Content-Type':'application/json',Authorization:`Bearer ${session.access_token}`},
+       body:JSON.stringify({postId,channel})
+     });
+     const b=await r.json().catch(()=>({}));
+     if(!r.ok)throw new Error(b?.error||'reminder');
+     alert(`${t.reminderSent} (${b?.count??0})`);
+   }catch(e:any){alert(e?.message||t.genericError);}
+   finally{setPollReminderBusy(null);}
  }
 
 
@@ -457,7 +489,11 @@ export default function KabinaApp(){
  const unansweredPlayers=registeredPlayers.filter(p=>!expressedPlayerIds.has(p.id));
  const answeredCount=responseGroups.yes.length+responseGroups.no.length;
  const nextAttendanceNeedsAnswer=Boolean(profile&&next&&!attendanceRows.some(r=>r.player_id===profile.id&&(r.status==='yes'||r.status==='no')));
- const openPollCount=profile?teamPosts.filter(p=>p.pollQuestion&&p.options.length>=2&&!p.myOptionId).length:0;
+ const activeTeamPosts=teamPosts.filter(p=>!p.archived);
+ const activePolls=activeTeamPosts.filter(p=>p.pollQuestion&&p.options.length>=2).sort((a,b)=>(a.eventDate||'9999-12-31').localeCompare(b.eventDate||'9999-12-31')||+new Date(b.createdAt)-+new Date(a.createdAt));
+ const otherActivePosts=activeTeamPosts.filter(p=>!(p.pollQuestion&&p.options.length>=2));
+ const archivedPolls=teamPosts.filter(p=>p.archived);
+ const openPollCount=profile?activePolls.filter(p=>!p.myOptionId).length:0;
 
  const selectedSeason=seasons.find(s=>s.season===historySeason); const selectedSeasonMatches=historyMatches.filter(m=>m.season===historySeason).sort((a,b)=>+new Date(a.kickoff)-+new Date(b.kickoff)); const selectedHistoricalStanding=historyStandings.filter(r=>r.season===historySeason).sort((a,b)=>a.rank-b.rank);
  const opponents=useMemo(()=>Array.from(new Set([...historyMatches.flatMap(m=>[m.home_team,m.away_team]),...matches.flatMap(m=>[m.home,m.away])].filter(n=>!ours(n)))).sort((a,b)=>a.localeCompare(b,'cs')),[historyMatches,matches]);
@@ -572,57 +608,91 @@ export default function KabinaApp(){
   {tab==='board'&&<section className="boardSection">
     <div className="boardHero">
       <div><span className="boardEyebrow"><Megaphone size={15}/>{lang==='cs'?'TÝMOVÁ NÁSTĚNKA':'TEAM BOARD'}</span><h2>{t.board}</h2><p>{t.boardIntro}</p></div>
-      {profile&&['admin','captain'].includes(profile.role)&&<span className="boardRole">{profile.role==='admin'?t.admin:t.captain}</span>}
+      {profile&&<span className="boardRole">{profile.role==='admin'?t.admin:profile.role==='captain'?t.captain:t.regularPlayer}</span>}
     </div>
-
-    {profile&&['admin','captain'].includes(profile.role)&&<div className="postComposer">
-      <div className="postComposerHead"><div className="postComposerIcon"><Plus size={20}/></div><div><strong>{t.newPost}</strong><span>{lang==='cs'?'Zveřejní se okamžitě na nástěnce.':'Published immediately to the board.'}</span></div></div>
-      <div className="postFields">
-        <label className="postTitleField"><span>{t.postTitle}</span><input value={postTitle} maxLength={120} onChange={e=>setPostTitle(e.target.value)} placeholder={lang==='cs'?'Např. Zápisné 2026/27':'e.g. Membership fee 2026/27'}/></label>
-      </div>
-      <label className="pollToggle"><input type="checkbox" checked={postPollEnabled} onChange={e=>setPostPollEnabled(e.target.checked)}/><Vote size={17}/><span>{t.addPoll}</span></label>
-      {postPollEnabled&&<div className="pollBuilder">
-        <label><span>{t.pollQuestion}</span><input value={postPollQuestion} maxLength={240} onChange={e=>setPostPollQuestion(e.target.value)} placeholder={lang==='cs'?'Např. Máš už zápisné zaplacené?':'e.g. Have you paid the fee?'}/></label>
-        <div className="pollOptionBuilder">{postPollOptions.map((opt,i)=><div key={i}><span>{i+1}</span><input value={opt} maxLength={120} onChange={e=>setPostPollOptions(v=>v.map((x,j)=>j===i?e.target.value:x))}/>{postPollOptions.length>2&&<button type="button" onClick={()=>setPostPollOptions(v=>v.filter((_,j)=>j!==i))}><X size={14}/></button>}</div>)}</div>
-        {postPollOptions.length<8&&<button type="button" className="addPollOption" onClick={()=>setPostPollOptions(v=>[...v,''])}><Plus size={14}/>{t.addOption}</button>}
-      </div>}
-      <div className="notifyChoices">
-        <label><input type="checkbox" checked={postSendEmail} onChange={e=>setPostSendEmail(e.target.checked)}/><span className="notifyIcon email"><Mail size={17}/></span><div><strong>{t.sendEmailAll}</strong><small>{lang==='cs'?'Všem aktivním hráčům, kteří mají účet a e-mail.':'All active players with an account and email.'}</small></div></label>
-        <label><input type="checkbox" checked={postSendPush} onChange={e=>setPostSendPush(e.target.checked)}/><span className="notifyIcon push"><Bell size={17}/></span><div><strong>{t.sendPushAll}</strong><small>{lang==='cs'?'Dostanou ji hráči, kteří mají push povolený.':'Players who enabled push will receive it.'}</small></div></label>
-      </div>
-      <button className="publishPostBtn" disabled={postPublishing||!postTitle.trim()} onClick={publishTeamPost}><Send size={17}/>{postPublishing?'…':t.publishPost}</button>
-    </div>}
 
     {!profile&&<div className="boardLogin"><UserRound size={24}/><div><strong>{t.loginNeeded}</strong><span>{lang==='cs'?'Příspěvky a ankety jsou určené členům týmu.':'Posts and polls are for team members.'}</span></div><button className="miniBtn" onClick={()=>setAuthOpen(true)}>{t.login}</button></div>}
 
-    {profile&&<div className="boardFeed">
-      {teamPostsBusy&&<div className="boardEmpty">{lang==='cs'?'Načítám nástěnku…':'Loading board…'}</div>}
-      {!teamPostsBusy&&teamPosts.length===0&&<div className="boardEmpty"><Megaphone size={24}/><strong>{t.noPosts}</strong></div>}
-      {teamPosts.map(post=>{
-        const totalVotes=post.options.reduce((n,o)=>n+o.votes.length,0);
-        return <article className="teamPost" key={post.id}>
-          <div className="teamPostTop">
-            <div className="teamPostAuthor">{avatar(post.author.name,post.author.avatarUrl,'sm')}<div><strong>{post.author.name}</strong><span>{new Intl.DateTimeFormat(lang==='cs'?'cs-CZ':'en-GB',{dateStyle:'medium',timeStyle:'short'}).format(new Date(post.createdAt))} · {post.author.role==='admin'?t.admin:post.author.role==='captain'?t.captain:t.regularPlayer}</span></div></div>
-            {profile&&((profile.role==='admin')||profile.id===post.author.id)&&<button className="postDeleteBtn" title={t.deletePost} onClick={()=>deleteTeamPost(post.id)}><Trash2 size={15}/></button>}
+    {profile&&<>
+      <div className="activePollArea">
+        {teamPostsBusy&&<div className="boardEmpty">{lang==='cs'?'Načítám nástěnku…':'Loading board…'}</div>}
+        {!teamPostsBusy&&activePolls.length===0&&<div className="boardEmpty"><Vote size={24}/><strong>{lang==='cs'?'Teď není žádná aktivní anketa.':'No active poll right now.'}</strong></div>}
+        {activePolls.map(post=>{
+          const totalVotes=post.options.reduce((n,o)=>n+o.votes.length,0);
+          return <article className={`teamPost activePollCard ${!post.myOptionId?'needsVote':''}`} key={post.id} style={post.backgroundUrl?{backgroundImage:`linear-gradient(rgba(13,45,30,.78),rgba(13,45,30,.86)),url(${post.backgroundUrl})`}:undefined}>
+            <div className="activePollRibbon"><span>●</span>{t.activePoll}{!post.myOptionId&&<b>{t.voteNow}</b>}</div>
+            <div className="teamPostTop">
+              <div className="teamPostAuthor">{avatar(post.author.name,post.author.avatarUrl,'sm')}<div><strong>{post.author.name}</strong><span>{new Intl.DateTimeFormat(lang==='cs'?'cs-CZ':'en-GB',{dateStyle:'medium',timeStyle:'short'}).format(new Date(post.createdAt))}</span></div></div>
+              {post.canManage&&<button className="postDeleteBtn" title={t.deletePost} onClick={()=>deleteTeamPost(post.id)}><Trash2 size={15}/></button>}
+            </div>
+            <div className="activePollHeading">
+              <h3>{post.title}</h3>
+              {post.eventDate&&<span className="pollDateBadge"><CalendarDays size={14}/>{new Intl.DateTimeFormat(lang==='cs'?'cs-CZ':'en-GB',{day:'numeric',month:'long',year:'numeric'}).format(new Date(`${post.eventDate}T12:00:00`))}</span>}
+            </div>
+            {post.pollQuestion&&<div className="postPoll featuredPoll">
+              <div className="postPollTitle"><Vote size={19}/><div><strong>{post.pollQuestion}</strong><span>{totalVotes} {t.votes}</span></div></div>
+              <div className="postPollOptions">{post.options.map(opt=>{
+                const count=opt.votes.length,pct=totalVotes?Math.round(count/totalVotes*100):0,chosen=post.myOptionId===opt.id;
+                return <div className="pollOptionWithVoters" key={opt.id}>
+                  <button className={chosen?'chosen':''} onClick={()=>voteTeamPost(post.id,opt.id)}>
+                    <span className="pollBar" style={{width:`${pct}%`}}/>
+                    <span className="pollChoice">{chosen?<Check size={15}/>:<span className="pollRadio"/>}<b>{opt.label}</b></span>
+                    <span className="pollCount">{count} · {pct}%</span>
+                  </button>
+                  <div className="pollVoters">{opt.votes.length?opt.votes.map(v=><span key={v.playerId}>{avatar(v.playerName,v.avatarUrl,'xs')}{v.playerName}</span>):<em>{t.noVoters}</em>}</div>
+                </div>
+              })}</div>
+              {post.myOptionId&&<div className="myVoteHint"><Check size={13}/>{t.yourVote} · {lang==='cs'?'kliknutím můžeš volbu změnit':'click another option to change it'}</div>}
+            </div>}
+            {post.canManage&&<div className="pollReminderTools">
+              <span>{lang==='cs'?'Připomenout pouze těm, kteří ještě nehlasovali:':'Remind only players who have not voted:'}</span>
+              <div>
+                <button disabled={pollReminderBusy===`${post.id}:push`} onClick={()=>remindPoll(post.id,'push')}><Bell size={14}/>{pollReminderBusy===`${post.id}:push`?'…':t.remindPush}</button>
+                <button disabled={pollReminderBusy===`${post.id}:email`} onClick={()=>remindPoll(post.id,'email')}><Mail size={14}/>{pollReminderBusy===`${post.id}:email`?'…':t.remindEmail}</button>
+              </div>
+            </div>}
+          </article>
+        })}
+      </div>
+
+      <div className="composerDivider"><span>{t.newPollBelow}</span></div>
+
+      <div className="postComposer">
+        <div className="postComposerHead"><div className="postComposerIcon"><Plus size={20}/></div><div><strong>{t.newPost}</strong><span>{t.captainOrAdmin}</span></div></div>
+        <div className="postFields">
+          <label className="postTitleField"><span>{t.postTitle}</span><input value={postTitle} maxLength={120} onChange={e=>setPostTitle(e.target.value)} placeholder={lang==='cs'?'Např. 21. říjen – Zápisné':'e.g. 21 October – Team fee'}/></label>
+        </div>
+        <label className="pollToggle"><input type="checkbox" checked={postPollEnabled} onChange={e=>setPostPollEnabled(e.target.checked)}/><Vote size={17}/><span>{t.addPoll}</span></label>
+        {postPollEnabled&&<div className="pollBuilder">
+          <div className="pollBuilderTop">
+            <label><span>{t.pollQuestion}</span><input value={postPollQuestion} maxLength={240} onChange={e=>setPostPollQuestion(e.target.value)} placeholder={lang==='cs'?'Např. Jdeš do lokálu na zápisné?':'e.g. Are you coming?'}/></label>
+            <label><span>{t.eventDate}</span><input type="date" value={postEventDate} onChange={e=>setPostEventDate(e.target.value)}/></label>
           </div>
+          <div className="pollOptionBuilder">{postPollOptions.map((opt,i)=><div key={i}><span>{i+1}</span><input value={opt} maxLength={120} onChange={e=>setPostPollOptions(v=>v.map((x,j)=>j===i?e.target.value:x))}/>{postPollOptions.length>2&&<button type="button" onClick={()=>setPostPollOptions(v=>v.filter((_,j)=>j!==i))}><X size={14}/></button>}</div>)}</div>
+          {postPollOptions.length<8&&<button type="button" className="addPollOption" onClick={()=>setPostPollOptions(v=>[...v,''])}><Plus size={14}/>{t.addOption}</button>}
+          <div className="pollPhotoBuilder">
+            <input ref={postBackgroundInput} hidden type="file" accept="image/jpeg,image/png,image/webp" onChange={e=>{const f=e.target.files?.[0]||null;if(f&&f.size>7*1024*1024){alert('Max. 7 MB');return;}setPostBackgroundFile(f);setPostBackgroundPreview(f?URL.createObjectURL(f):'')}}/>
+            {postBackgroundPreview?<div className="pollPhotoPreview" style={{backgroundImage:`url(${postBackgroundPreview})`}}><button type="button" onClick={()=>{setPostBackgroundFile(null);setPostBackgroundPreview('');if(postBackgroundInput.current)postBackgroundInput.current.value=''}}><X size={14}/>{t.removePhotoPoll}</button></div>:<button type="button" className="pollPhotoBtn" onClick={()=>postBackgroundInput.current?.click()}><Camera size={16}/>{t.addPhoto}</button>}
+          </div>
+        </div>}
+        {['admin','captain'].includes(profile.role)&&<div className="notifyChoices">
+          <label><input type="checkbox" checked={postSendEmail} onChange={e=>setPostSendEmail(e.target.checked)}/><span className="notifyIcon email"><Mail size={17}/></span><div><strong>{t.sendEmailAll}</strong><small>{lang==='cs'?'Všem aktivním hráčům s účtem.':'All active players with an account.'}</small></div></label>
+          <label><input type="checkbox" checked={postSendPush} onChange={e=>setPostSendPush(e.target.checked)}/><span className="notifyIcon push"><Bell size={17}/></span><div><strong>{t.sendPushAll}</strong><small>{lang==='cs'?'Hráčům, kteří mají push povolený.':'Players with push enabled.'}</small></div></label>
+        </div>}
+        <button className="publishPostBtn" disabled={postPublishing||!postTitle.trim()} onClick={publishTeamPost}><Send size={17}/>{postPublishing?'…':t.publishPost}</button>
+      </div>
+
+      {otherActivePosts.length>0&&<div className="boardFeed secondaryBoardFeed">{otherActivePosts.map(post=><article className="teamPost" key={post.id}><div className="teamPostTop"><div className="teamPostAuthor">{avatar(post.author.name,post.author.avatarUrl,'sm')}<div><strong>{post.author.name}</strong><span>{new Intl.DateTimeFormat(lang==='cs'?'cs-CZ':'en-GB',{dateStyle:'medium',timeStyle:'short'}).format(new Date(post.createdAt))}</span></div></div>{post.canManage&&<button className="postDeleteBtn" onClick={()=>deleteTeamPost(post.id)}><Trash2 size={15}/></button>}</div><h3>{post.title}</h3></article>)}</div>}
+
+      {profile.role==='admin'&&archivedPolls.length>0&&<div className="archivedPolls">
+        <div className="archiveDivider"><span>{t.archive}</span></div>
+        {archivedPolls.map(post=>{const totalVotes=post.options.reduce((n,o)=>n+o.votes.length,0);return <article className="teamPost archivedPollCard" key={post.id}>
+          <div className="teamPostTop"><div className="teamPostAuthor">{avatar(post.author.name,post.author.avatarUrl,'sm')}<div><strong>{post.author.name}</strong><span>{post.eventDate||post.createdAt.slice(0,10)}</span></div></div><button className="postDeleteBtn" onClick={()=>deleteTeamPost(post.id)}><Trash2 size={15}/></button></div>
           <h3>{post.title}</h3>
-          {post.body&&post.body!==post.title&&<p className="teamPostBody">{post.body}</p>}
-          {(post.emailSent||post.pushSent)&&<div className="postDelivery">{post.emailSent&&<span><Mail size={13}/>{lang==='cs'?'Rozesláno e-mailem':'Sent by email'}</span>}{post.pushSent&&<span><Bell size={13}/>{lang==='cs'?'Odeslán push':'Push sent'}</span>}</div>}
-          {post.pollQuestion&&post.options.length>=2&&<div className="postPoll">
-            <div className="postPollTitle"><Vote size={18}/><div><strong>{post.pollQuestion}</strong><span>{totalVotes} {t.votes}</span></div></div>
-            <div className="postPollOptions">{post.options.map(opt=>{
-              const count=opt.votes.length,pct=totalVotes?Math.round(count/totalVotes*100):0,chosen=post.myOptionId===opt.id;
-              return <button key={opt.id} className={chosen?'chosen':''} onClick={()=>voteTeamPost(post.id,opt.id)}>
-                <span className="pollBar" style={{width:`${pct}%`}}/>
-                <span className="pollChoice">{chosen?<Check size={15}/>:<span className="pollRadio"/>}<b>{opt.label}</b></span>
-                <span className="pollCount">{count} · {pct}%</span>
-              </button>
-            })}</div>
-            {post.myOptionId&&<div className="myVoteHint"><Check size={13}/>{t.yourVote} · {lang==='cs'?'kliknutím můžeš volbu změnit':'click another option to change it'}</div>}
-          </div>}
-        </article>
-      })}
-    </div>}
+          {post.pollQuestion&&<div className="postPoll"><div className="postPollTitle"><Vote size={16}/><div><strong>{post.pollQuestion}</strong><span>{totalVotes} {t.votes}</span></div></div>{post.options.map(opt=><div className="archiveOption" key={opt.id}><b>{opt.label}</b><span>{opt.votes.map(v=>v.playerName).join(', ')||t.noVoters}</span></div>)}</div>}
+        </article>})}
+      </div>}
+    </>}
   </section>}
 
   {tab==='map'&&<section className="mapPage">

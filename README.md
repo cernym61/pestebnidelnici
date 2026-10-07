@@ -355,3 +355,52 @@ Nový SQL není potřeba.
 - každý zápas ukazuje rok, divizi/ligu (např. 5D) a část sezóny (jaro/podzim), pokud jsou tato data v tabulce `seasons`
 
 Nový SQL není potřeba.
+
+
+## v3.7.9 — čitelnější štítky ve Vzájemných zápasech
+
+Rok, liga/divize a část sezóny (jaro/podzim) jsou lehce zvětšené:
+- větší písmo
+- o něco větší vnitřní odsazení
+- stále zůstávají nenápadné vůči výsledku a týmům
+
+Na mobilu jsou jen mírně menší, aby se dobře vešly.
+
+Nový SQL není potřeba.
+
+
+## v3.8.0 — Nástěnka jako týmové ankety / akce
+
+### Aktivní anketa nahoře
+Aktivní ankety jsou vždy úplně nahoře na Nástěnce.
+Pokud uživatel ještě nehlasoval, karta je zvýrazněná a obsahuje badge „Hlasuj teď“.
+
+### Každý může vytvořit anketu
+Každý přihlášený aktivní hráč může vytvořit příspěvek / anketu.
+Hromadný e-mail a push při publikaci zůstává z bezpečnostních důvodů dostupný jen adminovi a kapitánovi.
+
+### Datum
+Anketa může mít datum akce.
+Po skončení daného data:
+- běžným hráčům z Nástěnky zmizí,
+- admin ji dál vidí v šedé sekci „Historie anket“.
+
+### Kdo hlasoval
+Pod každou možností ankety jsou vidět konkrétní hráči, kteří pro ni hlasovali.
+
+### Reminder
+Autor ankety a admin vidí tlačítka:
+- Připomenout push
+- Připomenout e-mailem
+
+Reminder se pošle pouze registrovaným aktivním hráčům, kteří v dané anketě ještě nehlasovali.
+
+### Fotka
+K anketě lze nahrát JPG / PNG / WEBP do 7 MB.
+Fotografie se použije jako pozadí aktivní ankety.
+
+### SQL
+Spusť jednou:
+`supabase/update-v3.8.sql`
+
+Přidá `event_date`, `background_url` a vytvoří public Storage bucket `board-images`.

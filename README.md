@@ -217,3 +217,22 @@ Spusť jednou:
 `supabase/update-v3.7.sql`
 
 Přidá sloupce `latitude` a `longitude` do tabulky `venues`.
+
+
+## v3.7.1 — oprava mapy hřišť
+
+Chyba byla v kontrole souřadnic:
+JavaScript převádí `null` přes `Number(null)` na `0`.
+API proto považovalo prázdné `latitude/longitude` za platné `0,0` a všech 43 hřišť skončilo v Guinejském zálivu.
+
+Oprava:
+- `null`, prázdné hodnoty a `0,0` už nejsou považované za platné souřadnice,
+- souřadnice mimo rozumný rozsah pro ČR se zahodí,
+- hřiště bez správných souřadnic se znovu geokódují podle adresy,
+- Mapa hřišť je přesunuta na konec veřejných záložek.
+
+### SQL
+Spusť jednou:
+`supabase/update-v3.7.1.sql`
+
+Tím se smažou chybné uložené souřadnice a při dalším otevření mapy se doplní správně.

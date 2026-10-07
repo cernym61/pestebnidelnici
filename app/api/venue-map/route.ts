@@ -7,6 +7,19 @@ export const maxDuration=30;
 
 const sleep=(ms:number)=>new Promise(r=>setTimeout(r,ms));
 
+function hasValidCoords(v:any){
+  if(v?.latitude===null||v?.latitude===undefined||v?.longitude===null||v?.longitude===undefined)return false;
+  if(String(v.latitude).trim()===''||String(v.longitude).trim()==='')return false;
+  const lat=Number(v.latitude),lng=Number(v.longitude);
+  if(!Number.isFinite(lat)||!Number.isFinite(lng))return false;
+  // 0,0 is the Gulf of Guinea and is never a Prague/Hanspaulka venue.
+  if(Math.abs(lat)<0.0001&&Math.abs(lng)<0.0001)return false;
+  // All PSMF pitches used by this team should be in/around Czechia.
+  if(lat<48||lat>51.5||lng<12||lng>19)return false;
+  return true;
+}
+
+
 async function geocode(address:string,name:string){
   const q=[address,name,"Česko"].filter(Boolean).join(", ");
   const url=`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=cz&q=${encodeURIComponent(q)}`;
@@ -37,8 +50,9 @@ export async function GET(){
 
     // Geocode only missing coordinates, once; store them so subsequent opens are instant.
     for(const v of venues){
-      if(Number.isFinite(Number(v.latitude))&&Number.isFinite(Number(v.longitude)))continue;
+      if(hasValidCoords(v))continue;
       if(!v.address)continue;
+      v.latitude=null;v.longitude=null;
       const point=await geocode(String(v.address),String(v.name||v.code));
       if(point){
         v.latitude=point.latitude;v.longitude=point.longitude;
@@ -66,7 +80,7 @@ export async function GET(){
 
     return NextResponse.json({
       venues:venues
-        .filter(v=>Number.isFinite(Number(v.latitude))&&Number.isFinite(Number(v.longitude)))
+        .filter(v=>hasValidCoords(v))
         .map(v=>({
           code:v.code,name:v.name,address:v.address,notes:v.notes,
           latitude:Number(v.latitude),longitude:Number(v.longitude),

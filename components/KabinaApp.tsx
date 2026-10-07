@@ -39,7 +39,7 @@ function fmtDateTime(iso:string,lang:Lang){return new Intl.DateTimeFormat(lang==
 function googleMaps(address:string){return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;}
 function waze(address:string){return `https://www.waze.com/ul?q=${encodeURIComponent(address)}&navigate=yes`;}
 function ours(name:string){return name.startsWith('Pěstební dělníci');}
-const APP_VERSION='3.7.0';
+const APP_VERSION='3.7.1';
 
 function stripDiacritics(value:string){return value.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();}
 function parseScore(score:string|null|undefined){const m=String(score||'').match(/(\d+)\s*:\s*(\d+)/);return m?[Number(m[1]),Number(m[2])] as const:null;}
@@ -532,7 +532,7 @@ export default function KabinaApp(){
   <header className="teamHeroHeader"><div className="heroShade"/><div className="heroHeaderContent"><div><div className="tag light">{t.tagline}</div><h1>Pěstební dělníci<br className="mobileBreak"/> A<span>.</span></h1></div><div className="actions"><button className="glassBtn" onClick={()=>setLang(lang==='cs'?'en':'cs')}><Languages size={18}/>{lang==='cs'?'EN':'CZ'}</button>{session?<button className="glassBtn" onClick={logout}><LogOut size={18}/><span className="desktopOnly">{t.logout}</span></button>:<button className="glassBtn" onClick={()=>{setAuthMode('login');setAuthOpen(true)}}><LogIn size={18}/><span className="desktopOnly">{t.login}</span></button>}</div></div></header>
   {profile&&<div className="signedStrip">{avatar(profile.display_name,profile.avatar_url,'sm')}<span>{t.signedAs}: <strong>{profile.display_name}</strong></span></div>}
   <section className="sourceCard"><div><strong>{t.league}</strong><div className="muted">{t.verified}</div></div><div className="actions"><button className="ghost" onClick={refreshPsmf} disabled={syncing}><RefreshCw size={18}/>{syncing?'…':t.refresh}</button><a href={SOURCE_URL} target="_blank" rel="noreferrer" className="ghost"><ExternalLink size={16}/></a></div></section>
-  <nav className="tabs">{((['matches','board','map','table','stats','history','h2h'] as Tab[]).filter(k=>k!=='board'||Boolean(profile))).map(k=>{
+  <nav className="tabs">{((['matches','board','table','stats','history','h2h','map'] as Tab[]).filter(k=>k!=='board'||Boolean(profile))).map(k=>{
    const badge=k==='matches'&&nextAttendanceNeedsAnswer?1:k==='board'?openPollCount:0;
    return <button key={k} className={tab===k?'active':''} onClick={()=>setTab(k)}>
      <span className="tabLabel">{k==='board'?<><Megaphone size={15}/>{t.board}</>:k==='map'?<><MapIcon size={15}/>{t.map}</>:t[k]}</span>

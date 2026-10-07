@@ -62,3 +62,13 @@ AI zůstává odstraněná.
 - První sloupec s hráčem je při horizontálním posunu sticky, takže jméno zůstává vidět.
 
 SQL z v3.6 (`supabase/update-v3.6.sql`) zůstává stejný; žádný nový SQL pro v3.6.1 není potřeba.
+
+
+## v3.6.2 — build hotfix
+
+Opraven TypeScript build error ve funkci pro horizontální posun statistik.
+
+`useRef<HTMLDivElement>(null)` vrací referenci, jejíž `current` může být `null`.
+Helper nyní správně přijímá `{ current: HTMLDivElement | null }`.
+
+Žádná funkce se nemění a není potřeba nový SQL.

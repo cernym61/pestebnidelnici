@@ -365,7 +365,7 @@ export default function KabinaApp(){
  }
 
 
- function scrollStats(ref:React.RefObject<HTMLDivElement>,direction:-1|1){
+ function scrollStats(ref:{current:HTMLDivElement|null},direction:-1|1){
    ref.current?.scrollBy({left:direction*420,behavior:'smooth'});
  }
 

@@ -1346,3 +1346,164 @@ p,h1,h2,h3,h4,strong,b,span,a,button,label,td,th{
   .newPlayerForm{grid-template-columns:1fr}
   .newPlayerForm .primaryBtn{width:100%}
 }
+
+
+/* v3.12.1 — desktop jersey badge + remove player */
+.shell .playerIdsTable .jerseyBadge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:34px;
+  min-width:34px;
+  height:34px;
+  padding:0;
+  border-radius:9px;
+  line-height:1;
+  white-space:nowrap;
+  flex:0 0 34px;
+  background:#203f30;
+  color:#fff;
+  font-weight:900;
+  text-align:center;
+}
+.deletePlayerBtn{
+  border:1px solid #e4bdb8;
+  background:#fff2f0;
+  color:#a3342d;
+  border-radius:9px;
+  padding:8px 10px;
+  font-weight:850;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+}
+.deletePlayerBtn:hover{background:#ffe9e6}
+.deletePlayerBtn:disabled{opacity:.35;cursor:not-allowed}
+@media(max-width:760px){
+  .deletePlayerBtn{width:100%}
+}
+
+
+/* v3.12.2 — language switch on the private entry screen */
+.privateGateCard{
+  position:relative;
+}
+.privateGateLang{
+  position:absolute;
+  top:18px;
+  right:18px;
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
+  padding:3px;
+  border:1px solid #d8e2d3;
+  border-radius:10px;
+  background:#f5f8f2;
+}
+.privateGateLang button{
+  min-width:38px;
+  height:30px;
+  border:0;
+  border-radius:7px;
+  background:transparent;
+  color:#6f7d72;
+  font-size:11px;
+  font-weight:900;
+  cursor:pointer;
+}
+.privateGateLang button.active{
+  background:#1f5a39;
+  color:#fff;
+  box-shadow:0 3px 8px rgba(31,90,57,.14);
+}
+.privateGateLang button:not(.active):hover{
+  background:#e9f0e4;
+  color:#31543e;
+}
+@media(max-width:600px){
+  .privateGateLang{
+    top:14px;
+    right:14px;
+  }
+  .privateGateBrand{
+    padding-top:44px;
+  }
+}
+
+
+/* v3.12.3 — non-blocking notifications instead of browser alert() popups */
+.appToast{
+  position:fixed;
+  top:18px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:100000;
+  width:min(520px,calc(100vw - 24px));
+  min-height:48px;
+  display:grid;
+  grid-template-columns:28px minmax(0,1fr) 28px;
+  align-items:center;
+  gap:9px;
+  padding:10px 11px;
+  border:1px solid #cbd9c6;
+  border-radius:13px;
+  background:#fff;
+  box-shadow:0 14px 42px rgba(24,53,39,.20);
+  animation:toastIn .18s ease-out;
+}
+.appToast>span{
+  width:28px;
+  height:28px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:#e8f3e4;
+  color:#25623e;
+  font-weight:950;
+  font-size:14px;
+}
+.appToast p{
+  margin:0;
+  color:#263b31;
+  font-size:12px;
+  line-height:1.35;
+  font-weight:750;
+  overflow-wrap:anywhere;
+}
+.appToast>button{
+  border:0;
+  background:transparent;
+  color:#7d8980;
+  font-size:20px;
+  line-height:1;
+  cursor:pointer;
+  padding:0;
+}
+.appToast.error{
+  border-color:#efc4bf;
+  background:#fff9f8;
+}
+.appToast.error>span{
+  background:#fee8e5;
+  color:#a63b31;
+}
+.appToast.info{
+  border-color:#d8ded5;
+  background:#fbfcfa;
+}
+.appToast.info>span{
+  background:#eef2eb;
+  color:#51665a;
+}
+@keyframes toastIn{
+  from{opacity:0;transform:translate(-50%,-10px)}
+  to{opacity:1;transform:translate(-50%,0)}
+}
+@media(max-width:600px){
+  .appToast{
+    top:10px;
+    width:calc(100vw - 20px);
+  }
+}

@@ -614,3 +614,42 @@ Pokud se později na PSMF objeví pod stejným jménem, běžný PSMF upsert akt
 Pro jednoduchost je `supabase/update-v3.12.sql` samostatná kumulativní migrace:
 obsahuje zabezpečení z v3.11 i nové funkce z v3.12.
 Pokud v3.11 ještě nebyla spuštěna, stačí spustit pouze `update-v3.12.sql`.
+
+
+## v3.12.1 — čísla dresů + odstranění hráče
+
+- opraven desktopový vzhled čísel dresů v záložce ID hráčů; responsive globální pravidlo už nesmrští zelený badge
+- admin může odstranit hráče bez účtu tlačítkem **Odstranit hráče**
+- hráče s již propojeným účtem nelze omylem smazat; nejdřív je nutné účet odpojit
+- pokud je odstraněný hráč stále na PSMF, další synchronizace jej může znovu načíst
+
+SQL: spusť `supabase/update-v3.12.1.sql`. Je kumulativní a bezpečný k opětovnému spuštění.
+
+
+## v3.12.2 — přepínání CZ / EN na vstupní obrazovce
+
+- na neveřejné úvodní obrazovce je nově přepínač **CZ / EN**
+- překládá přihlášení, registraci, hosta i registrační formulář ještě před vstupem do aplikace
+- zvolený jazyk se uloží v prohlížeči a zůstane nastavený i při další návštěvě
+- případné přepnutí jazyka uvnitř aplikace používá stejné uložené nastavení
+
+SQL není potřeba.
+
+
+## v3.12.3 — automaticky mizející oznámení
+
+- odstraněna blokující browserová `alert()` okna, kde bylo nutné klikat na OK
+- po vytvoření ankety, přidání hráče, změně fotky, synchronizaci, odeslání reminderu apod. se zobrazí jen malé oznámení nahoře
+- oznámení samo zmizí přibližně po 3 sekundách
+- chyby se zobrazují červeně, informační zprávy neutrálně
+- potvrzení před destruktivní akcí (např. smazání hráče/příspěvku) zůstává schválně, aby nešlo něco smazat omylem
+
+SQL není potřeba.
+
+
+## v3.12.4 — GitHub deployment package
+
+Balíček sjednocuje aktuální stav aplikace a přidává doporučenou bezpečně opakovatelnou databázovou migraci:
+`supabase/update-v3.12.4.sql`.
+
+Pro nasazení této verze stačí nahrát celý obsah do GitHubu a spustit uvedený SQL v Supabase.

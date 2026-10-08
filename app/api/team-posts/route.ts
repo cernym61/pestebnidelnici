@@ -86,7 +86,7 @@ async function serializePosts(admin:any,currentPlayer:any){
     admin.from('team_posts').select('id,author_player_id,title,body,poll_question,email_sent,push_sent,event_date,background_url,created_at,updated_at').order('created_at',{ascending:false}).limit(150),
     admin.from('team_post_poll_options').select('id,post_id,label,sort_order').order('sort_order'),
     admin.from('team_post_votes').select('post_id,option_id,player_id,created_at'),
-    admin.from('players').select('id,display_name,avatar_url,role')
+    admin.from('players').select('id,display_name,avatar_url,role,user_id,active')
   ]);
   if(pe)throw pe;if(oe)throw oe;if(ve)throw ve;if(ple)throw ple;
 
@@ -115,12 +115,19 @@ async function serializePosts(admin:any,currentPlayer:any){
         return {playerId:v.player_id,playerName:p?.display_name||'Hráč',avatarUrl:p?.avatar_url||null};
       })
     }));
-    const myVote=(votes||[]).find((v:any)=>v.post_id===post.id&&v.player_id===currentPlayer.id);
+    const postVotes=(votes||[]).filter((v:any)=>v.post_id===post.id);
+    const votedIds=new Set(postVotes.map((v:any)=>v.player_id));
+    const unvoted=(players||[])
+      .filter((p:any)=>p.active===true&&p.user_id&&!votedIds.has(p.id))
+      .map((p:any)=>({playerId:p.id,playerName:p.display_name||'Hráč',avatarUrl:p.avatar_url||null}))
+      .sort((a:any,b:any)=>a.playerName.localeCompare(b.playerName,'cs'));
+    const myVote=postVotes.find((v:any)=>v.player_id===currentPlayer.id);
     return {
       id:post.id,title:post.title,body:post.body,createdAt:post.created_at,updatedAt:post.updated_at,
       author:{id:post.author_player_id,name:author?.display_name||'Tým',avatarUrl:author?.avatar_url||null,role:author?.role||'player'},
       pollQuestion:post.poll_question,
       options:postOptions,
+      unvoted,
       myOptionId:myVote?.option_id||null,
       emailSent:Boolean(post.email_sent),pushSent:Boolean(post.push_sent),
       eventDate:post.event_date||null,

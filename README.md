@@ -432,3 +432,41 @@ Každá odpověď v editoru ankety má nově vlastní tlačítko **×**.
 - pokud jich zbývá méně, editor na to upozorní
 
 Nový SQL není potřeba.
+
+
+## v3.9.0 — ankety: nehlasující, komentáře, notifikace + historické sestavy
+
+### Kdo ještě nehlasoval
+Každá aktivní anketa zobrazuje i registrované aktivní hráče, kteří ještě nehlasovali.
+
+### Komentáře u ankety
+Pod anketou lze:
+- přidat komentář
+- odpovědět na konkrétní komentář
+
+Pokud někdo odpoví na tvůj komentář, OneSignal pošle push přímo tobě.
+Běžný nový komentář neposílá push všem; místo toho ostatním zvýší červený badge u Nástěnky.
+Badge kombinuje:
+- nevyplněné aktivní ankety
+- nové nepřečtené komentáře
+
+Komentáře se kontrolují také při návratu do aplikace a průběžně každých 30 s.
+
+### Datum ankety
+Na desktopu je datum aktivní ankety výrazně větší.
+
+### Historie / Vzájemné zápasy
+Pokud jsou pro daný historický zápas načtená PSMF detailní data, je u zápasu nové tlačítko **Zobrazit sestavu**.
+Po rozkliknutí se zobrazí naše sestava a označení:
+- 🧤 brankář
+- C kapitán
+- ★ hráč zápasu
+
+### Iniciály
+Fallback avatary s iniciálami jsou natvrdo centrované horizontálně i vertikálně, včetně malých bublinek v anketách.
+
+### SQL
+Spusť jednou:
+`supabase/update-v3.9.sql`
+
+Vytvoří tabulky pro komentáře anket a evidenci posledního přečtení Nástěnky.

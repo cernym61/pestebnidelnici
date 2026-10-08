@@ -653,3 +653,17 @@ Balíček sjednocuje aktuální stav aplikace a přidává doporučenou bezpečn
 `supabase/update-v3.12.4.sql`.
 
 Pro nasazení této verze stačí nahrát celý obsah do GitHubu a spustit uvedený SQL v Supabase.
+
+
+## v3.12.5 — kontrola registračního kódu před ověřovacím e-mailem
+
+Před `supabase.auth.signUp()` aplikace nově volá databázovou funkci `validate_signup_code`.
+Ověří:
+- hráč je aktivní
+- ještě nemá účet
+- registrační kód přesně odpovídá
+
+Teprve poté se vytvoří Auth účet a Supabase odešle potvrzovací e-mail.
+Neplatný / použitý kód tedy už nevytváří zbytečný účet ani ověřovací e-mail.
+
+SQL: `supabase/update-v3.12.5.sql`

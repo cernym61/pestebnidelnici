@@ -44,3 +44,22 @@ export async function POST(request:Request){
     return NextResponse.json({ok:false,error:error?.message||'Vote failed'},{status:500});
   }
 }
+
+
+export async function DELETE(request:Request){
+  try{
+    const {admin,player}=await getAuthPlayer(request);
+    const body=await request.json().catch(()=>({}));
+    const postId=String(body?.postId||'');
+    if(!postId)return NextResponse.json({ok:false,error:'Missing poll id'},{status:400});
+
+    const {error}=await admin.from('team_post_votes')
+      .delete()
+      .eq('post_id',postId)
+      .eq('player_id',player.id);
+    if(error)throw error;
+    return NextResponse.json({ok:true});
+  }catch(error:any){
+    return NextResponse.json({ok:false,error:error?.message||'Could not cancel vote'},{status:500});
+  }
+}

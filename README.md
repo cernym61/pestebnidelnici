@@ -470,3 +470,60 @@ Spusť jednou:
 `supabase/update-v3.9.sql`
 
 Vytvoří tabulky pro komentáře anket a evidenci posledního přečtení Nástěnky.
+
+
+## v3.9.1 — testovací e-mail ankety + zrušení hlasu
+
+- V editoru ankety je tlačítko **Poslat test ankety sobě**.
+- Test se odešle přes Resend na e-mail právě přihlášeného uživatele.
+- Použije aktuální rozepsaný nadpis, otázku, možnosti a datum.
+- Pokud je editor ještě prázdný, odešle ukázkovou anketu.
+- Po hlasování se zobrazuje tlačítko **Zrušit hlas**.
+- Zrušení hlasu smaže vlastní hlas a hráč se znovu objeví mezi „Ještě nehlasovali“.
+
+Nový SQL není potřeba.
+
+
+## v3.10.0 — automatické přepínání sezón PSMF
+
+Kabina už není napevno svázaná s `2026-podzim / 5D`.
+
+### Jak přechod funguje
+- každý den dál běží Vercel cron `/api/sync-psmf`
+- dokud má aktuální sezóna na PSMF nadcházející zápasy, nic se nemění
+- jakmile má sezóna odehrané zápasy a PSMF už pro tým nemá žádný další nadcházející zápas, Kabina ji považuje za skončenou
+- automaticky vypočítá sezonu, která má následovat:
+  - `jaro YYYY` → `podzim YYYY`
+  - `podzim YYYY` → `jaro YYYY+1`
+- na stránce nové soutěže PSMF projde zveřejněné skupiny a hledá **Pěstební dělníci A**
+- jakmile tým najde, sama zjistí novou divizi i přesnou URL týmové stránky a přepne aktuální sezonu
+- není tedy potřeba předem vědět, zda tým bude například v 4C, 5D nebo jiné skupině
+
+### Stav mezi sezonami
+Pokud nová sezóna ještě není zveřejněná:
+- stará sezóna zůstane uložená jako poslední
+- na Zápasech se zobrazí:
+  **„Sezóna skončila. Čekáme na vyhlášení Jaro 2027.“**
+- Kabina zároveň vysvětlí, že novou sezonu kontroluje automaticky každý den
+
+Pokud PSMF už novou sezonu / týmovou skupinu zveřejní, ale ještě nemá rozpis zápasů:
+- Kabina se přepne na novou sezonu
+- zobrazí stav **„Rozpis se připravuje“**
+- jakmile PSMF doplní rozpis, zápasy se načtou automaticky
+
+### Dynamická data
+Po přepnutí se automaticky změní:
+- aktuální sezóna
+- divize
+- odkaz na PSMF
+- zápasy
+- tabulka
+- aktuální hráčské statistiky
+- označení sezóny ve Statistikách
+- nová sezóna se zároveň uloží do Historie, včetně detailních dat PSMF
+
+### SQL
+Spusť jednou:
+`supabase/update-v3.10.sql`
+
+Vytvoří tabulku `season_state`, která drží aktuální sezonu a stav čekání na následující sezonu.

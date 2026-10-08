@@ -159,6 +159,31 @@ async function fetchSeason(s:any, now:string){
   return {summary,standings,matches,stats,details};
 }
 
+
+export async function syncOneSeason(admin:any,s:any,now:string){
+  const {summary,standings:st,matches:ms,stats:ss,details:detail}=await fetchSeason(s,now);
+  const errors:string[]=[];
+  const a=await admin.from('seasons').upsert(summary,{onConflict:'season'});
+  if(a.error)errors.push(`${summary.season}: ${a.error.message}`);
+  if(st.length){
+    const h=await admin.from('historical_standings').upsert(st,{onConflict:'season,team'});
+    if(h.error)errors.push(`${summary.season} standings: ${h.error.message}`);
+  }
+  if(ms.length){
+    const b=await admin.from('historical_matches').upsert(ms,{onConflict:'psmf_key'});
+    if(b.error)errors.push(`${summary.season} matches: ${b.error.message}`);
+  }
+  if(ss.length){
+    const c=await admin.from('player_season_stats').upsert(ss,{onConflict:'season,player_name'});
+    if(c.error)errors.push(`${summary.season} stats: ${c.error.message}`);
+  }
+  if(detail.details_text){
+    const d=await admin.from('psmf_season_details').upsert(detail,{onConflict:'season'});
+    if(d.error)errors.push(`${summary.season} details: ${d.error.message}`);
+  }
+  return {season:summary.season,errors};
+}
+
 export async function syncHistory(admin:any, now:string){
   const settled=await Promise.allSettled(HISTORY_SEASONS.map(s=>fetchSeason(s,now)));
   let seasons=0,standings=0,matches=0,stats=0,details=0; const errors:string[]=[];

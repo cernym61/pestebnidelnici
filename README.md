@@ -667,3 +667,39 @@ Teprve poté se vytvoří Auth účet a Supabase odešle potvrzovací e-mail.
 Neplatný / použitý kód tedy už nevytváří zbytečný účet ani ověřovací e-mail.
 
 SQL: `supabase/update-v3.12.5.sql`
+
+
+## v3.12.6 — čitelnější názvy týmů v Historii a Vzájemných zápasech
+
+- zápas má pevnou logiku: datum | domácí — skóre — hosté | hřiště
+- detail střelců, brankáře, kapitána a hráče zápasu je pod názvy a už jim nebere šířku
+- názvy týmů se už nelámou uprostřed slov
+- upraveno pro desktop, menší notebook i mobil
+- stejné rozložení platí pro Historii i Vzájemné zápasy
+
+SQL není potřeba.
+
+
+## v3.12.7 — žluté/červené karty + řazení statistik
+
+### Karty
+Parser historických detailů nově čte přímo PSMF CSS třídy:
+- `is-yellow` → žlutá karta
+- `is-red` → červená karta
+
+Podporuje i skutečný PSMF formát, kdy je minuta a jméno uvnitř card spanu, např. `46. Martin Černý`.
+
+### Statistiky
+Nahoře ve Statistikách je nový filtr **Seřadit statistiky podle**:
+- góly
+- zápasy
+- žluté karty
+- červené karty
+- hráč zápasu
+- kapitán
+- brankář
+
+Řazení platí pro aktuální sezonu i kariéru.
+Jakmile uživatel záložku Statistiky opustí, řazení se automaticky vrátí na výchozí pořadí.
+
+SQL není potřeba.

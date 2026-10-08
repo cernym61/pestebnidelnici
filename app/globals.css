@@ -1507,3 +1507,146 @@ p,h1,h2,h3,h4,strong,b,span,a,button,label,td,th{
     width:calc(100vw - 20px);
   }
 }
+
+
+/* v3.12.6 — History/H2H match layout: keep team names readable */
+.historyRich{
+  grid-template-columns:118px minmax(0,1fr) 62px;
+  column-gap:18px;
+  align-items:start;
+}
+.historyRich .dateBox{
+  padding-top:2px;
+}
+.historyRich .matchTeams{
+  min-width:0;
+  width:100%;
+  display:grid;
+  grid-template-columns:minmax(150px,1fr) auto minmax(150px,1fr);
+  grid-template-rows:auto auto auto;
+  align-items:center;
+  justify-content:stretch;
+  column-gap:16px;
+  row-gap:0;
+}
+.historyRich .matchTeams>b{
+  min-width:0;
+  font-size:15px;
+  line-height:1.28;
+  font-weight:850;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+  hyphens:none;
+}
+.historyRich .matchTeams>b:first-child{
+  text-align:right;
+  justify-self:stretch;
+}
+.historyRich .matchTeams>b:nth-of-type(2){
+  text-align:left;
+  justify-self:stretch;
+}
+.historyRich .matchTeams>.result{
+  justify-self:center;
+  min-width:44px;
+  text-align:center;
+  font-size:14px;
+  line-height:1;
+  padding:9px 9px;
+}
+.historyRich .matchEventSummary{
+  grid-column:1/-1;
+  width:100%;
+  min-width:0;
+  margin-top:14px;
+  padding-top:11px;
+}
+.historyRich .historyLineupWrap{
+  grid-column:1/-1;
+  min-width:0;
+}
+.historyRich>.venueBtn{
+  align-self:start;
+  padding-top:3px;
+  white-space:nowrap;
+}
+
+/* Intermediate laptop widths */
+@media(max-width:980px) and (min-width:701px){
+  .historyRich{
+    grid-template-columns:100px minmax(0,1fr) 58px;
+    column-gap:12px;
+  }
+  .historyRich .matchTeams{
+    grid-template-columns:minmax(115px,1fr) auto minmax(115px,1fr);
+    column-gap:10px;
+  }
+  .historyRich .matchTeams>b{font-size:14px}
+}
+
+/* Phones: teams may wrap at spaces, never in the middle of words */
+@media(max-width:700px){
+  .historyRich{
+    grid-template-columns:68px minmax(0,1fr);
+    column-gap:9px;
+  }
+  .historyRich .matchTeams{
+    grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;
+    column-gap:8px;
+  }
+  .historyRich .matchTeams>b{
+    font-size:11px;
+    line-height:1.25;
+    overflow-wrap:normal!important;
+    word-break:normal!important;
+    hyphens:none;
+  }
+  .historyRich .matchTeams>b:first-child{text-align:right}
+  .historyRich .matchTeams>b:nth-of-type(2){text-align:left}
+  .historyRich>.venueBtn{
+    grid-column:2;
+    justify-self:end;
+    padding-top:0;
+  }
+}
+
+
+/* v3.12.7 — statistics sorting */
+.statsSortBar{
+  margin:24px 0 -18px;
+  display:flex;
+  justify-content:flex-end;
+}
+.statsSortBar label{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  font-size:11px;
+  font-weight:850;
+  color:var(--muted);
+}
+.statsSortBar select{
+  border:1px solid var(--line);
+  border-radius:11px;
+  padding:9px 12px;
+  background:#fff;
+  color:var(--ink);
+  font-weight:800;
+  min-width:220px;
+}
+@media(max-width:700px){
+  .statsSortBar{
+    margin:12px 0 -10px;
+    justify-content:stretch;
+  }
+  .statsSortBar label{
+    width:100%;
+    display:grid;
+    gap:5px;
+  }
+  .statsSortBar select{
+    width:100%;
+    min-width:0;
+    font-size:16px;
+  }
+}

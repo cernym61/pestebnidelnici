@@ -4,9 +4,15 @@ import { detailsTextFromRawHtml, parseSeasonDetails } from '@/lib/history-events
 
 export const runtime='nodejs';
 
-export async function GET(){
+export async function GET(request:Request){
   try{
+    const token=(request.headers.get('authorization')||'').replace(/^Bearer\s+/,'');
+    if(!token)return NextResponse.json({error:'Unauthorized'},{status:401});
     const admin=getSupabaseAdmin();
+    const {data:userData,error:userErr}=await admin.auth.getUser(token);
+    if(userErr||!userData.user)return NextResponse.json({error:'Unauthorized'},{status:401});
+    const {data:player}=await admin.from('players').select('id,role,active').eq('user_id',userData.user.id).maybeSingle();
+    if(!player||player.active!==true||player.role!=='admin')return NextResponse.json({error:'Forbidden'},{status:403});
     const [{data:details,error:de},{data:stats,error:se}]=await Promise.all([
       admin.from('psmf_season_details').select('season,details_html,details_text').order('season'),
       admin.from('player_season_stats').select('season,player_name').order('season')

@@ -13,7 +13,7 @@ type Point={
   nextMatch:boolean;
 };
 
-export default function VenueMap({lang,nextVenue,onVenueClick}:{lang:"cs"|"en";nextVenue?:string;onVenueClick?:(code:string)=>void}){
+export default function VenueMap({lang,nextVenue,onVenueClick,accessToken}:{lang:"cs"|"en";nextVenue?:string;onVenueClick?:(code:string)=>void;accessToken:string}){
   const mapEl=useRef<HTMLDivElement|null>(null);
   const mapRef=useRef<any>(null);
   const clusterRef=useRef<any>(null);
@@ -187,7 +187,7 @@ export default function VenueMap({lang,nextVenue,onVenueClick}:{lang:"cs"|"en";n
       try{
         setError("");
         await initMap();
-        const res=await fetch(`/api/venue-map?t=${Date.now()}`,{cache:"no-store"});
+        const res=await fetch(`/api/venue-map?t=${Date.now()}`,{cache:"no-store",headers:{Authorization:`Bearer ${accessToken}`}});
         const body=await res.json().catch(()=>({}));
         if(!res.ok)throw new Error(body?.error||"Map data failed");
 
@@ -231,7 +231,7 @@ export default function VenueMap({lang,nextVenue,onVenueClick}:{lang:"cs"|"en";n
       didInitialFitRef.current=false;
       userInteractedRef.current=false;
     };
-  },[]);
+  },[accessToken]);
 
 
   const locateMe=()=>{

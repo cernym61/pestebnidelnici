@@ -62,9 +62,15 @@ async function geocode(address:string,name:string,code:string){
   return null;
 }
 
-export async function GET(){
+export async function GET(request:Request){
   try{
+    const token=(request.headers.get('authorization')||'').replace(/^Bearer\s+/,'');
+    if(!token)return NextResponse.json({error:'Unauthorized'},{status:401});
     const admin=getSupabaseAdmin();
+    const {data:userData,error:userErr}=await admin.auth.getUser(token);
+    if(userErr||!userData.user)return NextResponse.json({error:'Unauthorized'},{status:401});
+    const {data:player}=await admin.from('players').select('id,active').eq('user_id',userData.user.id).maybeSingle();
+    if(!player||player.active!==true)return NextResponse.json({error:'Forbidden'},{status:403});
     const {data,error}=await admin.from("venues")
       .select("code,name,address,notes,latitude,longitude")
       .order("code");

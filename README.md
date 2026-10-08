@@ -527,3 +527,90 @@ Spusť jednou:
 `supabase/update-v3.10.sql`
 
 Vytvoří tabulku `season_state`, která drží aktuální sezonu a stav čekání na následující sezonu.
+
+
+## v3.10.1 — responsive audit pro iPhone, Android, Samsung a iPad
+
+Prošel jsem kritické části rozhraní pro šířky typické pro:
+- 320–360 px (užší Androidy)
+- 375–430 px (iPhone / Samsung / běžné Androidy)
+- 768–820 px (iPad / menší tablety)
+- 1024 px (tablet landscape)
+
+Opravy:
+- tabulky už nemohou roztáhnout celý web; horizontálně scrolluje pouze tabulka
+- dlouhé názvy hráčů a týmů se bezpečně zalamují
+- zápasové řádky mají `minmax(0,1fr)` a nepřetékají
+- Historie a Vzájemné zápasy jsou bezpečnější pro dlouhé názvy
+- Nástěnka, ankety, komentáře a seznam nehlasujících se vejdou i na úzké displeje
+- admin formuláře se na telefonu skládají do jednoho sloupce
+- source card, hlavička a tlačítka jsou upravené pro Android i tablety
+- fallback pro 320–360 px skládá účast do jednoho sloupce
+- opraveno přetékání textu v buňkách a čipech
+
+Nový SQL není potřeba.
+
+
+## v3.11.0 — neveřejná týmová kabina
+
+Po otevření webu nepřihlášený návštěvník nejdřív vidí pouze vstupní bránu:
+
+- Přihlásit
+- Vytvořit účet
+- Pokračovat jako host
+
+### Člen týmu
+Po přihlášení a platném propojení s aktivním hráčem vidí všechny týmové záložky.
+
+### Host
+Host vidí pouze záložku **Tabulka**.
+Nevidí zápasy, účast, nástěnku, statistiky, historii, vzájemné zápasy, mapu, ID hráčů ani správu.
+Hostovský režim se pamatuje jen pro aktuální relaci prohlížeče.
+
+### Bezpečná registrace
+Registrace už nestačí pouze výběrem jména.
+
+Každý dosud nezaregistrovaný hráč má vlastní jednorázový osmimístný registrační kód.
+- registrovaná jména se v nabídce registrace vůbec nezobrazují
+- jméno lze propojit pouze se správným kódem
+- po úspěšném propojení se kód automaticky zneplatní
+- stará funkce `claim_player`, která uměla propojit hráče pouze podle jména, je zakázána
+
+Admin vidí kódy ve **Správa týmu** pouze u hráčů bez účtu a může tlačítkem vygenerovat nový kód.
+Kód hráči pošle soukromě.
+
+### Ochrana dat
+Anonymní uživatel už nemá přímé čtení:
+- zápasů
+- hráčů
+- hřišť
+- historie
+- historických tabulek
+- hráčských statistik
+
+Veřejná zůstává pouze ligová **Tabulka**, protože tu smí vidět host.
+API pro historické detaily a mapu nově také vyžadují přihlášeného aktivního hráče.
+
+### SQL
+Spusť jednou:
+`supabase/update-v3.11.sql`
+
+
+## v3.12.0 — automatické kódy pro nové hráče + ruční přidání hráče
+
+### Co se děje automaticky
+- stávající hráči, kteří už mají účet, zůstávají beze změny
+- každý nový aktivní hráč bez účtu automaticky dostane jednorázový registrační kód
+- to platí i pro hráče, kterého později načte synchronizace z PSMF
+- po propojení účtu se registrační kód zneplatní
+
+### Nový hráč ještě není na PSMF
+Admin může ve Správě týmu použít **Přidat nového hráče**.
+Stačí zadat jméno. Profil se vytvoří jako aktivní a automaticky dostane registrační kód.
+
+Pokud se později na PSMF objeví pod stejným jménem, běžný PSMF upsert aktualizuje existující profil místo vytvoření nového.
+
+### SQL
+Pro jednoduchost je `supabase/update-v3.12.sql` samostatná kumulativní migrace:
+obsahuje zabezpečení z v3.11 i nové funkce z v3.12.
+Pokud v3.11 ještě nebyla spuštěna, stačí spustit pouze `update-v3.12.sql`.

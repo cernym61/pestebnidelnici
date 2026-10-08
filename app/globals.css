@@ -958,3 +958,391 @@
   .seasonWaitingPanel{padding:28px 17px}
   .seasonWaitingPanel h2{font-size:28px}
 }
+
+
+/* v3.10.1 — responsive audit: iPhone / Android / Samsung / iPad */
+/* Globální ochrana proti horizontálnímu přetékání dlouhého textu */
+html,body{max-width:100%;overflow-x:hidden}
+.shell,.panel,.heroCard,.sourceCard,.matchCard,.teamPost,.postComposer,.boardHero,.accountCard{min-width:0}
+.shell *{min-width:0}
+img,svg,video,canvas{max-width:100%}
+button,input,select,textarea{max-width:100%}
+p,h1,h2,h3,h4,strong,b,span,a,button,label,td,th{
+  overflow-wrap:break-word;
+  word-break:normal;
+}
+
+/* Tabulky se nesmí roztáhnout přes celou stránku — scrolluje jen jejich obal */
+.tableWrap,.statsScroller,.richStats{
+  width:100%;
+  max-width:100%;
+  overflow-x:auto;
+  overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-inline:contain;
+}
+.tableWrap table,.statsScroller table,.richStats table{max-width:none}
+.tableWrap td,.tableWrap th{white-space:normal}
+.tableWrap td:nth-child(2),.tableWrap th:nth-child(2){
+  overflow-wrap:anywhere;
+}
+
+/* Dlouhé názvy týmů / hráčů */
+.matchTeams,.matchTeams>b,.teams>div,.teams h3,.h2hSummary,.historyRich,.teamPostTop,.teamPostAuthor,
+.playerCard,.adminPerson,.sourceCard>div:first-child,.accountMain{
+  min-width:0;
+}
+.matchTeams>b,.teams h3,.teamPost h3,.boardHero h2,.panelHead h2{
+  overflow-wrap:anywhere;
+}
+.teamPostAuthor>div,.adminPerson>div,.playerCard>div{min-width:0}
+
+/* Tablet landscape / iPad */
+@media(max-width:1024px){
+  .shell{max-width:100%;padding-left:22px;padding-right:22px}
+  .tabs{gap:20px}
+  .tabs button{font-size:15px}
+  .matchRow{grid-template-columns:125px minmax(0,1fr) auto}
+  .adminRowExtended{grid-template-columns:1fr 1fr}
+  .adminPerson{grid-column:1/-1}
+  .notifyChoices{grid-template-columns:1fr 1fr}
+}
+
+/* iPad portrait / menší tablety */
+@media(max-width:820px){
+  .shell{padding-left:16px;padding-right:16px}
+  .teamHeroHeader{margin-left:-16px;margin-right:-16px}
+  .heroHeaderContent{padding-left:20px;padding-right:20px}
+  .tabs{gap:12px}
+  .sourceCard{gap:10px}
+  .sourceCard .actions{flex:0 0 auto}
+  .sourceCard>div:first-child{flex:1}
+  .historyRich{grid-template-columns:110px minmax(0,1fr)}
+  .h2hDateBox{min-width:0}
+  .adminRow,.adminRowExtended{grid-template-columns:1fr 1fr}
+  .adminPerson{grid-column:1/-1}
+}
+
+/* Telefony — Android/iPhone */
+@media(max-width:700px){
+  .shell{width:100%;max-width:100%;padding-left:12px;padding-right:12px}
+  .sourceCard{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    width:100%;
+  }
+  .sourceCard strong,.sourceCard .muted{overflow-wrap:anywhere}
+  .sourceCard .actions{justify-self:end}
+  .sourceCard .ghost{padding:8px 9px}
+
+  .heroHeaderContent{gap:8px}
+  .heroHeaderContent>div:first-child{min-width:0}
+  .heroHeaderContent h1{overflow-wrap:normal;word-break:normal}
+  .glassBtn{flex:0 0 auto}
+
+  .teams{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    align-items:center;
+  }
+  .teams>div:first-child{min-width:0}
+  .teams h3{
+    font-size:clamp(24px,8vw,29px);
+    max-width:100%;
+  }
+  .vs{justify-self:end}
+  .meta>*{min-width:0}
+
+  .matchRow{grid-template-columns:minmax(0,1fr) auto}
+  .matchTeams{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;
+    width:100%;
+    align-items:center;
+  }
+  .matchTeams>b{
+    font-size:11px;
+    line-height:1.25;
+    overflow-wrap:anywhere;
+  }
+  .matchTeams>b:last-of-type{text-align:right}
+  .matchTeams .result,.matchTeams>span{white-space:nowrap}
+  .matchRow .venueBtn{
+    max-width:42vw;
+    text-align:right;
+    overflow-wrap:anywhere;
+  }
+
+  .responseCols span,.pollVoters span,.pollUnvotedPeople>span{
+    max-width:100%;
+    overflow-wrap:anywhere;
+  }
+
+  .panel,.teamPost,.postComposer,.boardHero{width:100%;max-width:100%}
+  .panelHead>*{max-width:100%}
+  .seasonSelect{min-width:0}
+
+  /* Běžné tabulky jsou na mobilu kompaktnější, ale zůstávají bezpečně scrollovatelné */
+  .tableWrap{margin-left:0;margin-right:0}
+  .tableWrap table:not(.playerIdsTable){min-width:560px}
+  .tableWrap th,.tableWrap td{
+    padding:9px 7px;
+    font-size:11px;
+    line-height:1.25;
+  }
+  .tableWrap th{font-size:9px}
+  .playerIdsTable{min-width:480px}
+
+  .mobileCompactStats{width:100%;max-width:100%}
+  .mobileCompactStats table{min-width:0!important}
+  .mobileCompactStats th,.mobileCompactStats td{
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .h2hSummary>*{min-width:0}
+  .historyRich{
+    grid-template-columns:68px minmax(0,1fr);
+    width:100%;
+  }
+  .historyRich .matchTeams{min-width:0}
+  .matchEventSummary,.historyLineupWrap,.historyLineup{max-width:100%}
+  .eventChip{max-width:100%;white-space:normal}
+
+  .pollBuilderTop,.notifyChoices,.pollReminderTools,.pollCropControls{max-width:100%}
+  .pollOptionBuilder>div{grid-template-columns:auto minmax(0,1fr) auto}
+  .pollOptionBuilder input{min-width:0}
+  .pollCommentComposer,.pollReplyComposer{grid-template-columns:minmax(0,1fr) auto}
+  .pollCommentItem p{overflow-wrap:anywhere}
+
+  .accountCard{grid-template-columns:auto minmax(0,1fr)}
+  .accountTools{grid-column:1/-1;width:100%}
+  .accountTools>*{max-width:100%}
+
+  .adminRow,.adminRowExtended{
+    grid-template-columns:1fr;
+    width:100%;
+  }
+  .adminPerson{grid-column:auto}
+  .adminRow select,.playerDataField input,.savePlayerDataBtn,.unlinkBtn{width:100%;max-width:100%}
+}
+
+/* Užší Androidy / iPhone mini / starší telefony */
+@media(max-width:430px){
+  .shell{padding-left:10px;padding-right:10px}
+  .teamHeroHeader{margin-left:-10px;margin-right:-10px}
+  .heroHeaderContent{padding-left:12px;padding-right:12px}
+  .heroHeaderContent h1{font-size:34px}
+  .heroHeaderContent .actions{gap:5px}
+  .glassBtn{padding:8px}
+
+  .sourceCard{padding:11px}
+  .sourceCard .actions{gap:5px}
+  .sourceCard .ghost{padding:7px}
+
+  .heroCard{padding-left:12px;padding-right:12px}
+  .teams h3{font-size:24px}
+  .vs{font-size:20px}
+  .meta{font-size:12px}
+  .attendanceHead{font-size:14px}
+
+  .tabs{margin-left:-10px;margin-right:-10px;padding-left:10px;padding-right:10px}
+  .tabs button{font-size:12px;padding-left:7px;padding-right:7px}
+
+  .panel{padding-left:11px;padding-right:11px}
+  .panel h2{font-size:27px}
+  .seasonSummary{grid-template-columns:1fr 1fr}
+  .seasonSummary>div{padding:8px}
+  .seasonSummary span{font-size:8px}
+
+  .responseCols>div{padding:9px}
+  .responseCols span{font-size:11px}
+
+  .tableWrap table:not(.playerIdsTable){min-width:520px}
+  .playerIdsTable{min-width:450px}
+
+  .historyRich .matchTeams>b{font-size:10px}
+  .h2hDateBox{font-size:10px}
+  .h2hSeasonMeta em{font-size:8px}
+
+  .teamPost{padding:12px}
+  .teamPost h3{font-size:18px}
+  .pollReminderTools>div{grid-template-columns:1fr}
+  .pollReminderTools button{width:100%}
+
+  .authModal{width:calc(100vw - 20px);padding:18px 14px}
+  .authSwitch button{font-size:11px;padding:9px 6px}
+}
+
+/* 320–360 px Androidy — nejtvrdší fallback */
+@media(max-width:360px){
+  .heroHeaderContent h1{font-size:30px}
+  .heroHeaderContent .tag{font-size:9px;letter-spacing:.12em}
+  .glassBtn{padding:7px}
+  .teams h3{font-size:21px}
+  .vs{font-size:18px}
+  .attendance.attendanceTwo{grid-template-columns:1fr}
+  .seasonSummary{grid-template-columns:1fr}
+  .mobileStatGrid{grid-template-columns:1fr 1fr}
+  .matchRow .venueBtn{max-width:50vw}
+  .pollVoters span,.pollUnvotedPeople>span{font-size:8px}
+}
+
+
+/* v3.11 — neveřejná kabina / vstupní brána / registrační kódy */
+.privateGate{
+  min-height:100dvh;
+  width:100%;
+  display:grid;
+  place-items:center;
+  padding:22px;
+  background:
+    radial-gradient(circle at 15% 10%,rgba(155,181,68,.14),transparent 34%),
+    linear-gradient(145deg,#f5f7f1,#edf2e9);
+  color:#153427;
+}
+.privateGateCard{
+  width:min(520px,100%);
+  background:#fff;
+  border:1px solid #dce4d7;
+  border-radius:24px;
+  padding:28px;
+  box-shadow:0 24px 70px rgba(20,52,39,.11);
+}
+.privateGateBrand{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  gap:15px;
+  align-items:start;
+}
+.privateGateLogo{
+  width:54px;height:54px;border-radius:16px;
+  background:#1f5a39;color:#fff;
+  display:grid;place-items:center;
+  font-weight:950;letter-spacing:.02em;
+  box-shadow:0 8px 20px rgba(31,90,57,.18);
+}
+.privateGateBrand span{
+  font-size:10px;font-weight:900;letter-spacing:.12em;color:#7b877d;
+}
+.privateGateBrand h1{
+  margin:5px 0 7px;
+  font-size:30px;line-height:1.05;letter-spacing:-.035em;
+}
+.privateGateBrand p,.unlinkedGate p{
+  margin:0;color:#728075;line-height:1.5;
+}
+.privateGateChoices{
+  display:grid;gap:9px;margin-top:24px;
+}
+.privateGateChoices>button,.gatePrimary,.gateSecondary,.gateGuest{
+  width:100%;
+  border-radius:12px;
+  padding:13px 14px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  cursor:pointer;font-weight:850;
+}
+.gatePrimary{border:0;background:#1f5a39;color:#fff}
+.gateSecondary{border:1px solid #cfdac9;background:#f5f8f2;color:#234c35}
+.gateGuest{
+  border:0;background:transparent;color:#667369;
+  flex-direction:column;gap:2px;padding-top:10px;
+}
+.gateGuest small{font-size:9px;font-weight:600;color:#929c94}
+.gateForm{margin-top:22px}
+.gateFormHead{display:flex;align-items:center;gap:10px;margin-bottom:3px}
+.gateFormHead button{
+  border:0;background:#eef3e9;color:#31543e;
+  width:34px;height:34px;border-radius:10px;cursor:pointer
+}
+.gateFormHead strong{font-size:18px}
+.fieldHint{font-size:9px;color:#88938a;font-weight:500}
+.loadingGate{gap:10px;align-content:center}
+.loadingGate p{color:#758075}
+.unlinkedGate{text-align:center}
+.unlinkedGate .privateGateLogo{margin:0 auto 14px}
+.unlinkedGate h2{margin:0 0 9px}
+.unlinkedGate .gatePrimary{margin-top:18px}
+
+.signupCodeAdmin{
+  border:1px dashed #cbd7c5;
+  border-radius:10px;
+  padding:8px 9px;
+  display:grid;grid-template-columns:1fr auto;
+  gap:4px 8px;align-items:center;
+  background:#f8faf6;
+}
+.signupCodeAdmin span{font-size:9px;color:#758075;text-transform:uppercase;font-weight:850}
+.signupCodeAdmin b{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.08em;font-size:13px;
+}
+.signupCodeAdmin button{
+  grid-column:1/-1;
+  border:1px solid #d5ded1;background:#fff;color:#31543e;
+  border-radius:8px;padding:6px 8px;font-size:9px;font-weight:850;cursor:pointer
+}
+
+@media(max-width:600px){
+  .privateGate{padding:12px}
+  .privateGateCard{padding:20px 16px;border-radius:19px}
+  .privateGateBrand{grid-template-columns:1fr}
+  .privateGateBrand h1{font-size:27px}
+  .privateGateLogo{width:48px;height:48px}
+}
+
+
+/* v3.12 — ruční přidání hráče + automatická registrace nových PSMF hráčů */
+.newPlayerBox{
+  margin:18px 0;
+  padding:15px;
+  border:1px solid #d8e2d3;
+  border-radius:14px;
+  background:#f7faf4;
+}
+.newPlayerBoxHead{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  margin-bottom:12px;
+}
+.newPlayerBoxHead>svg{margin-top:2px;flex:0 0 auto}
+.newPlayerBoxHead div{display:flex;flex-direction:column;gap:2px}
+.newPlayerBoxHead strong{font-size:14px;color:#234c35}
+.newPlayerBoxHead span{font-size:10px;color:#79857b;line-height:1.4}
+.newPlayerForm{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:9px;
+  align-items:end;
+}
+.newPlayerForm label{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  min-width:0;
+}
+.newPlayerForm label span{
+  font-size:9px;
+  font-weight:850;
+  text-transform:uppercase;
+  color:#6f7d72;
+}
+.newPlayerForm input{
+  width:100%;
+  min-width:0;
+}
+.newPlayerForm .primaryBtn{
+  white-space:nowrap;
+  height:42px;
+}
+.newPlayerBox>p{
+  margin:9px 0 0;
+  font-size:9px;
+  color:#7f8a81;
+  line-height:1.45;
+}
+@media(max-width:600px){
+  .newPlayerForm{grid-template-columns:1fr}
+  .newPlayerForm .primaryBtn{width:100%}
+}

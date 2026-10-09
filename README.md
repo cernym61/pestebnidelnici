@@ -703,3 +703,15 @@ Nahoře ve Statistikách je nový filtr **Seřadit statistiky podle**:
 Jakmile uživatel záložku Statistiky opustí, řazení se automaticky vrátí na výchozí pořadí.
 
 SQL není potřeba.
+
+
+## v3.12.8 — karty už se nesmí propsat jako góly
+
+- `is-yellow` / `is-red` se převádí na `[ŽK]` / `[ČK]`
+- `goalMinutes()` nově odmítne jakýkoli `minuta + hráč`, kterému bezprostředně předchází marker karty
+- jedna karta se navíc deduplikuje, aby nebyla započtena dvakrát
+- stejný parser napájí Historii, Vzájemné zápasy i součty ŽK/ČK ve Statistikách
+- server má druhou pojistku: parsed detail nesmí hráči přidat více gólů, než má oficiálně v PSMF sezonních statistikách
+- admin debug endpoint vrací součty parsed gólů/ŽK/ČK pro audit
+
+SQL není potřeba.

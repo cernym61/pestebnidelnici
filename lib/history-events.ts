@@ -26,8 +26,22 @@ function goalMinutes(text:string,names:string[]){
   const out:number[]=[];
   for(const name of names){
     const re=new RegExp(`((?:\\d{1,2}\\.\\s*,?\\s*)+)${esc(name)}`,'ig');
-    for(const m of text.matchAll(re))
+    for(const m of text.matchAll(re)){
+      const start=m.index??0;
+
+      // Card rows on PSMF also look like "44. Player". After raw HTML
+      // conversion they are explicitly tagged as [ŽK] / [ČK].
+      // Never allow such a card occurrence to pass as a goal.
+      const leftBoundary=Math.max(
+        text.lastIndexOf('\n',start-1),
+        text.lastIndexOf('|',start-1),
+        start-80
+      );
+      const localBefore=text.slice(Math.max(0,leftBoundary+1),start);
+      if(/\[(?:ŽK|ČK)\]\s*$/i.test(localBefore))continue;
+
       out.push(...[...m[1].matchAll(/(\d{1,2})\./g)].map(x=>Number(x[1])));
+    }
   }
   return [...new Set(out)].sort((a,b)=>a-b);
 }
@@ -36,17 +50,22 @@ function markerMinutes(text:string,names:string[],marker:string){
   for(const name of names){
     const e=esc(name), mk=esc(marker);
     for(const re of [
-      // 46. [ŽK] Martin Černý
       new RegExp(`(?:(\\d{1,2})\\.\\s*)?${mk}\\s*${e}`,'ig'),
-      // Martin Černý [ŽK]
       new RegExp(`(?:(\\d{1,2})\\.\\s*)?${e}\\s*${mk}`,'ig'),
-      // [ŽK] 46. Martin Černý  (actual PSMF card span after HTML conversion)
       new RegExp(`${mk}\\s*(?:(\\d{1,2})\\.\\s*)?${e}`,'ig')
     ]){
       for(const m of text.matchAll(re))out.push(m[1]?Number(m[1]):null);
     }
   }
-  return out;
+
+  // Compatibility patterns above can hit the same visual card more than once.
+  const seen=new Set<string>();
+  return out.filter(minute=>{
+    const key=minute==null?'null':String(minute);
+    if(seen.has(key))return false;
+    seen.add(key);
+    return true;
+  });
 }
 function markerBeforeName(line:string,name:string,kind:'star'|'captain'){
   const idx=fold(line).indexOf(fold(name));

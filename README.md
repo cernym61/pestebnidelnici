@@ -715,3 +715,14 @@ SQL není potřeba.
 - admin debug endpoint vrací součty parsed gólů/ŽK/ČK pro audit
 
 SQL není potřeba.
+
+
+## v3.12.9 — nejbližší zápas respektuje skutečný čas
+
+- zápas bez výsledku už není automaticky považován za budoucí
+- rozhoduje i skutečné datum a čas výkopu
+- starý zápas bez doplněného výsledku už nemůže zůstat jako „Nejbližší zápas“
+- stejná ochrana platí pro účast, ID hráčů, komentáře a automatický výběr soupeře
+- klientský fallback používá časovou zónu Europe/Prague
+
+SQL není potřeba.

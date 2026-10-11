@@ -39,10 +39,16 @@ const copy={
 
 function fmtDate(iso:string,lang:Lang){return new Intl.DateTimeFormat(lang==='cs'?'cs-CZ':'en-GB',{day:'numeric',month:'long'}).format(new Date(`${iso}T12:00:00`));}
 function fmtDateTime(iso:string,lang:Lang){return new Intl.DateTimeFormat(lang==='cs'?'cs-CZ':'en-GB',{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'}).format(new Date(iso));}
+function pragueNowKey(){
+ const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Prague',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date());
+ const get=(type:string)=>parts.find(p=>p.type===type)?.value||'';
+ return `${get('year')}-${get('month')}-${get('day')}T${get('hour')}:${get('minute')}`;
+}
+function isFutureMatch(m:Match){return `${m.date}T${m.time}`>pragueNowKey();}
 function googleMaps(address:string){return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;}
 function waze(address:string){return `https://www.waze.com/ul?q=${encodeURIComponent(address)}&navigate=yes`;}
 function ours(name:string){return name.startsWith('Pěstební dělníci');}
-const APP_VERSION='3.12.8';
+const APP_VERSION='3.12.9';
 
 function stripDiacritics(value:string){return value.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();}
 function parseScore(score:string|null|undefined){const m=String(score||'').match(/(\d+)\s*:\s*(\d+)/);return m?[Number(m[1]),Number(m[2])] as const:null;}
@@ -167,7 +173,7 @@ export default function KabinaApp(){
     supabase.from('historical_standings').select('season,rank,team,played,wins,draws,losses,score,points').order('rank'),
     supabase.from('player_season_stats').select('season,player_name,games,goals')
    ]);
-   setMatches((m.data||[]).map((r:any)=>{const d=new Date(r.kickoff);return{id:r.id,psmfKey:r.psmf_key,date:d.toLocaleDateString('en-CA',{timeZone:'Europe/Prague'}),time:d.toLocaleTimeString('cs-CZ',{timeZone:'Europe/Prague',hour:'2-digit',minute:'2-digit'}),venue:r.venue_code||'',home:r.home_team,away:r.away_team,round:Number(String(r.psmf_key).match(/r(\d+)$/)?.[1]||0),result:r.home_score==null?undefined:`${r.home_score}:${r.away_score}`,homeScore:r.home_score,awayScore:r.away_score,status:r.home_score==null?'upcoming':'past',season:r.season} as Match;}));
+   setMatches((m.data||[]).map((r:any)=>{const d=new Date(r.kickoff);return{id:r.id,psmfKey:r.psmf_key,date:d.toLocaleDateString('en-CA',{timeZone:'Europe/Prague'}),time:d.toLocaleTimeString('cs-CZ',{timeZone:'Europe/Prague',hour:'2-digit',minute:'2-digit'}),venue:r.venue_code||'',home:r.home_team,away:r.away_team,round:Number(String(r.psmf_key).match(/r(\d+)$/)?.[1]||0),result:r.home_score==null?undefined:`${r.home_score}:${r.away_score}`,homeScore:r.home_score,awayScore:r.away_score,status:r.home_score==null&&d.getTime()>Date.now()?'upcoming':'past',season:r.season} as Match;}));
    setStandings((s.data||[]).map((r:any)=>[r.team,r.played,r.wins,r.draws,r.losses,r.score,r.points] as Standing));
    if(p.data?.length){const list=p.data.map((r:any)=>({name:r.display_name,games:r.psmf_games??0,goals:r.psmf_goals??0,avatarUrl:r.avatar_url??null}));setPlayers(list);setSelectedPlayer(prev=>list.some((x:PlayerStat)=>x.name===prev)?prev:list[0].name);}
    if(v.data?.length)setVenues(Object.fromEntries(v.data.map((r:any)=>[r.code,r as Venue])));
@@ -186,7 +192,7 @@ export default function KabinaApp(){
  useEffect(()=>{loadPublicData();},[loadPublicData]);
  useEffect(()=>{if(guestMode)setTab('table');},[guestMode]);
  useEffect(()=>{if(tab!=='stats')setStatsSort('default');},[tab]);
- const next=useMemo(()=>matches.find(m=>m.status==='upcoming'),[matches]); const opponent=next?(next.home===TEAM?next.away:next.home):''; const nextKey=next?.psmfKey??'';
+ const next=useMemo(()=>matches.find(m=>m.status==='upcoming'&&isFutureMatch(m)),[matches]); const opponent=next?(next.home===TEAM?next.away:next.home):''; const nextKey=next?.psmfKey??'';
  const currentSeasonLabel=`${seasonState.currentPhase==='jaro'?(lang==='cs'?'jaro':'spring'):(lang==='cs'?'podzim':'autumn')} ${seasonState.currentYear}`;
  const leagueDisplay=`PSMF · ${seasonState.currentDivision} · ${currentSeasonLabel}`;
  const waitingLabel=seasonState.waitingForLabel||(seasonState.currentPhase==='podzim'?`${lang==='cs'?'Jaro':'Spring'} ${seasonState.currentYear+1}`:`${lang==='cs'?'Podzim':'Autumn'} ${seasonState.currentYear}`);
@@ -204,7 +210,7 @@ export default function KabinaApp(){
  },[next?.id,session?.access_token]);
 
 
- const loadComments=useCallback(async()=>{if(!session){setComments([]);return;}const ids=matches.filter(m=>m.status==='upcoming'&&m.id).map(m=>m.id!) ;if(!ids.length)return;const {data}=await supabase.from('match_comments').select('id,match_id,player_id,parent_id,body,created_at,updated_at,players(display_name,avatar_url,role)').in('match_id',ids).order('created_at');if(data)setComments(data.map((r:any)=>({...r,players:Array.isArray(r.players)?r.players[0]??null:r.players??null})) as CommentRow[]);},[session,matches]);
+ const loadComments=useCallback(async()=>{if(!session){setComments([]);return;}const ids=matches.filter(m=>m.status==='upcoming'&&isFutureMatch(m)&&m.id).map(m=>m.id!) ;if(!ids.length)return;const {data}=await supabase.from('match_comments').select('id,match_id,player_id,parent_id,body,created_at,updated_at,players(display_name,avatar_url,role)').in('match_id',ids).order('created_at');if(data)setComments(data.map((r:any)=>({...r,players:Array.isArray(r.players)?r.players[0]??null:r.players??null})) as CommentRow[]);},[session,matches]);
  useEffect(()=>{loadComments();},[loadComments]);
 
  const loadCabin=useCallback(async(active:Session|null)=>{if(!active){setProfile(null);setAttendance(null);setAttendanceRows([]);setRegisteredPlayers([]);return;}let {data:me}=await supabase.from('players').select('id,display_name,role,user_id,avatar_url').eq('user_id',active.user.id).maybeSingle();const pending=localStorage.getItem('pending-player-name')||String(active.user.user_metadata?.player_name||'');
@@ -999,7 +1005,7 @@ export default function KabinaApp(){
     <p>{lang==='cs'?<>Sezóna <b>{currentSeasonLabel}</b> už byla nalezena, ale PSMF zatím nezveřejnilo další zápas.</>:<>Season <b>{currentSeasonLabel}</b> has been found, but PSMF has not published the next match yet.</>}</p>
   </>}
 </section>}
-   {matches.filter(m=>m.status==='upcoming').slice(1).length>0&&<><h3 className="sectionTitle">{t.upcoming}</h3><div className="list">{matches.filter(m=>m.status==='upcoming').slice(1).map(m=><article className="matchCard" key={m.psmfKey||m.date+m.time}><div className="matchRow"><div className="dateBox"><b>{fmtDate(m.date,lang)}</b><span>{m.time}</span></div><div className="matchTeams"><b>{m.home}</b><span>vs</span><b>{m.away}</b></div><button className="venueBtn" onClick={()=>openVenue(m.venue)}><MapPin size={17}/>{m.venue}</button></div>{renderDiscussion(m)}</article>)}</div></>}
+   {matches.filter(m=>m.status==='upcoming'&&isFutureMatch(m)).slice(1).length>0&&<><h3 className="sectionTitle">{t.upcoming}</h3><div className="list">{matches.filter(m=>m.status==='upcoming'&&isFutureMatch(m)).slice(1).map(m=><article className="matchCard" key={m.psmfKey||m.date+m.time}><div className="matchRow"><div className="dateBox"><b>{fmtDate(m.date,lang)}</b><span>{m.time}</span></div><div className="matchTeams"><b>{m.home}</b><span>vs</span><b>{m.away}</b></div><button className="venueBtn" onClick={()=>openVenue(m.venue)}><MapPin size={17}/>{m.venue}</button></div>{renderDiscussion(m)}</article>)}</div></>}
    <h3 className="sectionTitle">{t.past}</h3><div className="list">{matches.filter(m=>m.status==='past').slice().reverse().map(m=><article className={`matchRow resultRow ${outcome(m.home,m.away,m.homeScore,m.awayScore)}`} key={m.psmfKey||m.date}><div className="dateBox"><b>{fmtDate(m.date,lang)}</b><span>{m.time}</span></div><div className="matchTeams"><b>{m.home}</b><span className="result">{m.result}</span><b>{m.away}</b></div><button className="venueBtn venueText" onClick={()=>openVenue(m.venue)}>{m.venue}</button></article>)}</div></>}
 
   {tab==='board'&&<section className="boardSection">

@@ -6,6 +6,19 @@ export const runtime='nodejs';
 export const dynamic='force-dynamic';
 const BOARD_URL='https://www.pestebnidelnici.cz/?tab=board';
 
+function hasEveryoneMention(text:string){
+  return /(^|\s)@(všichni|vsichni|everyone)(?=$|\s|[,.!?;:])/i.test(text);
+}
+
+async function resolveMentions(admin:any,text:string,authorId:string){
+  const {data,error}=await admin.from('players').select('id,display_name').eq('active',true).not('user_id','is',null);
+  if(error)throw error;
+  const players=data||[];
+  if(hasEveryoneMention(text))return players.map((p:any)=>p.id).filter((id:string)=>id!==authorId);
+  const lower=text.toLocaleLowerCase('cs-CZ');
+  return players.filter((p:any)=>lower.includes(`@${String(p.display_name).toLocaleLowerCase('cs-CZ')}`)).map((p:any)=>p.id).filter((id:string)=>id!==authorId);
+}
+
 async function auth(request:Request){
   const token=(request.headers.get('authorization')||'').replace(/^Bearer\s+/,'');
   if(!token)throw new Error('Missing session');
@@ -79,11 +92,13 @@ export async function POST(request:Request){
     if(postErr)throw postErr;
     if(!post)return NextResponse.json({ok:false,error:'Poll not found'},{status:404});
 
+    let parentPlayerId:string|null=null;
     if(parentId){
       const {data:parent,error:parentErr}=await admin.from('team_post_comments')
         .select('id,post_id,player_id').eq('id',parentId).eq('post_id',postId).maybeSingle();
       if(parentErr)throw parentErr;
       if(!parent)return NextResponse.json({ok:false,error:'Parent comment not found'},{status:404});
+      parentPlayerId=parent.player_id;
     }
 
     const {data:created,error}=await admin.from('team_post_comments').insert({
@@ -91,22 +106,19 @@ export async function POST(request:Request){
     }).select('id').single();
     if(error)throw error;
 
-    // Only replies trigger a push notification, and never to yourself.
-    if(parentId){
-      try{
-        const {data:parent}=await admin.from('team_post_comments').select('player_id').eq('id',parentId).maybeSingle();
-        if(parent?.player_id&&parent.player_id!==player.id){
-          await sendPush({
-            externalIds:[parent.player_id],
-            titleCs:`↩️ ${player.display_name} odpověděl na tvůj komentář`,
-            bodyCs:text.length>150?`${text.slice(0,147)}…`:text,
-            titleEn:`↩️ ${player.display_name} replied to your comment`,
-            bodyEn:text.length>150?`${text.slice(0,147)}…`:text,
-            url:BOARD_URL
-          });
-        }
-      }catch(e){console.warn('reply push failed',e);}
-    }
+    // Mentions and replies share one deduplicated push. @všichni/@everyone targets the whole active team.
+    try{
+      const mentioned=await resolveMentions(admin,text,player.id);
+      const recipients=new Set<string>(mentioned);
+      if(parentPlayerId&&parentPlayerId!==player.id)recipients.add(parentPlayerId);
+      if(recipients.size){
+        const all=hasEveryoneMention(text);
+        const titleCs=all?`📣 ${player.display_name} označil celý tým`:mentioned.length?`@ ${player.display_name} tě označil v komentáři`:`↩️ ${player.display_name} odpověděl na tvůj komentář`;
+        const titleEn=all?`📣 ${player.display_name} mentioned the whole team`:mentioned.length?`@ ${player.display_name} mentioned you in a comment`:`↩️ ${player.display_name} replied to your comment`;
+        const excerpt=text.length>150?`${text.slice(0,147)}…`:text;
+        await sendPush({externalIds:[...recipients],titleCs,bodyCs:excerpt,titleEn,bodyEn:excerpt,url:BOARD_URL});
+      }
+    }catch(e){console.warn('comment notification failed',e);}
 
     return NextResponse.json({ok:true,id:created.id});
   }catch(e:any){

@@ -153,7 +153,7 @@ function buildEmailHtml(playerName:string, ctx:MailContext, test=false){
       <p style="margin:6px 0"><strong>${esc(ctx.opponent)}:</strong> ${standingCz(ctx.oppStanding)}</p>
     </div>
     <div style="border:1px solid #e2e7df;border-radius:12px;padding:16px;margin:16px 0">
-      <div style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#7b8579;font-weight:700;margin-bottom:8px">Vzájemná bilance od roku 2020</div>
+      <div style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#7b8579;font-weight:700;margin-bottom:8px">Vzájemná bilance od roku 2015</div>
       <p style="margin:6px 0">${h2hCz(ctx.h2h)}</p>
       ${recentHtml(ctx,'cz')}
     </div>
@@ -174,7 +174,7 @@ function buildEmailHtml(playerName:string, ctx:MailContext, test=false){
       <p style="margin:6px 0"><strong>${esc(ctx.opponent)}:</strong> ${standingEn(ctx.oppStanding)}</p>
     </div>
     <div style="border:1px solid #e2e7df;border-radius:12px;padding:16px;margin:16px 0">
-      <div style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#7b8579;font-weight:700;margin-bottom:8px">Head-to-head record since 2020</div>
+      <div style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#7b8579;font-weight:700;margin-bottom:8px">Head-to-head record since 2015</div>
       <p style="margin:6px 0">${h2hEn(ctx.h2h)}</p>
       ${recentHtml(ctx,'en')}
     </div>

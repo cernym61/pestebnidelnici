@@ -726,3 +726,20 @@ SQL není potřeba.
 - klientský fallback používá časovou zónu Europe/Prague
 
 SQL není potřeba.
+
+## v3.13.0 — @ označování v komentářích
+
+- funguje v komentářích u zápasů i u anket na Nástěnce
+- po napsání `@` se zobrazí našeptávač aktivních hráčů
+- výběr `@všichni` (`@everyone` v EN) upozorní celý aktivní tým s účtem
+- označený hráč dostane push notifikaci, pokud má push povolený
+- odpověď na komentář dál upozorní autora; pokud je zároveň označený, notifikace se neduplikuje
+- zmínky jsou v komentáři vizuálně zvýrazněné
+- SQL migrace není potřeba
+
+## v3.13.1 — text vzájemné bilance v reminder e-mailu
+
+- pouze v reminder e-mailu změněn nadpis z „od roku 2020“ na „od roku 2015“
+- anglická verze změněna na „since 2015“
+- výpočet vzájemných zápasů zůstává beze změny
+- SQL není potřeba

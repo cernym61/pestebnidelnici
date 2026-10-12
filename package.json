@@ -1,6 +1,6 @@
 {
   "name": "kabina-hanspaulka",
-  "version": "3.12.9",
+  "version": "3.13.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
